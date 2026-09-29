@@ -4,11 +4,12 @@ Deploy the frontend and backend as separate sites. The repository root includes
 a small Node.js host for Plesk Git deployments: `npm install` builds the Vite
 frontend and `app.js` serves the generated files.
 
-## Backend (`api.example.com`)
+## Backend (`api-dev.ceypetco.gov.lk`)
 
-Upload the contents of `backend` to the API subdomain's application root. The
-application root must contain `package.json`, `package-lock.json`, `src`, and
-`uploads` (the latter can be created empty).
+When Plesk clones the whole repository into `api-dev.ceypetco.gov.lk`, point
+the Node.js application at the repository's `backend` directory. Do not run
+NPM Install from the repository root: its package is the separate frontend
+host and is named `ceypetco-frontend-host`.
 
 Use these Plesk Node.js settings:
 
@@ -16,8 +17,8 @@ Use these Plesk Node.js settings:
 | --- | --- |
 | Node.js version | 22 LTS |
 | Application mode | `production` |
-| Application root | API subdomain directory |
-| Document root | API subdomain directory |
+| Application root | `api-dev.ceypetco.gov.lk/backend` |
+| Document root | `api-dev.ceypetco.gov.lk/backend/public` |
 | Startup file | `src/server.js` |
 
 Add the environment variables from `backend/.env.example` under **Custom
@@ -25,10 +26,14 @@ environment variables**. At minimum, replace all database credentials,
 `JWT_SECRET`, `CLIENT_URL`, and `LOCAL_ASSET_BASE_URL` with production values.
 Do not upload a real `.env` file or commit secrets.
 
+Before installing, use the **open** link beside Application Root and verify it
+contains `package.json`, `package-lock.json`, `public`, and `src`. The package
+must be named `backend`, not `ceypetco-frontend-host`.
+
 In Plesk, run **NPM Install**, restart the app, and verify:
 
 ```text
-https://api.example.com/api/health
+https://api-dev.ceypetco.gov.lk/api/health
 ```
 
 ## Frontend (`example.com`) with Plesk Node.js
@@ -80,6 +85,11 @@ visits to React routes fall back to `index.html`.
 
 - `app.js is not found`: the frontend domain incorrectly has Node.js enabled,
   or the backend startup file is not set to `src/server.js`.
+- `ceypetco-frontend-host@1.0.0 postinstall` appears while installing the API:
+  the backend Application Root is incorrectly set to the repository root;
+  change it to `api-dev.ceypetco.gov.lk/backend`.
+- `nodenv: npm: command not found`: select Node.js 22 in Plesk. If it occurs
+  together with `ceypetco-frontend-host`, correct the Application Root first.
 - `DB_PASSWORD is required`: configure the `DB_*` variables in Plesk. The
   backend uses MySQL, not the obsolete `SQL_*` names.
 - Browser CORS error: set backend `CLIENT_URL` to the exact frontend origin,
