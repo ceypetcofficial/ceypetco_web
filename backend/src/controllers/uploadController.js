@@ -2,6 +2,7 @@ const path = require("path");
 const fs = require("fs");
 const crypto = require("crypto");
 const multer = require("multer");
+const { getPublicAssetOrigin, isProduction } = require("../config/env");
 
 const UPLOADS_DIR = path.resolve(__dirname, "../../uploads");
 
@@ -23,7 +24,7 @@ const docFilter = (_req, file, cb) => {
   const mimeOk = /pdf|msword|officedocument|sheet|zip|rar|presentation|text/.test(
     file.mimetype
   );
-  if (extOk || mimeOk) return cb(null, true);
+  if (extOk && mimeOk) return cb(null, true);
   cb(new Error("Unsupported document type"));
 };
 
@@ -46,7 +47,7 @@ const saveToDisk = (req, isDoc) => {
   const targetDir = path.resolve(UPLOADS_DIR, folder);
   fs.mkdirSync(targetDir, { recursive: true });
   fs.writeFileSync(path.join(targetDir, fileName), req.file.buffer);
-  const base = `${req.protocol}://${req.get("host")}`;
+  const base = getPublicAssetOrigin(req);
   return {
     filename: fileName,
     originalname: req.file.originalname,
@@ -66,7 +67,11 @@ const runUpload = (req, res, isDoc) => {
       data: saveToDisk(req, isDoc),
     });
   } catch (err) {
-    return res.status(500).json({ success: false, message: "Upload failed: " + err.message });
+    console.error("Upload failed:", err);
+    return res.status(500).json({
+      success: false,
+      message: isProduction ? "Upload failed" : `Upload failed: ${err.message}`,
+    });
   }
 };
 
@@ -111,7 +116,7 @@ const safeImageName = (name) => {
 const listImages = (req, res) => {
   try {
     fs.mkdirSync(IMAGES_DIR, { recursive: true });
-    const base = `${req.protocol}://${req.get("host")}`;
+    const base = getPublicAssetOrigin(req);
     const images = fs
       .readdirSync(IMAGES_DIR)
       .filter((f) => allowedImageTypes.test(path.extname(f).toLowerCase()))
@@ -130,7 +135,12 @@ const listImages = (req, res) => {
   } catch (err) {
     return res
       .status(500)
-      .json({ success: false, message: "Failed to list images: " + err.message });
+      .json({
+        success: false,
+        message: isProduction
+          ? "Failed to list images"
+          : `Failed to list images: ${err.message}`,
+      });
   }
 };
 
@@ -151,7 +161,12 @@ const deleteImage = (req, res) => {
   } catch (err) {
     return res
       .status(500)
-      .json({ success: false, message: "Failed to delete image: " + err.message });
+      .json({
+        success: false,
+        message: isProduction
+          ? "Failed to delete image"
+          : `Failed to delete image: ${err.message}`,
+      });
   }
 };
 
@@ -184,7 +199,7 @@ const renameImage = (req, res) => {
         .json({ success: false, message: "An image with that name already exists" });
     }
     fs.renameSync(oldTarget, newTarget);
-    const base = `${req.protocol}://${req.get("host")}`;
+    const base = getPublicAssetOrigin(req);
     return res.json({
       success: true,
       message: "Image renamed",
@@ -193,7 +208,12 @@ const renameImage = (req, res) => {
   } catch (err) {
     return res
       .status(500)
-      .json({ success: false, message: "Failed to rename image: " + err.message });
+      .json({
+        success: false,
+        message: isProduction
+          ? "Failed to rename image"
+          : `Failed to rename image: ${err.message}`,
+      });
   }
 };
 

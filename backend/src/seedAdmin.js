@@ -4,13 +4,22 @@ const connectDB = require("./config/db");
 const User = require("./models/User");
 
 const seedAdmin = async () => {
+  const email = process.env.SEED_ADMIN_EMAIL?.trim().toLowerCase();
+  const password = process.env.SEED_ADMIN_PASSWORD;
+  if (!email || !password) {
+    throw new Error("SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD are required");
+  }
+  if (password.length < 12) {
+    throw new Error("SEED_ADMIN_PASSWORD must contain at least 12 characters");
+  }
+
   await connectDB();
 
   const data = [
     {
       name: "Super Administrator",
-      email: "admin@ceypetco.gov.lk",
-      password: "Admin@123456",
+      email,
+      password,
       role: "super_admin",
       status: "active",
     },

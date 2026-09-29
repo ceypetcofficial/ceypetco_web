@@ -1,37 +1,35 @@
-require("dotenv").config();
 const mysql = require("mysql2/promise");
-const { modelNames, tableName } = require("../models/modelRegistry");
+const { getDatabaseConfig } = require("./env");
 
 let pool;
-
-const getPoolConfig = () => {
-  return {
-    host: process.env.DB_HOST || "127.0.0.1",
-    port: process.env.DB_PORT || 3306,
-    user: process.env.DB_USER || "root",
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME || "ceypetco_website",
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0,
-  };
-};
 
 const connectDB = async () => {
   if (pool) return pool;
 
-  const config = getPoolConfig();
+  const config = getDatabaseConfig();
   if (!config.password) throw new Error("DB_PASSWORD is required");
 
   pool = mysql.createPool(config);
 
-  // We are relying on the migrate script to have created the WebsiteDocuments table.
-  // We can just verify connection works here.
+  // This is non-destructive for existing deployments and initializes fresh databases.
   try {
-    const [rows] = await pool.query("SELECT 1");
+    await pool.query("SELECT 1");
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS WebsiteDocuments (
+        ModelName VARCHAR(100) NOT NULL,
+        Id CHAR(36) NOT NULL,
+        Data LONGTEXT NOT NULL,
+        CreatedAt DATETIME(3) NOT NULL,
+        UpdatedAt DATETIME(3) NOT NULL,
+        PRIMARY KEY (ModelName, Id),
+        INDEX IX_ModelName_UpdatedAt (ModelName, UpdatedAt DESC)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `);
     console.log(`MySQL connected: ${config.host}:${config.port}/${config.database}`);
   } catch (error) {
-    console.error("MySQL connection failed:", error);
+    console.error(`MySQL connection failed: ${error.message}`);
+    await pool.end().catch(() => {});
+    pool = undefined;
     throw error;
   }
   

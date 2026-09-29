@@ -34,9 +34,12 @@ const pageContentRoutes = require("./routes/pageContentRoutes");
 const googleDriveImageRoutes = require("./routes/googleDriveImageRoutes");
 const tenderDownloadRoutes = require("./routes/tenderDownloadRoutes");
 const errorHandler = require("./middleware/errorMiddleware");
+const { allowedOrigins, isProduction } = require("./config/env");
 
 const app = express();
 const isDevelopment = process.env.NODE_ENV === "development";
+
+if (isProduction) app.set("trust proxy", 1);
 
 app.use(
   helmet({
@@ -44,18 +47,15 @@ app.use(
   })
 );
 
-const corsOrigins = (process.env.CLIENT_URL || "")
-  .split(",")
-  .map((o) => o.trim().replace(/\/+$/, ""))
-  .filter(Boolean);
-
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (!origin || corsOrigins.length === 0 || corsOrigins.includes(origin)) {
+      if (!origin || allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
-      return callback(new Error("Not allowed by CORS"));
+      const error = new Error("Origin not allowed by CORS");
+      error.statusCode = 403;
+      return callback(error);
     },
     credentials: true,
   })
@@ -65,15 +65,12 @@ app.use(
   "/uploads",
   express.static(path.resolve(__dirname, "../uploads"), {
     setHeaders: (res) => {
-      res.setHeader(
-        "Access-Control-Allow-Origin",
-        corsOrigins[0] || "*"
-      );
+      res.setHeader("Access-Control-Allow-Origin", allowedOrigins[0] || "*");
       res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
     },
   })
 );
-app.use(morgan("dev"));
+app.use(morgan(isProduction ? "combined" : "dev"));
 
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -116,6 +113,7 @@ const writeLimiter = rateLimit({
 app.get("/api/health", (req, res) => {
   res.status(200).json({
     success: true,
+    status: "ok",
     message: "CEYPETCO backend is running successfully",
   });
 });
