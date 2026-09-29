@@ -2796,7 +2796,7 @@ function DivisionPage({ data }) {
 }
 
 function RefineryPage() {
-  const div = useDivision('refinery', {
+  const defaults = {
     kicker: 'REFINERY OPERATIONS & CAPABILITIES',
     heading:
       'We refine with precision and expertise, delivering quality petroleum products that fuel the nation\u2019s growth',
@@ -2831,15 +2831,47 @@ function RefineryPage() {
       ['Vacuum Unit', '950'],
       ['Bitumen Blowing Unit', '350'],
     ],
-  });
-  const gallery = div.gallery || [];
-  const paragraphs = div.paragraphs || [];
-  const importance = div.keyFacts || [];
-  const copy = div.copy || [];
-  const units =
-    div.detailRows && Array.isArray(div.detailRows) && div.detailRows[0] && 'name' in div.detailRows[0]
-      ? div.detailRows.map((r) => [r.name, r.value])
-      : div.detailRows || [];
+  };
+  const div = useDivision('refinery', defaults);
+  const textValue = (value, fallback) =>
+    typeof value === 'string' || typeof value === 'number'
+      ? String(value)
+      : fallback;
+  const stringList = (value, fallback) => {
+    if (!Array.isArray(value)) return fallback;
+    const items = value
+      .filter((item) => typeof item === 'string' || typeof item === 'number')
+      .map((item) => String(item).trim())
+      .filter(Boolean);
+    return items.length ? items : fallback;
+  };
+  const normalizeRows = (value, fallback) => {
+    if (!Array.isArray(value)) return fallback;
+    const rows = value
+      .map((row) => {
+        if (Array.isArray(row)) {
+          const [name, capacity] = row;
+          return name !== undefined && capacity !== undefined
+            ? [String(name), String(capacity)]
+            : null;
+        }
+        if (row && typeof row === 'object') {
+          return row.name !== undefined && row.value !== undefined
+            ? [String(row.name), String(row.value)]
+            : null;
+        }
+        return null;
+      })
+      .filter(Boolean);
+    return rows.length ? rows : fallback;
+  };
+  const kicker = textValue(div.kicker, defaults.kicker);
+  const heading = textValue(div.heading, defaults.heading);
+  const gallery = stringList(div.gallery, defaults.gallery);
+  const paragraphs = stringList(div.paragraphs, defaults.paragraphs);
+  const importance = stringList(div.keyFacts, defaults.keyFacts);
+  const copy = stringList(div.copy, defaults.copy);
+  const units = normalizeRows(div.detailRows, defaults.detailRows);
   const galleryImage = (img) =>
     !img
       ? ''
@@ -2851,8 +2883,8 @@ function RefineryPage() {
       <section className="refinery-opening content-section">
         <div className="container refinery-opening-grid">
           <div>
-            <p className="eyebrow">{div.kicker}</p>
-            <h2>{div.heading}</h2>
+            <p className="eyebrow">{kicker}</p>
+            <h2>{heading}</h2>
           </div>
           <div className="refinery-lead">
             <strong>{copy[0]}</strong>
