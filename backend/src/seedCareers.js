@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const { closeDB } = require("./config/db");
 require("dotenv").config();
 const connectDB = require("./config/db");
 const Career = require("./models/Career");
@@ -70,7 +70,7 @@ const seedCareers = async () => {
     console.log(`Career created: ${item.title}`);
   }
 
-  await mongoose.connection.close();
+  await closeDB();
   console.log("Career seeding complete.");
   process.exit(0);
 };

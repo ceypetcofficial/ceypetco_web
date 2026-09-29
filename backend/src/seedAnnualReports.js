@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const { closeDB } = require("./config/db");
 require("dotenv").config();
 const connectDB = require("./config/db");
 const AnnualReport = require("./models/AnnualReport");
@@ -34,7 +34,7 @@ const seed = async () => {
     console.log(`AnnualReport created: ${year}`);
   }
 
-  await mongoose.connection.close();
+  await closeDB();
   console.log("Annual report seeding complete.");
   process.exit(0);
 };

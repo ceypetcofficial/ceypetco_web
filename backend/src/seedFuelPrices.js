@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const { closeDB } = require("./config/db");
 require("dotenv").config();
 const connectDB = require("./config/db");
 const FuelPrice = require("./models/FuelPrice");
@@ -38,7 +38,7 @@ const seed = async () => {
     console.log(`Upserted fuel price: ${p.product}`);
   }
 
-  await mongoose.connection.close();
+  await closeDB();
   console.log("Fuel price seeding complete.");
   process.exit(0);
 };

@@ -11,7 +11,10 @@ React + Vite + Tailwind CSS
 Node.js + Express.js
 
 **Database:**
-MongoDB
+Microsoft SQL Server
+
+**Uploaded files:**
+Stored locally under `backend/uploads/images` and `backend/uploads/docs`. Admin dashboard uploads and CRUD operations use local storage.
 
 ## Development Ports
 
@@ -44,7 +47,7 @@ cp backend/.env.example backend/.env
 ```
 
 - `frontend/.env` — set `VITE_API_BASE_URL` to the backend API base URL.
-- `backend/.env` — set `PORT`, `MONGODB_URI`, and `CLIENT_URL`.
+- `backend/.env` — set `PORT`, `CLIENT_URL`, and the `SQL_*` connection variables.
 
 ### 2. Run the Backend
 
@@ -82,5 +85,5 @@ Frontend runs on http://localhost:5173.
 
 Never commit:
 - `.env` files
-- MongoDB credentials
+- SQL Server credentials
 - Passwords, API secrets, or private keys

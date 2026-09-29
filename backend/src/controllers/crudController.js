@@ -1,4 +1,13 @@
-const { deleteAssets } = require("../utils/cloudinary");
+const { deleteAssets } = require("../utils/assetStorage");
+
+const PROTECTED_FIELDS = ["_id", "createdAt", "updatedAt"];
+
+const sanitizeBody = (body) => {
+  if (!body || typeof body !== "object") return body || {};
+  const clean = { ...body };
+  for (const field of PROTECTED_FIELDS) delete clean[field];
+  return clean;
+};
 
 const collectUrls = (doc, assetFields) => {
   if (!doc) return [];
@@ -74,7 +83,7 @@ const createCrudController = (
 
   const create = async (req, res, next) => {
     try {
-      const item = await Model.create(req.body);
+      const item = await Model.create(sanitizeBody(req.body));
       res.status(201).json({ success: true, data: item });
     } catch (error) {
       next(error);
@@ -89,10 +98,14 @@ const createCrudController = (
           .status(404)
           .json({ success: false, message: "Resource not found" });
       }
-      const item = await Model.findByIdAndUpdate(req.params.id, req.body, {
-        new: true,
-        runValidators: true,
-      });
+      const item = await Model.findByIdAndUpdate(
+        req.params.id,
+        sanitizeBody(req.body),
+        {
+          new: true,
+          runValidators: true,
+        }
+      );
       if (!item) {
         return res
           .status(404)
@@ -106,7 +119,7 @@ const createCrudController = (
           await deleteAssets(removed);
         }
       } catch (cleanupErr) {
-        console.warn("Cloudinary cleanup warning:", cleanupErr.message);
+        console.warn("Local asset cleanup warning:", cleanupErr.message);
       }
       res.status(200).json({ success: true, data: item });
     } catch (error) {
@@ -129,7 +142,7 @@ const createCrudController = (
           await deleteAssets(removed);
         }
       } catch (cleanupErr) {
-        console.warn("Cloudinary cleanup warning:", cleanupErr.message);
+        console.warn("Local asset cleanup warning:", cleanupErr.message);
       }
       res.status(200).json({ success: true, message: "Resource deleted" });
     } catch (error) {

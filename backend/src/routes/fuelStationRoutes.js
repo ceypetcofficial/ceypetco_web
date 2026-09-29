@@ -4,9 +4,9 @@ const c = require("../controllers/fuelStationController");
 const { protect } = require("../middleware/authMiddleware");
 const { authorize } = require("../middleware/roleMiddleware");
 
-router.route("/").get(c.getAll);
-
 router.use(protect);
+
+router.route("/").get(c.getAll);
 
 router.route("/").post(authorize("super_admin", "admin", "editor"), c.create);
 router

@@ -1,4 +1,3 @@
-const mongoose = require("mongoose");
 const HistoricalPrice = require("../models/HistoricalPrice");
 const parseHistoricalDate = require("../utils/historicalPriceDate");
 
@@ -65,7 +64,7 @@ exports.create = async (req, res, next) => {
 
 exports.update = async (req, res, next) => {
   try {
-    if (!mongoose.isValidObjectId(req.params.id)) return invalid(res);
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(req.params.id)) return invalid(res);
     const payload = payloadFrom(req.body);
     if (!payload) return invalid(res);
     const data = await HistoricalPrice.findByIdAndUpdate(req.params.id, payload, { new: true, runValidators: true });
@@ -76,7 +75,7 @@ exports.update = async (req, res, next) => {
 
 exports.remove = async (req, res, next) => {
   try {
-    if (!mongoose.isValidObjectId(req.params.id)) return invalid(res);
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(req.params.id)) return invalid(res);
     const data = await HistoricalPrice.findByIdAndDelete(req.params.id);
     if (!data) return res.status(404).json({ success: false, message: "Record not found" });
     res.json({ success: true, message: "Record deleted" });

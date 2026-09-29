@@ -1,17 +1,20 @@
 const express = require("express");
 const router = express.Router();
 const c = require("../controllers/newsController");
-const { protect } = require("../middleware/authMiddleware");
+const { protect, optionalAuth } = require("../middleware/authMiddleware");
 const { authorize } = require("../middleware/roleMiddleware");
 
-router.route("/").get(c.getPublished);
+router
+  .route("/")
+  .get(optionalAuth, (req, res, next) =>
+    req.user ? c.getAll(req, res, next) : c.getPublished(req, res, next)
+  );
 router.route("/by/:identifier").get(c.getPublishedById);
 
 router.use(protect);
 
 router
   .route("/")
-  .get(c.getAll)
   .post(authorize("super_admin", "admin", "editor"), c.create);
 
 router

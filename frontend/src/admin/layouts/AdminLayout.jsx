@@ -13,7 +13,7 @@ const AdminLayout = () => {
         onClose={() => setSidebarOpen(false)}
       />
 
-      <div className="lg:ml-[260px] min-h-screen flex flex-col">
+      <div className="lg:ml-[270px] min-h-screen flex flex-col">
         <AdminHeader onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 
         <main className="flex-1 p-6">

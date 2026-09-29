@@ -1,5 +1,36 @@
 const User = require("../models/User");
 
+const ALLOWED_ROLES = ["super_admin", "admin", "editor"];
+const ALLOWED_STATUSES = ["active", "inactive"];
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MIN_PASSWORD_LENGTH = 8;
+
+const validateUserInput = ({ name, email, password, role, status }) => {
+  if (name !== undefined) {
+    if (typeof name !== "string" || name.trim().length < 2) {
+      return "Name must be at least 2 characters";
+    }
+  }
+  if (email !== undefined) {
+    const value = String(email).trim().toLowerCase();
+    if (!EMAIL_RE.test(value)) {
+      return "Please provide a valid email address";
+    }
+  }
+  if (password !== undefined && password !== "") {
+    if (typeof password !== "string" || password.length < MIN_PASSWORD_LENGTH) {
+      return `Password must be at least ${MIN_PASSWORD_LENGTH} characters`;
+    }
+  }
+  if (role !== undefined && !ALLOWED_ROLES.includes(role)) {
+    return "Invalid role. Must be one of: super_admin, admin, editor";
+  }
+  if (status !== undefined && !ALLOWED_STATUSES.includes(status)) {
+    return "Invalid status. Must be one of: active, inactive";
+  }
+  return null;
+};
+
 const getAll = async (req, res, next) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -53,13 +84,30 @@ const create = async (req, res, next) => {
         message: "Name, email and password are required",
       });
     }
-    const existing = await User.findOne({ email: email.toLowerCase() });
+    const normalizedEmail = String(email).trim().toLowerCase();
+    const invalid = validateUserInput({
+      name,
+      email: normalizedEmail,
+      password,
+      role,
+      status,
+    });
+    if (invalid) {
+      return res.status(400).json({ success: false, message: invalid });
+    }
+    const existing = await User.findOne({ email: normalizedEmail });
     if (existing) {
       return res
         .status(400)
         .json({ success: false, message: "Email already in use" });
     }
-    const user = await User.create({ name, email, password, role, status });
+    const user = await User.create({
+      name: name.trim(),
+      email: normalizedEmail,
+      password,
+      role: role || "admin",
+      status: status || "active",
+    });
     res.status(201).json({ success: true, data: user });
   } catch (error) {
     next(error);
@@ -68,7 +116,40 @@ const create = async (req, res, next) => {
 
 const update = async (req, res, next) => {
   try {
-    const { password, ...updates } = req.body;
+    const { password } = req.body;
+
+    if (
+      req.params.id === req.user._id.toString() &&
+      (req.body.role !== undefined || req.body.status !== undefined)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "You cannot change your own role or status",
+      });
+    }
+
+    const invalid = validateUserInput(req.body);
+    if (invalid) {
+      return res.status(400).json({ success: false, message: invalid });
+    }
+
+    const updates = {};
+    for (const field of ["name", "role", "status"]) {
+      if (field in req.body) updates[field] = req.body[field];
+    }
+    if (req.body.email !== undefined) {
+      updates.email = String(req.body.email).trim().toLowerCase();
+      const existing = await User.findOne({ email: updates.email });
+      if (
+        existing &&
+        existing._id.toString().toLowerCase() !==
+          String(req.params.id).toLowerCase()
+      ) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Email already in use" });
+      }
+    }
     if (password) {
       const user = await User.findById(req.params.id).select("+password");
       if (!user) {

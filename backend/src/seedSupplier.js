@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const { closeDB } = require("./config/db");
 require("dotenv").config();
 const connectDB = require("./config/db");
 const SupplierResource = require("./models/SupplierResource");
@@ -103,7 +103,7 @@ const seed = async () => {
     console.log(`SupplierResource created: ${title}`);
   }
 
-  await mongoose.connection.close();
+  await closeDB();
   console.log("Supplier seeding complete.");
   process.exit(0);
 };

@@ -85,6 +85,11 @@ const SupplierResources = () => {
     loadAll();
   }, [loadAll]);
 
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("create") === "1") openCreate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadAll]);
+
   const openCreate = () => {
     setEditing(null);
     const nextOrder = items.length

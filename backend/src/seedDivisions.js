@@ -1,10 +1,10 @@
-const mongoose = require("mongoose");
+const { closeDB } = require("./config/db");
 require("dotenv").config();
 const connectDB = require("./config/db");
 const Division = require("./models/Division");
 
 const CLOUD =
-  "https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/";
+  "/images/";
 
 const refImage = (file) => CLOUD + file;
 
@@ -287,7 +287,7 @@ const seedDivisions = async () => {
     console.log(`Division created: ${item.slug}`);
   }
 
-  await mongoose.connection.close();
+  await closeDB();
   console.log("Division seeding complete.");
   process.exit(0);
 };

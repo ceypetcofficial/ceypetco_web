@@ -1,24 +1,9 @@
 const path = require("path");
 const fs = require("fs");
+const crypto = require("crypto");
 const multer = require("multer");
-const cloudinary = require("cloudinary").v2;
 
 const UPLOADS_DIR = path.resolve(__dirname, "../../uploads");
-
-const USE_CLOUDINARY = Boolean(
-  process.env.CLOUDINARY_URL ||
-    (process.env.CLOUDINARY_CLOUD_NAME &&
-      process.env.CLOUDINARY_API_KEY &&
-      process.env.CLOUDINARY_API_SECRET)
-);
-
-if (USE_CLOUDINARY && !process.env.CLOUDINARY_URL) {
-  cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-  });
-}
 
 const allowedImageTypes = /jpeg|jpg|png|webp|gif|avif|svg/;
 const imageFilter = (_req, file, cb) => {
@@ -45,7 +30,6 @@ const docFilter = (_req, file, cb) => {
 const upload = multer({
   storage: multer.memoryStorage(),
   fileFilter: imageFilter,
-  // Vercel functions have a request body limit; keep uploads below it.
   limits: { fileSize: 4 * 1024 * 1024 },
 });
 
@@ -55,22 +39,10 @@ const docUpload = multer({
   limits: { fileSize: 20 * 1024 * 1024 },
 });
 
-const uploadToCloudinary = (buffer, resourceType) =>
-  new Promise((resolve, reject) => {
-    const stream = cloudinary.uploader.upload_stream(
-      { folder: "ceypetco", resource_type: resourceType || "auto" },
-      (error, result) => {
-        if (error) return reject(error);
-        resolve(result.secure_url);
-      }
-    );
-    stream.end(buffer);
-  });
-
 const saveToDisk = (req, isDoc) => {
   const folder = isDoc ? "docs" : "images";
   const ext = path.extname(req.file.originalname).toLowerCase();
-  const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext}`;
+  const fileName = `${Date.now()}-${crypto.randomBytes(8).toString("hex")}${ext}`;
   const targetDir = path.resolve(UPLOADS_DIR, folder);
   fs.mkdirSync(targetDir, { recursive: true });
   fs.writeFileSync(path.join(targetDir, fileName), req.file.buffer);
@@ -85,38 +57,17 @@ const saveToDisk = (req, isDoc) => {
 };
 
 const runUpload = (req, res, isDoc) => {
-  const resourceType = isDoc ? "raw" : "image";
-  const doUpload = async () => {
-    if (!USE_CLOUDINARY) {
-      return res.status(201).json({
-        success: true,
-        message: isDoc
-          ? "Document uploaded successfully"
-          : "Image uploaded successfully",
-        data: saveToDisk(req, isDoc),
-      });
-    }
-    const url = await uploadToCloudinary(req.file.buffer, resourceType);
-    res.status(201).json({
+  try {
+    return res.status(201).json({
       success: true,
       message: isDoc
         ? "Document uploaded successfully"
         : "Image uploaded successfully",
-      data: {
-        filename: url.split("/").pop(),
-        originalname: req.file.originalname,
-        size: req.file.size,
-        mimetype: req.file.mimetype,
-        url,
-      },
+      data: saveToDisk(req, isDoc),
     });
-  };
-
-  doUpload().catch((err) => {
-    res
-      .status(500)
-      .json({ success: false, message: "Upload failed: " + err.message });
-  });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: "Upload failed: " + err.message });
+  }
 };
 
 const uploadImage = (req, res, next) => {
@@ -147,4 +98,109 @@ const uploadDocument = (req, res, next) => {
   });
 };
 
-module.exports = { uploadImage, uploadDocument };
+const IMAGES_DIR = path.resolve(UPLOADS_DIR, "images");
+
+const safeImageName = (name) => {
+  if (typeof name !== "string" || !name) return null;
+  const base = path.basename(name);
+  if (base !== name) return null;
+  if (!allowedImageTypes.test(path.extname(base).toLowerCase())) return null;
+  return base;
+};
+
+const listImages = (req, res) => {
+  try {
+    fs.mkdirSync(IMAGES_DIR, { recursive: true });
+    const base = `${req.protocol}://${req.get("host")}`;
+    const images = fs
+      .readdirSync(IMAGES_DIR)
+      .filter((f) => allowedImageTypes.test(path.extname(f).toLowerCase()))
+      .map((filename) => {
+        const stat = fs.statSync(path.join(IMAGES_DIR, filename));
+        return {
+          filename,
+          name: filename,
+          url: `${base}/uploads/images/${filename}`,
+          size: stat.size,
+          mtime: stat.mtime,
+        };
+      })
+      .sort((a, b) => b.mtime - a.mtime);
+    return res.status(200).json({ success: true, data: images });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ success: false, message: "Failed to list images: " + err.message });
+  }
+};
+
+const deleteImage = (req, res) => {
+  try {
+    const name = safeImageName(req.params.filename);
+    if (!name) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid image name" });
+    }
+    const target = path.join(IMAGES_DIR, name);
+    if (!fs.existsSync(target)) {
+      return res.status(404).json({ success: false, message: "Image not found" });
+    }
+    fs.unlinkSync(target);
+    return res.json({ success: true, message: "Image deleted" });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ success: false, message: "Failed to delete image: " + err.message });
+  }
+};
+
+const renameImage = (req, res) => {
+  try {
+    const oldName = safeImageName(req.params.filename);
+    const newName = safeImageName(req.body && req.body.name);
+    if (!oldName) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid image name" });
+    }
+    if (!newName) {
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message:
+            "New name must be provided and must end in an image extension (jpeg, jpg, png, webp, gif, svg, avif)",
+        });
+    }
+    const oldTarget = path.join(IMAGES_DIR, oldName);
+    const newTarget = path.join(IMAGES_DIR, newName);
+    if (!fs.existsSync(oldTarget)) {
+      return res.status(404).json({ success: false, message: "Image not found" });
+    }
+    if (fs.existsSync(newTarget)) {
+      return res
+        .status(409)
+        .json({ success: false, message: "An image with that name already exists" });
+    }
+    fs.renameSync(oldTarget, newTarget);
+    const base = `${req.protocol}://${req.get("host")}`;
+    return res.json({
+      success: true,
+      message: "Image renamed",
+      data: { filename: newName, name: newName, url: `${base}/uploads/images/${newName}` },
+    });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ success: false, message: "Failed to rename image: " + err.message });
+  }
+};
+
+module.exports = {
+  uploadImage,
+  uploadDocument,
+  listImages,
+  deleteImage,
+  renameImage,
+};

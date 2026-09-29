@@ -34,6 +34,7 @@ const teamMemberService = createResourceService("/admin/team-members");
 const managementContactService = createResourceService("/admin/management-contacts");
 const contactService = createResourceService("/admin/contact-messages");
 const fuelPriceService = createResourceService("/admin/fuel-prices");
+const aviationPriceService = createResourceService("/admin/aviation-prices");
 const fuelStationService = createResourceService("/admin/fuel-stations");
 const regionalOfficeService = createResourceService("/admin/regional-offices");
 const userService = createResourceService("/admin/users");
@@ -108,6 +109,7 @@ export {
   managementContactService,
   contactService,
   fuelPriceService,
+  aviationPriceService,
   fuelStationService,
   regionalOfficeService,
   userService,

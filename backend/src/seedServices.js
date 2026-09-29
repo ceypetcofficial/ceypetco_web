@@ -1,10 +1,10 @@
-const mongoose = require("mongoose");
+const { closeDB } = require("./config/db");
 require("dotenv").config();
 const connectDB = require("./config/db");
 const Service = require("./models/Service");
 
 const CLOUD =
-  "https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/";
+  "/images/";
 
 const seedServices = async () => {
   await connectDB();
@@ -121,7 +121,7 @@ const seedServices = async () => {
     console.log(`Service created: ${item.title}`);
   }
 
-  await mongoose.connection.close();
+  await closeDB();
   console.log("Service seeding complete.");
   process.exit(0);
 };

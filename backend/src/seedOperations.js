@@ -1,5 +1,5 @@
 const path = require("path");
-const mongoose = require("mongoose");
+const { closeDB } = require("./config/db");
 require("dotenv").config();
 const connectDB = require("./config/db");
 const FuelPrice = require("./models/FuelPrice");
@@ -79,11 +79,11 @@ const seedOperations = async () => {
   );
 
   console.log(`Operations ready: ${stations.length} stations, ${regionalOffices.length} offices, ${prices.length} prices.`);
-  await mongoose.connection.close();
+  await closeDB();
 };
 
 seedOperations().catch(async (error) => {
   console.error("Operations seed failed:", error);
-  await mongoose.connection.close().catch(() => {});
+  await closeDB().catch(() => {});
   process.exit(1);
 });

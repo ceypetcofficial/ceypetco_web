@@ -36,14 +36,19 @@ const BunkeringIntro = () => (
         </ul>
       </div>
       <figure className="mb-intro-figure">
+        <div className="mb-intro-accents" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
         <img
-          src="/images/bunkering/marine-fuel-transfer.webp"
+          src="/images/bunkering/jupiter-sun.jpg"
           alt="Marine fuel transfer alongside a commercial vessel"
           loading="lazy"
           decoding="async"
         />
         <figcaption>
-          <span>Vessel supply</span>
+          <span>VESSEL SUPPLY</span>
           <b>Coordinated fuel delivery at the port</b>
         </figcaption>
       </figure>

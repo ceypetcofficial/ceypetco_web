@@ -12,9 +12,11 @@ import subsidiariesHeroImage from './images/subsidiaries.JPG';
 import ministryHeroImage from './images/ministry.jpeg';
 import allServicesHeroImage from './images/allservices.JPG';
 import displayImageUrl from './utils/displayImageUrl.js';
+import applyCmsOverrides, { scheduleCmsOverrides } from './utils/applyCmsOverrides.js';
 import MarineBunkeringPage from './components/marine-bunkering/MarineBunkeringPage.jsx';
 import ElectricMobilityContent from './components/electric-mobility/ElectricMobilityContent.jsx';
 import HistoricalPricesPage from './components/HistoricalPricesPage.jsx';
+import ManagedPage, { ManagedSections } from './components/ManagedPage.jsx';
 
 const paymentBanks = [
   { name: 'Bank of Ceylon', branch: 'City Office', logo: 'boc.svg' },
@@ -91,6 +93,13 @@ const Icon = ({ name, size = 24 }) => {
       <>
         <circle cx="12" cy="8" r="4" />
         <path d="M5 21a7 7 0 0 1 14 0" />
+      </>
+    ),
+    "bar-chart": (
+      <>
+        <line x1="18" y1="20" x2="18" y2="10" />
+        <line x1="12" y1="20" x2="12" y2="4" />
+        <line x1="6" y1="20" x2="6" y2="14" />
       </>
     ),
   };
@@ -213,7 +222,7 @@ const divisions = [
   [
     'Refinery',
     'At the heart of CPC operations, strengthening the nation’s petroleum supply',
-    'https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/refinery.png',
+    '/images/refinery.png',
     '/refinery',
   ],
   [
@@ -225,13 +234,13 @@ const divisions = [
   [
     'Lubricants',
     'High-performance automotive and industrial oils engineered for lasting protection',
-    'https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/lubricants-hero.jpg',
+    '/images/lubricants-hero.jpg',
     '/lubricants',
   ],
   [
     'Agro Chemicals',
     'Quality crop-protection solutions supporting stronger and more sustainable harvests',
-    'https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/agro-products.jpg',
+    '/images/agro-products.jpg',
     '/agro-chemicals',
   ],
   ['Bunkering', 'Marine fuel supply supporting vessels and port operations', '/images/operations/bunkering.jpg', '/bunkering'],
@@ -240,14 +249,14 @@ const divisions = [
   ['Bitumen', 'Petroleum bitumen for road and industrial applications', '/images/operations/bitumen.jpg', '/bitumen'],
 ];
 const brandLogos = [
-  { name: 'Lanka Bunkering', image: '/images/brand-logos/bunkering.webp', href: '/bunkering' },
-  { name: 'Lanka Agro Solutions', image: '/images/brand-logos/agro-solutions.webp', href: '/agro-chemicals' },
-  { name: 'Lanka Lubricants', image: '/images/brand-logos/lubricants.webp', href: '/lubricants' },
+  { name: 'Ceypetco Lanka Bunkering', image: '/images/brand-logos/bunkering.webp', href: '/bunkering' },
+  { name: 'Ceypetco Lanka Agro Solutions', image: '/images/brand-logos/agro-solutions.webp', href: '/agro-chemicals' },
+  { name: 'Ceypetco Lanka Lubricants', image: '/images/brand-logos/lubricants.webp', href: '/lubricants' },
   { name: 'Sustainable Fuel', image: '/images/brand-logos/sustainable-fuel.webp', href: '/services' },
-  { name: 'Lanka Bitumen', image: '/images/brand-logos/bitumen.webp', href: '/bitumen' },
-  { name: 'Lanka Aviation', image: '/images/brand-logos/aviation.webp', href: '/aviation' },
-{ name: 'Refining', image: '/images/brand-logos/refining.webp', href: '/refinery' },
-  { name: 'Lanka EV Solutions', image: '/images/brand-logos/ev-solutions.webp', href: '/ev-charging' },
+  { name: 'Ceypetco Lanka Bitumen', image: '/images/brand-logos/bitumen.webp', href: '/bitumen' },
+  { name: 'Ceypetco Lanka Aviation', image: '/images/brand-logos/aviation.webp', href: '/aviation' },
+  { name: 'Refining', image: '/images/brand-logos/refining.webp', href: '/refinery' },
+  { name: 'Ceypetco Lanka EV Solutions', image: '/images/brand-logos/ev-solutions.webp', href: '/ev-charging' },
 ];
 const pageBrandLogos = {
   '/bunkering': '/images/brand-logos/bunkering.webp',
@@ -260,7 +269,24 @@ const pageBrandLogos = {
 };
 const heroSlides = [
   {
-    image: 'https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/distribution.jpg',
+    image: 'https://images.squarespace-cdn.com/content/v1/693bf5941493ec4ce40a537d/f2785c86-6ee9-429c-a714-cd0e945aea44/Billboard+Image.jpg',
+    alt: 'Offshore oil rig and support vessels at sunset',
+    eyebrow: 'ISLANDWIDE DISTRIBUTION.',
+    title: (
+      <>
+        <span style={{ whiteSpace: 'nowrap' }}>Unlocking Sri Lanka’s</span>
+        <br />
+        <span style={{ whiteSpace: 'nowrap' }}>Offshore Oil &amp; Natural Gas</span>
+        <br />
+        Potential
+      </>
+    ),
+    copy: 'The Petroleum Development Authority of Sri Lanka (PDASL) invites qualified energy companies to participate in the Sri Lanka Licensing Round 2026 – offering access to one of South Asia’s most prospective basins.',
+    cta: 'Learn more about PDASL',
+    href: 'https://www.srilankalicensinground.com/',
+  },
+  {
+    image: '/images/distribution.jpg',
     alt: 'Ceypetco fuel distribution truck travelling through Sri Lanka',
     eyebrow: 'ISLANDWIDE DISTRIBUTION',
     title: (
@@ -275,7 +301,7 @@ const heroSlides = [
     href: '#fuel-network',
   },
   {
-    image: 'https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/refinery.png',
+    image: '/images/refinery.png',
     alt: 'Ceypetco refinery under a clear blue sky',
     eyebrow: 'REFINING WITH PURPOSE',
     title: (
@@ -290,7 +316,7 @@ const heroSlides = [
     href: '/refinery',
   },
   {
-    image: 'https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/agro-products.jpg',
+    image: '/images/agro-products.jpg',
     alt: 'Ceypetco agrochemical products supporting Sri Lankan agriculture',
     eyebrow: 'SUPPORTING SRI LANKAN AGRICULTURE',
     title: (
@@ -305,7 +331,7 @@ const heroSlides = [
     href: '/agro-chemicals',
   },
   {
-    image: 'https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/fuel-train.jpg',
+    image: '/images/fuel-train.jpg',
     alt: 'Fuel transport train travelling through Sri Lanka',
     eyebrow: 'ENERGY IN MOTION',
     title: (
@@ -573,11 +599,11 @@ const pageData = {
   '/about': {
     label: 'ABOUT CEYPETCO',
     title: 'Built to power national progress',
-intro:
+    intro:
       'For more than six decades, Ceylon Petroleum Corporation has served at the centre of Sri Lanka’s energy landscape',
     image: aboutHeroImage,
   },
-'/management': {
+  '/management': {
     label: 'OUR LEADERSHIP',
     title: 'Leadership with purpose',
     intro:
@@ -621,21 +647,21 @@ intro:
     label: 'PUBLIC SERVICES · BANKING INFORMATION',
     title: 'Online banking information',
     intro: 'Find the banks and branches listed for CEYPETCO transactions. This website does not process payments.',
-    image: 'https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/head-office.webp',
+    image: '/images/head-office.webp',
   },
   '/regional-offices': {
     label: 'PUBLIC SERVICES · REGIONAL OFFICES',
     title: 'Support across every region',
     intro:
       'Connect directly with Ceypetco regional management teams serving customers, dealers and communities across Sri Lanka',
-    image: 'https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/head-office.webp',
+    image: '/images/head-office.webp',
   },
   '/consumer-registration': {
     label: 'PUBLIC SERVICES · BULK CONSUMERS',
     title: 'Register your consumer point',
     intro:
       'A clear registration pathway for industrial customers requiring more than 3,300 litres of fuel per month',
-    image: 'https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/distribution.jpg',
+    image: '/images/distribution.jpg',
   },
   '/notices': {
     label: 'MEDIA CENTRE · NOTICES',
@@ -649,14 +675,14 @@ intro:
     title: 'Modernising Sri Lanka’s refining future',
     intro:
       'The Sapugaskanda Oil Refinery Expansion and Modernization Project is designed to strengthen capacity, product quality and national energy resilience',
-    image: 'https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/refinery.png',
+    image: '/images/refinery.png',
   },
   '/annual-reports': {
     label: 'CORPORATE PUBLICATIONS · ANNUAL REPORTS',
     title: 'Performance documented with clarity',
     intro:
       'Access Ceylon Petroleum Corporation annual reports and review our operational and financial record across the years',
-    image: 'https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/about-banner.webp',
+    image: '/images/about-banner.webp',
   },
   '/publications': {
     label: 'CORPORATE PUBLICATIONS · ANNUAL REPORTS',
@@ -670,7 +696,7 @@ intro:
     title: 'Information access made clear',
     intro:
       'Contact the officers nominated by Ceylon Petroleum Corporation to support Right to Information enquiries and official information requests',
-    image: 'https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/head-office.webp',
+    image: '/images/head-office.webp',
   },
   '/media': {
     label: 'MEDIA CENTRE',
@@ -697,7 +723,7 @@ intro:
     title: 'Power your career',
     intro:
       'Join Sri Lanka’s energy journey and help build the systems that keep a nation moving',
-    image: 'https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/career-team.jpg',
+    image: '/images/career-team.jpg',
   },
   '/corporate-life': {
     label: 'CAREERS · CORPORATE LIFE',
@@ -709,14 +735,14 @@ intro:
     label: 'CAREERS · CURRENT OPPORTUNITIES',
     title: 'Find your next opportunity',
     intro: 'Explore open roles across Ceylon Petroleum Corporation and review each vacancy before applying',
-    image: 'https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/career-team.jpg',
+    image: '/images/career-team.jpg',
   },
   '/contact': {
     label: 'CONTACT US',
     title: 'We’re here to help',
     intro:
       'Connect with our head office, customer care and specialist operating divisions',
-    image: 'https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/head-office.webp',
+    image: '/images/head-office.webp',
   },
   '/refinery': {
     label: 'OUR SERVICES · REFINERY',
@@ -730,13 +756,13 @@ intro:
     title: 'Fueling every part of Sri Lanka',
     intro:
       'An islandwide dealer and distribution network serving transport, industry and communities',
-    image: 'https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/distribution.jpg',
+    image: '/images/distribution.jpg',
   },
   '/marketing-sales/historical-prices': {
     label: 'MARKETING & SALES · PRICE HISTORY',
     title: 'Historical fuel prices',
     intro: 'Explore Ceypetco fuel and bitumen price records across decades',
-    image: 'https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/distribution.jpg',
+    image: '/images/distribution.jpg',
   },
   '/aviation': {
     label: 'OUR SERVICES · AVIATION',
@@ -750,21 +776,21 @@ intro:
     title: 'Supporting stronger harvests',
     intro:
       'Quality crop-protection solutions and expert support for Sri Lanka’s farming communities',
-    image: 'https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/agro-products.jpg',
+    image: '/images/agro-products.jpg',
   },
   '/lubricants': {
     label: 'OUR SERVICES · LUBRICANTS',
     title: 'Performance engineered to last',
     intro:
       'Certified automotive and industrial lubricants meeting recognised international specifications',
-    image: 'https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/lubricants-hero.jpg',
+    image: '/images/lubricants-hero.jpg',
   },
   '/history': {
     label: 'OUR HISTORY',
     title: 'Milestones that shaped our journey',
     intro:
       'Explore the defining moments behind more than six decades of service to Sri Lanka',
-    image: 'https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/history-1.jpg',
+    image: '/images/history-1.jpg',
   },
   '/subsidiaries': {
     label: 'DISCOVER CEYPETCO · SUBSIDIARIES',
@@ -772,7 +798,7 @@ intro:
     intro: 'The companies supporting petroleum storage, distribution and terminal development in Sri Lanka',
     image: subsidiariesHeroImage,
   },
-'/energy-ministries': {
+  '/energy-ministries': {
     label: 'DISCOVER CEYPETCO · PUBLIC INSTITUTIONS',
     title: 'Related ministries & agencies',
     intro: 'Explore the public institutions connected to Sri Lanka’s energy, transport and infrastructure sectors',
@@ -783,7 +809,7 @@ intro:
     title: 'Official mobile apps',
     intro:
       'Download the official Ceypetco application and access public services, fuel-station information and product updates from your mobile device',
-    image: 'https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/distribution.jpg',
+    image: '/images/distribution.jpg',
   },
 };
 
@@ -834,7 +860,7 @@ const defaultHistoryPage = {
   galleryTitle: 'A visual journey through our legacy',
   milestones: historyMilestones.map(([year, text]) => ({ year, text })),
   gallery: [1, 2, 3, 4, 6, 7, 8, 9].map((number, index) => ({
-    image: `https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/history-${number}.jpg`,
+    image: `/images/history-${number}.jpg`,
     alt: `Ceypetco historical archive ${index + 1}`,
     caption: `Archive ${String(index + 1).padStart(2, '0')}`,
     wide: index === 0 || index === 5,
@@ -1269,7 +1295,7 @@ function ManagementTeam() {
             <div className="team-row">
               <article className="team-member-card">
                 <div className="team-member-photo">
-                  <img src="https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/chairman.jpeg" alt="" />
+                  <img src="/images/chairman.jpeg" alt="" />
                 </div>
                 <div className="team-member-info">
                   <h3>No team members yet</h3>
@@ -1517,10 +1543,10 @@ function NewsDetailPage({ newsId }) {
     .replace(/\b\w/g, (c) => c.toUpperCase());
   const published = item.publishedDate
     ? new Date(item.publishedDate).toLocaleDateString('en-GB', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      })
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    })
     : null;
   const paragraphs = (item.content || '')
     .split(/\n{2,}|\r?\n/)
@@ -2188,7 +2214,7 @@ const divisionPages = {
       ['1,100+', 'Direct jobs'],
       ['30–35%', 'CPC sales volume'],
     ],
-    image: 'https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/refinery-detail-2.jpg',
+    image: '/images/refinery-detail-2.jpg',
     features: [
       '100% Sri Lankan operating staff',
       'Foreign-exchange savings for the nation',
@@ -2214,7 +2240,7 @@ const divisionPages = {
       ['Islandwide', 'Distribution'],
       ['Since 1962', 'Marketing operations'],
     ],
-    image: 'https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/media-3.jpg',
+    image: '/images/media-3.jpg',
     features: [
       'Retail and commercial fuel supply',
       'Dealer and regional-office support',
@@ -2241,7 +2267,7 @@ const divisionPages = {
       ['1.3M L', 'Daily demand'],
       ['3', 'Operating locations'],
     ],
-    image: 'https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/aviation-service.jpg',
+    image: '/images/aviation-service.jpg',
     features: [
       'JET A-1 and AV GAS availability',
       'International quality-control standards',
@@ -2262,7 +2288,7 @@ const divisionPages = {
       ['ISO 9001', 'Quality certified'],
       ['Islandwide', 'Field support'],
     ],
-    image: 'https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/agro-products.jpg',
+    image: '/images/agro-products.jpg',
     features: [
       'Quality, environment and safety systems',
       'Guidance for farmers and agrarian centres',
@@ -2284,7 +2310,7 @@ const divisionPages = {
       ['20+', 'Product families'],
       ['Automotive +', 'Industrial use'],
     ],
-    image: 'https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/control-room.png',
+    image: '/images/control-room.png',
     features: [
       'Internationally aligned specifications',
       'Automotive and industrial product ranges',
@@ -2817,9 +2843,9 @@ function RefineryPage() {
   const galleryImage = (img) =>
     !img
       ? ''
-      : img.startsWith('http')
+      : /^(https?:|data:|blob:)/i.test(img) || img.startsWith('/')
         ? img
-        : `https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/${img}`;
+        : `/images/${String(img).replace(/^images\//i, '')}`;
   return (
     <>
       <section className="refinery-opening content-section">
@@ -3079,12 +3105,12 @@ function MarketingSalesPage() {
           (p.price ?? 0).toFixed(2),
           p.effectiveDate
             ? new Date(p.effectiveDate)
-                .toLocaleDateString('en-GB', {
-                  day: '2-digit',
-                  month: '2-digit',
-                  year: 'numeric',
-                })
-                .replace(/\//g, '-')
+              .toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+              })
+              .replace(/\//g, '-')
             : '',
         ]),
     }))
@@ -3151,9 +3177,8 @@ function MarketingSalesPage() {
           ) : (
             grouped.map((g, i) => (
               <div
-                className={`price-category ${
-                  g.category === 'Black Oil' ? 'black-oil' : ''
-                }`}
+                className={`price-category ${g.category === 'Black Oil' ? 'black-oil' : ''
+                  }`}
                 key={g.category}
               >
                 <div className="price-category-title">
@@ -3208,7 +3233,7 @@ function AviationPage() {
     ],
     gallery: [1, 2, 3, 4, 5, 6].map(
       (n) =>
-        `https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/aviation-gallery-${n}.jpg`,
+        `/images/aviation-gallery-${n}.jpg`,
     ),
     locations: [
       {
@@ -3261,14 +3286,42 @@ function AviationPage() {
       },
     ],
   });
-  const prices = [
-    { customer: 'Local Customer with AOC Document', location: 'BIA, CIAR & MRIA', price: '2.43' },
-    { customer: 'Local Customer with AOC Document', location: 'JIA', price: '2.54' },
-    { customer: 'Local Contract Customer without Operating an Airline', location: 'BIA, CIAR & MRIA', price: '2.46' },
-    { customer: 'Local Contract Customer without Operating an Airline', location: 'JIA', price: '2.57' },
-    { customer: 'All Contract Customers · Foreign', location: 'BIA, CIAR & MRIA', price: '2.43' },
-    { customer: 'All Contract Customers · Foreign', location: 'JIA', price: '2.54' },
+  const defaultPrices = [
+    { customer: 'Spot / One-Time Customer', location: 'CMB & RML', price: '3.53' },
+    { customer: 'Spot / One-Time Customer', location: 'HRI', price: '3.51' },
+    { customer: 'Spot / One-Time Customer', location: 'JAF', price: '3.64' },
   ];
+  const [prices, setPrices] = useState(defaultPrices);
+  const [pricesEffectiveDate, setPricesEffectiveDate] = useState('01 August 2026');
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const res = await api.get('/admin/aviation-prices/active', {
+          params: { limit: 100 },
+        });
+        if (!cancelled && res.data?.data?.length) {
+          const rows = res.data.data.map((p) => ({
+            customer: p.customer || '',
+            location: p.location || '',
+            price: p.price != null ? String(p.price) : '',
+          }));
+          setPrices(rows);
+          const eff = res.data.data.find((p) => p.effectiveDate);
+          if (eff?.effectiveDate) {
+            try {
+              const d = new Date(eff.effectiveDate);
+              setPricesEffectiveDate(d.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }));
+            } catch (e) { }
+          }
+        }
+      } catch (err) { }
+    };
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   const palaliLocation = {
     name: 'Palali',
     code: 'Jaffna International Airport · JAF / VCCJ',
@@ -3292,9 +3345,9 @@ function AviationPage() {
   const galleryImage = (img) =>
     !img
       ? ''
-      : img.startsWith('http')
+      : /^(https?:|data:|blob:)/i.test(img) || img.startsWith('/')
         ? img
-        : `https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/${img}`;
+        : `/images/${String(img).replace(/^images\//i, '')}`;
   return (
     <>
       <section className="aviation-opening content-section">
@@ -3325,7 +3378,7 @@ function AviationPage() {
               <p className="eyebrow">AVIATION FUEL PRICING</p>
               <h2>Contract customer rates</h2>
               <p>
-                Effective 01 February 2025 · Prices shown in US dollars per US
+                Effective {pricesEffectiveDate} · Prices shown in US dollars per US
                 gallon
               </p>
             </div>
@@ -3511,10 +3564,10 @@ function AgroChemicalsPage() {
       'Ceypetco Agrochemicals is the only government-sector organisation engaged in the agrochemicals business among Sri Lanka\u2019s marketing companies, helping maintain product quality, access and reasonable market pricing',
     ],
     image:
-      'https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/agro-products.jpg',
+      '/images/agro-products.jpg',
     gallery: [
-      'https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/agro-production-1.webp',
-      'https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/agro-production-2.webp',
+      '/images/agro-production-1.webp',
+      '/images/agro-production-2.webp',
     ],
     certs: [
       { standard: 'ISO 9001:2015', label: 'Quality Management System' },
@@ -3558,9 +3611,9 @@ function AgroChemicalsPage() {
   const imageSrc = (img) =>
     !img
       ? ''
-      : img.startsWith('http')
+      : /^(https?:|data:|blob:)/i.test(img) || img.startsWith('/')
         ? img
-        : `https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/${img}`;
+        : `/images/${String(img).replace(/^images\//i, '')}`;
   return (
     <>
       <section className="agro-opening content-section">
@@ -3781,7 +3834,7 @@ function LubricantsPage() {
       'Our products serve demanding automotive and industrial applications with a focus on quality, consistency and dependable protection',
     ],
     image:
-      'https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/lubricants-hero.jpg',
+      '/images/lubricants-hero.jpg',
     standards: ['API', 'ACEA', 'MTU', 'ISO'],
     mission: {
       heading:
@@ -3799,12 +3852,12 @@ function LubricantsPage() {
   );
   const copy = div.copy || [];
   const standards = div.standards || [];
-  const legacyLubricantImage = 'https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/lubricants-hero.jpg';
+  const legacyLubricantImage = '/images/lubricants-hero.jpg';
   const heroImage = !div.image || div.image === legacyLubricantImage || div.image === 'lubricants-hero.jpg'
     ? '/images/lubricant-intro-generated.webp'
     : div.image.startsWith('http') || div.image.startsWith('/')
       ? div.image
-      : `https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/${div.image}`;
+      : `/images/${div.image}`;
   return (
     <>
       <section className="lubricant-intro content-section">
@@ -3918,7 +3971,7 @@ function LubricantsPage() {
   );
 }
 
-const regionalOffices = [
+const defaultRegionalOffices = [
   [
     'West',
     'Dematagoda',
@@ -4070,26 +4123,27 @@ const bulkConsumerResources = [
   ['Fuel Ordering Mobile App', 'https://fuelup.cpstl.lk/apk/'],
 ];
 
-function InnerPage({ type }) {
+function InnerPage({ type, preserveTemplate, managedSections }) {
   const { t } = useLanguage();
   const aboutVideoRef = useRef(null);
   const [aboutVideoPlaying, setAboutVideoPlaying] = useState(false);
   const [historyPage, setHistoryPage] = useState(defaultHistoryPage);
   const page = type === '/history'
     ? { label: historyPage.heroLabel, title: historyPage.heroTitle, intro: historyPage.heroIntro, image: historyPage.heroImage }
-    : pageData[type] || pageData['/about'];
+    : pageData[type === '/electric-mobility' ? '/ev-charging' : type] || pageData['/about'];
   useEffect(() => {
     if (type !== '/history') return undefined;
     let cancelled = false;
     api.get('/admin/history-page').then((res) => {
       if (!cancelled && res.data?.data) setHistoryPage(res.data.data);
-    }).catch(() => {});
+    }).catch(() => { });
     return () => { cancelled = true; };
   }, [type]);
   const [news, setNews] = useState([]);
   const [newsLoading, setNewsLoading] = useState(true);
   const [tenders, setTenders] = useState([]);
   const [tendersLoading, setTendersLoading] = useState(true);
+  const [downloadTender, setDownloadTender] = useState(null);
   const [notices, setNotices] = useState([]);
   const [noticesLoading, setNoticesLoading] = useState(true);
   const [projects, setProjects] = useState([]);
@@ -4100,6 +4154,7 @@ function InnerPage({ type }) {
   const [careersLoading, setCareersLoading] = useState(true);
   const [annualReports, setAnnualReports] = useState([]);
   const [annualReportsLoading, setAnnualReportsLoading] = useState(true);
+  const [regionalOffices, setRegionalOffices] = useState(null);
   const [services, setServices] = useState([]);
   const [servicesLoading, setServicesLoading] = useState(true);
   const serviceItems = [
@@ -4207,7 +4262,7 @@ function InnerPage({ type }) {
         ? item.image
         : item.image.startsWith('/')
           ? item.image
-        : `https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/${item.image}`;
+          : `/images/${item.image}`;
   const requestedSubject =
     new URLSearchParams(window.location.search).get('subject') || '';
   const cameFromServices =
@@ -4299,6 +4354,31 @@ function InnerPage({ type }) {
       }
     };
     loadProjects();
+    return () => {
+      cancelled = true;
+    };
+  }, [type]);
+
+  useEffect(() => {
+    if (type !== '/regional-offices') return undefined;
+    let cancelled = false;
+    api
+      .get('/admin/regional-offices/active', { params: { limit: 50 } })
+      .then((res) => {
+        if (!cancelled && res.data?.data?.length) {
+          setRegionalOffices(
+            res.data.data.map((o) => [
+              o.region || '',
+              o.district || '',
+              o.manager || '',
+              o.openingHours || '',
+              o.phone || '',
+              o.email || '',
+            ])
+          );
+        }
+      })
+      .catch(() => { });
     return () => {
       cancelled = true;
     };
@@ -4410,7 +4490,7 @@ function InnerPage({ type }) {
 
   return (
     <main className="inner-page">
-<section className={`page-hero${type === '/about' ? ' page-hero--about' : ''}${type === '/management' ? ' page-hero--management' : ''}${type === '/refinery' ? ' page-hero--refinery' : ''}${type === '/lubricants' ? ' page-hero--lubricants' : ''}${type === '/tenders' ? ' page-hero--tenders' : ''}${pageBrandLogos[type] ? ' page-hero--' + type.slice(1) : ''}`}>
+      <section className={`page-hero${type === '/about' ? ' page-hero--about' : ''}${type === '/management' ? ' page-hero--management' : ''}${type === '/refinery' ? ' page-hero--refinery' : ''}${type === '/lubricants' ? ' page-hero--lubricants' : ''}${type === '/tenders' ? ' page-hero--tenders' : ''}${pageBrandLogos[type] ? ' page-hero--' + type.slice(1) : ''}`}>
         <img src={page.image} alt="" />
         {pageBrandLogos[type] && (
           <div className="page-hero-logo">
@@ -4504,8 +4584,8 @@ function InnerPage({ type }) {
           '/agro-chemicals',
           '/lubricants',
         ].includes(type) && <DivisionPage data={divisionPages[type]} />}
-      {type === '/ev-charging' && <ElectricMobilityContent />}
-      {type !== '/ev-charging' && additionalOperationPages[type] && (
+      {['/ev-charging', '/electric-mobility'].includes(type) && <ElectricMobilityContent />}
+      {!['/ev-charging', '/electric-mobility'].includes(type) && additionalOperationPages[type] && (
         <AdditionalOperationPage data={additionalOperationPages[type]} />
       )}
       {type === '/refinery' && <RefineryPage />}
@@ -4899,7 +4979,7 @@ function InnerPage({ type }) {
               </p>
             </div>
             <div className="regional-office-grid">
-              {regionalOffices.map(
+              {(regionalOffices || defaultRegionalOffices).map(
                 ([region, city, manager, role, phone, email], index) => (
                   <article className="regional-office-card" key={region}>
                     <div className="regional-office-top">
@@ -5547,26 +5627,28 @@ function InnerPage({ type }) {
                           <p>
                             {item.closingDate
                               ? new Date(
-                                  item.closingDate,
-                                ).toLocaleDateString('en-GB', {
-                                  day: 'numeric',
-                                  month: 'long',
-                                  year: 'numeric',
-                                })
+                                item.closingDate,
+                              ).toLocaleDateString('en-GB', {
+                                day: 'numeric',
+                                month: 'long',
+                                year: 'numeric',
+                              })
                               : 'Open'}
                           </p>
                         </div>
-                        <a
-                          href={
-                            item.documents && item.documents.length
-                              ? item.documents[0].url
-                              : '#'
-                          }
-                          target="_blank"
-                          rel="noreferrer"
+                        <button
+                          type="button"
+                          className="btn-text"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            if (item.documents && item.documents.length) {
+                              setDownloadTender({ ...item, url: item.documents[0].url });
+                            }
+                          }}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: 'var(--cpc-red)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}
                         >
                           Download tender <Icon name="download" size={16} />
-                        </a>
+                        </button>
                       </article>
                     ))}
                   </div>
@@ -5584,6 +5666,7 @@ function InnerPage({ type }) {
               </a>
             </div>
           </div>
+          {downloadTender && <TenderDownloadModal tender={downloadTender} onClose={() => setDownloadTender(null)} />}
         </section>
       )}
       {type === '/careers' && (
@@ -5720,15 +5803,20 @@ function InnerPage({ type }) {
           </div>
         </section>
       )}
+      {managedSections && managedSections.length > 0 && !preserveTemplate && (
+        <ManagedSections sections={managedSections} />
+      )}
     </main>
   );
 }
 
 function App() {
   const { t } = useLanguage();
+  const showOriginalPage = new URLSearchParams(window.location.search).get('cmsPreview') === 'original';
   const [path, setPath] = useState(
     () => window.location.pathname.replace(/\/$/, '') || '/',
   );
+  const [isNavigating, setIsNavigating] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [navDropClosed, setNavDropClosed] = useState(true);
   const [navAboutDropClosed, setNavAboutDropClosed] = useState(true);
@@ -5738,6 +5826,13 @@ function App() {
   const [news, setNews] = useState([]);
   const [newsLoading, setNewsLoading] = useState(true);
   const [homeServices, setHomeServices] = useState([]);
+  const [managedPage, setManagedPage] = useState(null);
+  const preserveOriginalTemplate = new Set([
+    '/', '/about', '/history', '/services', '/management', '/subsidiaries', '/energy-ministries',
+    '/marketing-sales', '/refinery', '/aviation', '/agro-chemicals', '/lubricants',
+    '/services/marine-bunkering', '/electric-mobility', '/news', '/notices', '/tenders',
+    '/projects', '/careers', '/annual-reports', '/contact',
+  ]).has(path);
   const changeSlide = (direction) =>
     setSlide(
       (current) =>
@@ -5775,21 +5870,69 @@ function App() {
     if (url.hash && nextPath === path) return;
     event.preventDefault();
     if (!url.hash) jumpToPageTop();
-    window.history.pushState({}, '', `${url.pathname}${url.search}${url.hash}`);
-    setPath(nextPath);
+    if (showOriginalPage) url.searchParams.set('cmsPreview', 'original');
+    
     setMenuOpen(false);
     setNavDropClosed(true);
     setNavAboutDropClosed(true);
     setNavMediaDropClosed(true);
     setNavCareersDropClosed(true);
-    scrollAfterNavigation(url.hash);
+
+    setIsNavigating(true);
+    setTimeout(() => {
+      window.history.pushState({}, '', `${url.pathname}${url.search}${url.hash}`);
+      setPath(nextPath);
+      scrollAfterNavigation(url.hash);
+      setTimeout(() => setIsNavigating(false), 50);
+    }, 250);
   };
 
   useEffect(() => {
+    let active = true;
+    setManagedPage(null);
+    api.get('/admin/pages/public', { params: { path } })
+      .then(({ data }) => { if (active) setManagedPage(data.data || null); })
+      .catch(() => { if (active) setManagedPage(null); });
+    return () => { active = false; };
+  }, [path]);
+
+  useEffect(() => {
+    if (!managedPage) return;
+    if (managedPage.seoTitle) document.title = managedPage.seoTitle;
+    const meta = document.querySelector('meta[name="description"]');
+    if (meta && managedPage.seoDescription) meta.setAttribute('content', managedPage.seoDescription);
+  }, [managedPage]);
+
+  useEffect(() => {
+    if (!managedPage?.overrides?.length || showOriginalPage) return;
+    // Published overrides live in the same nodes React renders. Re-asserting the
+    // copy after a commit is safe because a write only happens when the content
+    // actually differs, so this never oscillates.
+    applyCmsOverrides(managedPage.overrides);
+  });
+
+  useEffect(() => {
+    if (!managedPage?.overrides?.length) return undefined;
+    // Late-mounted template content (deferred images, fonts) is caught by a short
+    // settling window. A MutationObserver must not be used here: it re-entered
+    // React's commit phase and destroyed the child nodes reconciliation tracks.
+    // In editor preview the canvas owns the DOM, so apply the published copy once.
+    if (showOriginalPage) {
+      applyCmsOverrides(managedPage.overrides);
+      return undefined;
+    }
+    return scheduleCmsOverrides(managedPage.overrides);
+  }, [managedPage, path, showOriginalPage]);
+
+  useEffect(() => {
     const handlePopState = () => {
-      if (!window.location.hash) jumpToPageTop();
-      setPath(window.location.pathname.replace(/\/$/, '') || '/');
-      scrollAfterNavigation(window.location.hash);
+      setIsNavigating(true);
+      setTimeout(() => {
+        if (!window.location.hash) jumpToPageTop();
+        setPath(window.location.pathname.replace(/\/$/, '') || '/');
+        scrollAfterNavigation(window.location.hash);
+        setTimeout(() => setIsNavigating(false), 50);
+      }, 250);
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
@@ -5866,7 +6009,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const targets = document.querySelectorAll(
+    const selectors =
       [
         '.section-heading',
         '.about-copy',
@@ -5970,18 +6113,11 @@ function App() {
         '.em-enquiry-grid > *',
         '.em-faq-grid > *',
         '.em-cta-inner',
-      ].join(','),
-    );
+      ].join(',');
 
-    targets.forEach((element, index) => {
-      element.classList.add('reveal-item');
-      element.style.setProperty('--reveal-delay', `${(index % 4) * 70}ms`);
-    });
 
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      targets.forEach((element) => element.classList.add('is-visible'));
-      return undefined;
-    }
+
+    const isReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -5995,8 +6131,32 @@ function App() {
       { threshold: 0.12, rootMargin: '0px 0px -45px' },
     );
 
-    targets.forEach((element) => observer.observe(element));
-    return () => observer.disconnect();
+    const observed = new WeakSet();
+
+    const applyReveal = () => {
+      const allTargets = document.querySelectorAll(selectors);
+      allTargets.forEach((element, index) => {
+        if (element.classList.contains('is-visible') || observed.has(element)) return;
+        if (isReduced) {
+          element.classList.add('is-visible');
+          return;
+        }
+        element.classList.add('reveal-item');
+        element.style.setProperty('--reveal-delay', `${(index % 4) * 70}ms`);
+        observer.observe(element);
+        observed.add(element);
+      });
+    };
+
+    applyReveal();
+
+    const mutationObserver = new MutationObserver(() => applyReveal());
+    mutationObserver.observe(document.body, { childList: true, subtree: true });
+
+    return () => {
+      observer.disconnect();
+      mutationObserver.disconnect();
+    };
   }, [path]);
 
   useEffect(() => {
@@ -6038,7 +6198,7 @@ function App() {
         <div className="container nav-wrap">
           <a className="brand notranslate" href="/" translate="no">
             <img
-              src="https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/ceypetco-logo.png"
+              src="/images/ceypetco-logo.png"
               alt="Ceylon Petroleum Corporation logo"
             />
             <span>
@@ -6289,7 +6449,10 @@ function App() {
           </nav>
         </div>
       </header>
-      {path === '/' ? (
+      <div className={`page-transition-wrapper ${isNavigating ? 'is-navigating' : ''}`}>
+      {managedPage && !preserveOriginalTemplate && !showOriginalPage ? (
+        <ManagedPage page={managedPage} />
+      ) : path === '/' ? (
         <main>
           <section
             className="hero"
@@ -6376,61 +6539,62 @@ function App() {
               ))}
             </div>
           </section>
-          <section className="about section" id="about">
-            <div className="container about-grid">
-              <div className="image-composition">
-                <div className="image-main">
-                  <img
-                    src="/images/fuel-nozzle-oil-drop.png"
-                    alt="Fuel pump nozzle dispensing a single amber oil drop"
-                  />
-                </div>
-                <div className="experience">
-                  <b>60+</b>
-                  <span>
-                    years serving
+          <section className="every-drop-section" id="about">
+            <div className="container">
+              <div className="every-drop-grid">
+                <div className="every-drop-content-col">
+                  <h2 className="every-drop-title">
+                    Every drop powers
                     <br />
-                    the nation
-                  </span>
-                </div>
-                <div className="red-strokes">
-                  <i></i>
-                  <i></i>
-                  <i></i>
-                </div>
-              </div>
-              <div className="about-copy">
-                <h2>
-                  Every drop powers
-                  <br />
-                  national progress
-                </h2>
-                <p>
-                  Ceylon Petroleum Corporation plays a vital role in the
-                  national economy through the continuous supply of petroleum
-                  products. We are committed to assuring uninterrupted fuel
-                  supply so Sri Lanka can keep moving toward resilient economic
-                  growth
-                </p>
-                <div className="promise-grid">
-                  <div>
-                    <Icon name="shield" size={30} />
-                    <h3>Energy Security</h3>
-                    <p>
-                      Safeguarding a reliable petroleum supply for the country
-                    </p>
+                    national <span className="text-red">progress</span>
+                  </h2>
+                  <p className="every-drop-description">
+                    Ceylon Petroleum Corporation plays a vital role in the national economy through the continuous supply of petroleum products. We are committed to ensuring uninterrupted fuel supply so Sri Lanka can keep moving toward a stronger, more resilient economy.
+                  </p>
+                  <div className="every-drop-features-grid">
+                    <div className="drop-feature-card">
+                      <div className="feature-icon-wrapper" style={{ color: '#dc2626' }}>
+                        <Icon name="shield" size={24} />
+                      </div>
+                      <h4>Energy Security</h4>
+                      <p>Safeguarding a reliable petroleum supply for the country.</p>
+                    </div>
+                    <div className="drop-feature-card">
+                      <div className="feature-icon-wrapper" style={{ color: '#dc2626' }}>
+                        <Icon name="droplet" size={24} />
+                      </div>
+                      <h4>Trusted Supply</h4>
+                      <p>Supporting transport, commerce and communities islandwide.</p>
+                    </div>
+                    <div className="drop-feature-card">
+                      <div className="feature-icon-wrapper" style={{ color: '#dc2626' }}>
+                        <Icon name="bar-chart" size={24} />
+                      </div>
+                      <h4>Driving Growth</h4>
+                      <p>Powering industries and people for a brighter tomorrow.</p>
+                    </div>
                   </div>
-                  <div>
-                    <Icon name="droplet" size={30} />
-                    <h3>Trusted Supply</h3>
-                    <p>
-                      Supporting transport, commerce and communities islandwide
-                    </p>
+                  <div className="every-drop-cta">
+                    <a className="every-drop-btn" href="#divisions">
+                      SEE OUR OPERATIONS <Icon name="arrow" size={17} />
+                    </a>
                   </div>
                 </div>
-                <a className="text-link" href="#divisions">
-                  See our operations <Icon name="arrow" size={17} />
-                </a>
+                <div className="every-drop-image-col">
+                  <div className="every-drop-image-wrapper">
+                    <div className="image-overlay-gradient"></div>
+                    <img src="/images/bunkering/jupiter-sun.jpg" alt="Sea Platform" className="every-drop-img" /> 
+                  </div>
+                  <div className="every-drop-accents">
+                    <span></span><span></span><span></span>
+                  </div>
+                  <div className="every-drop-badge">
+                    <div className="every-drop-badge-content">
+                      <span className="badge-number">60+</span>
+                      <span className="badge-text">YEARS SERVING<br />THE NATION</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </section>
@@ -6452,6 +6616,7 @@ function App() {
                     <a
                       className="home-service-card"
                       href={service.link}
+                      data-icon={service.icon}
                       key={service._id || service.title}
                     >
                       <span className="home-service-icon">
@@ -6563,24 +6728,26 @@ function App() {
           </section>
           <section className="home-brands section" aria-labelledby="home-brands-heading">
             <div className="container">
-              <div className="section-heading">
-                <div>
+              <div className="home-brands-split-layout">
+                <div className="home-brands-info">
                   <p className="eyebrow">CEYPETCO BRANDS</p>
                   <h2 id="home-brands-heading">Built for every journey</h2>
+                  <p className="home-brands-desc">
+                    Explore the Ceypetco brands serving industry, transport,
+                    agriculture and emerging energy needs.
+                  </p>
                 </div>
-                <p>
-                  Explore the Ceypetco brands serving industry, transport,
-                  agriculture and emerging energy needs.
-                </p>
-              </div>
-              <div className="home-brands-marquee">
-                <div className="home-brands-track">
-                  {[...brandLogos, ...brandLogos].map(({ name, image, href }, i) => (
-                    <a className="home-brand-chip" href={href} key={`${name}-${i}`} aria-label={`Explore ${name}`}>
-                      <img src={image} alt={`${name} logo`} loading="lazy" decoding="async" />
-                      <span>{name}</span>
-                    </a>
-                  ))}
+                <div className="home-brands-grid-wrapper">
+                  <div className="home-brands-grid">
+                    {brandLogos.map((brand, index) => (
+                      <a href={brand.href} className="home-brand-grid-card" key={index} aria-label={`Explore ${brand.name}`}>
+                        <div className="home-brand-logo-box">
+                          <img src={brand.image} alt={`${brand.name} logo`} loading="lazy" decoding="async" />
+                        </div>
+                        <span className="home-brand-name">{brand.name}</span>
+                      </a>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -6618,10 +6785,13 @@ function App() {
           <div id="fuel-network">
             <FuelDistributionMap />
           </div>
+          {managedPage && !showOriginalPage && !preserveOriginalTemplate && (
+            <ManagedSections sections={managedPage.sections} />
+          )}
         </main>
       ) : districtFromPath(path) ? (
         <FuelStationPage district={districtFromPath(path)} />
-) : path.startsWith('/management-team/') ? (
+      ) : path.startsWith('/management-team/') ? (
         <ManagementTeamProfile
           key={path}
           memberId={path.split('/').pop()}
@@ -6633,14 +6803,20 @@ function App() {
       ) : path === '/services/marine-bunkering' || path === '/bunkering' ? (
         <MarineBunkeringPage />
       ) : (
-        <InnerPage type={path} />
+        <InnerPage
+          type={path}
+          preserveTemplate={preserveOriginalTemplate}
+          managedSections={
+            managedPage && !showOriginalPage ? managedPage.sections : []
+          }
+        />
       )}
       <footer id="footer">
         <div className="container footer-main">
           <div className="footer-brand">
             <div className="footer-brand-lockup">
               <img
-                src="https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/ceypetco-logo.png"
+                src="/images/ceypetco-logo.png"
                 alt="Ceylon Petroleum Corporation logo"
               />
               <div>
@@ -6706,7 +6882,77 @@ function App() {
         </div>
       </footer>
       <PopupNotice />
+      </div>
     </div>
   );
 }
+
+function TenderDownloadModal({ tender, onClose }) {
+  const [email, setEmail] = useState('');
+  const [mobileNumber, setMobileNumber] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    try {
+      await api.post('/tender-downloads', {
+        tenderId: tender._id,
+        email,
+        mobileNumber
+      });
+      // Success: download and close
+      window.open(tender.url, '_blank');
+      onClose();
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to request download');
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="tender-modal-overlay" style={{ display: 'flex', zIndex: 9999, position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0, 0, 0, 0.6)', alignItems: 'center', justifyContent: 'center' }}>
+      <div className="tender-modal-content" style={{ maxWidth: '800px', width: '90%', maxHeight: '90vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', padding: 0, backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 4px 20px rgba(0,0,0,0.15)' }}>
+        <div style={{ padding: '20px 24px', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h2 style={{ margin: 0, fontSize: '1.25rem' }}>Download Tender Document</h2>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.5rem', lineHeight: 1 }}>&times;</button>
+        </div>
+
+        <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+          {/* Form Side */}
+          <div style={{ flex: '1 1 300px', padding: '24px', borderRight: '1px solid #eee' }}>
+            <p style={{ marginBottom: '1rem', color: '#666', fontSize: '0.9rem' }}>Please provide your contact details to download the tender document for <strong>{tender.title}</strong>.</p>
+            {error && <div style={{ color: 'red', marginBottom: '1rem', fontSize: '0.9rem' }}>{error}</div>}
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <label>
+                <span style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Email Address *</span>
+                <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} style={{ width: '100%', padding: '0.75rem', border: '1px solid #ddd', borderRadius: '4px' }} />
+              </label>
+              <label>
+                <span style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Mobile Number *</span>
+                <input type="tel" required value={mobileNumber} onChange={(e) => setMobileNumber(e.target.value)} style={{ width: '100%', padding: '0.75rem', border: '1px solid #ddd', borderRadius: '4px' }} />
+              </label>
+              <button type="submit" disabled={loading} className="btn-primary" style={{ marginTop: '0.5rem' }}>
+                {loading ? 'Processing...' : 'Submit & Download'}
+              </button>
+            </form>
+          </div>
+
+          {/* Preview Side */}
+          <div style={{ flex: '1 1 300px', padding: '24px', backgroundColor: '#fafafa' }}>
+            <p style={{ marginBottom: '1rem', fontWeight: 600 }}>Document Preview</p>
+            <div style={{ width: '100%', height: '300px', border: '1px solid #ddd', background: '#fff', overflow: 'hidden', position: 'relative' }}>
+              <iframe src={`https://docs.google.com/gview?url=${encodeURIComponent(tender.url)}&embedded=true`} width="100%" height="100%" style={{ border: 'none', pointerEvents: 'none' }}></iframe>
+              <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 10 }}></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default App;
+

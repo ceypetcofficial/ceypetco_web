@@ -91,6 +91,10 @@ const TenderManagement = () => {
     setShowModal(true);
   };
 
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("create") === "1") openCreate();
+  }, []);
+
   const openEdit = (item) => {
     setEditing(item);
     setForm({

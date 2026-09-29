@@ -1,0 +1,12 @@
+const router = require("express").Router();
+const controller = require("../controllers/pageContentController");
+const { protect } = require("../middleware/authMiddleware");
+const { authorize } = require("../middleware/roleMiddleware");
+router.get("/public", controller.getPublic);
+router.use(protect);
+router.get("/", controller.getAll);
+router.get("/:id", controller.getById);
+router.post("/", authorize("super_admin","admin","editor"), controller.create);
+router.put("/:id", authorize("super_admin","admin","editor"), controller.update);
+router.delete("/:id", authorize("super_admin","admin"), controller.remove);
+module.exports=router;

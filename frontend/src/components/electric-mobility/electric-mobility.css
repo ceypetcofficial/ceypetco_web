@@ -1,4 +1,4 @@
-.em-page {
+.em-page{
   --em-accent: #217458;
   --em-accent-dark: #175a44;
   --em-tint: #edf7f2;
@@ -8,51 +8,34 @@
   --em-cream: #f7f6f2;
   background: #fff;
   overflow-x: clip;
-}
-
-.em-page .em-section {
+}.em-page .em-section{
   padding: 92px 0;
   scroll-margin-top: 110px;
-}
-
-.em-page .em-notice,
-.em-page .em-cta {
+}.em-page .em-notice, .em-page .em-cta{
   scroll-margin-top: 110px;
-}
-
-.em-page .em-section-heading {
+}.em-page .em-section-heading{
   max-width: 720px;
   margin-bottom: 48px;
-}
-
-.em-page .em-section-heading h2 {
-  font: 800 38px/1.16 'Manrope';
+}.em-page .em-section-heading h2{
+  font: 800 38px/1 'League Spartan', 'Outfit', sans-serif;
   letter-spacing: -0.03em;
   color: var(--em-ink);
   margin: 0 0 16px;
-}
-
-.em-page .em-lead {
+}.em-page .em-lead{
   color: var(--em-muted);
-  font-size: 16px;
+  font-size: 17.5px;
   line-height: 1.75;
   margin: 0;
-}
-
-.em-page .em-eyebrow {
+}.em-page .em-eyebrow{
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--em-accent);
   margin: 0 0 14px;
-}
-
-.em-page .em-eyebrow--light {
+}.em-page .em-eyebrow--light{
   color: #9fe3c8;
-}
-
-.em-page .em-card-icon {
+}.em-page .em-card-icon{
   width: 48px;
   height: 48px;
   border-radius: 12px;
@@ -61,9 +44,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-}
-
-.em-page .em-btn {
+}.em-page .em-btn{
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -79,83 +60,53 @@
   cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease,
     transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.em-page .em-btn--primary {
+}.em-page .em-btn--primary{
   background: var(--em-accent);
   color: #fff;
-}
-
-.em-page .em-btn--primary:hover {
+}.em-page .em-btn--primary:hover{
   background: var(--em-accent-dark);
-}
-
-.em-page .em-btn--outline {
+}.em-page .em-btn--outline{
   background: #fff;
   border-color: var(--em-line);
   color: var(--em-ink);
-}
-
-.em-page .em-btn--outline:hover {
+}.em-page .em-btn--outline:hover{
   border-color: var(--em-accent);
   color: var(--em-accent);
-}
-
-.em-page .em-btn--ghost {
+}.em-page .em-btn--ghost{
   background: transparent;
   border-color: rgba(255, 255, 255, 0.45);
   color: #fff;
-}
-
-.em-page .em-btn--ghost:hover {
+}.em-page .em-btn--ghost:hover{
   background: rgba(255, 255, 255, 0.12);
-}
-
-.em-page .em-btn:disabled {
+}.em-page .em-btn:disabled{
   opacity: 0.6;
   cursor: default;
-}
-
-.em-page .em-btn:focus-visible,
-.em-page .em-faq-question button:focus-visible {
+}.em-page .em-btn:focus-visible, .em-page .em-faq-question button:focus-visible{
   outline: 2px solid var(--em-accent);
   outline-offset: 3px;
-}
-
-/* About */
-.em-page .em-about {
+}/* About */ .em-page .em-about{
   background: #fff;
-}
-
-.em-page .em-about-grid {
+}.em-page .em-about-grid{
   display: grid;
   grid-template-columns: 1.05fr 0.95fr;
   gap: 72px;
   align-items: center;
-}
-
-.em-page .em-about-copy h2 {
-  font: 800 38px/1.18 'Manrope';
+}.em-page .em-about-copy h2{
+  font: 800 38px/1 'League Spartan', 'Outfit', sans-serif;
   letter-spacing: -0.03em;
   color: var(--em-ink);
   margin: 0 0 20px;
-}
-
-.em-page .em-about-copy p {
+}.em-page .em-about-copy p{
   color: var(--em-muted);
   line-height: 1.8;
   margin: 0 0 16px;
-}
-
-.em-page .em-about-points {
+}.em-page .em-about-points{
   list-style: none;
   margin: 26px 0 0;
   padding: 0;
   display: grid;
   gap: 12px;
-}
-
-.em-page .em-about-points li {
+}.em-page .em-about-points li{
   display: flex;
   gap: 12px;
   align-items: flex-start;
@@ -163,31 +114,23 @@
   font-weight: 600;
   font-size: 15px;
   line-height: 1.5;
-}
-
-.em-page .em-about-points svg {
+}.em-page .em-about-points svg{
   color: var(--em-accent);
   flex: 0 0 auto;
   margin-top: 3px;
-}
-
-.em-page .em-about-figure {
+}.em-page .em-about-figure{
   margin: 0;
   position: relative;
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 24px 60px rgba(9, 47, 59, 0.14);
-}
-
-.em-page .em-about-figure img {
+}.em-page .em-about-figure img{
   display: block;
   width: 100%;
   height: 100%;
   min-height: 380px;
   object-fit: cover;
-}
-
-.em-page .em-about-figure figcaption {
+}.em-page .em-about-figure figcaption{
   position: absolute;
   left: 0;
   right: 0;
@@ -197,32 +140,21 @@
   color: #fff;
   display: grid;
   gap: 6px;
-}
-
-.em-page .em-about-figure figcaption span {
+}.em-page .em-about-figure figcaption span{
   font-size: 11px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #9fe3c8;
   font-weight: 700;
-}
-
-.em-page .em-about-figure figcaption b {
-  font: 700 16px/1.4 'Manrope';
-}
-
-/* Initiative */
-.em-page .em-initiative {
+}.em-page .em-about-figure figcaption b{
+  font: 700 16px/1.4 'Plus Jakarta Sans', 'Outfit', sans-serif;
+}/* Initiative */ .em-page .em-initiative{
   background: var(--em-cream);
-}
-
-.em-page .em-stat-grid {
+}.em-page .em-stat-grid{
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
-}
-
-.em-page .em-stat-card {
+}.em-page .em-stat-card{
   background: #fff;
   border: 1px solid var(--em-line);
   border-radius: 14px;
@@ -230,39 +162,26 @@
   display: grid;
   gap: 14px;
   align-content: start;
-}
-
-.em-page .em-stat-card b {
-  font: 800 40px/1 'Manrope';
+}.em-page .em-stat-card b{
+  font: 800 40px/1 'Plus Jakarta Sans', 'Outfit', sans-serif;
   letter-spacing: -0.03em;
   color: var(--em-accent);
-}
-
-.em-page .em-stat-card > span:last-child {
+}.em-page .em-stat-card > span:last-child{
   color: var(--em-muted);
   line-height: 1.6;
   font-size: 15px;
-}
-
-.em-page .em-note {
+}.em-page .em-note{
   margin: 22px 0 0;
   color: var(--em-muted);
-  font-size: 13px;
+  font-size: 14px;
   font-style: italic;
-}
-
-/* Locations */
-.em-page .em-locations {
+}/* Locations */ .em-page .em-locations{
   background: #fff;
-}
-
-.em-page .em-location-grid {
+}.em-page .em-location-grid{
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
-}
-
-.em-page .em-location-card {
+}.em-page .em-location-card{
   border: 1px solid var(--em-line);
   border-radius: 14px;
   padding: 26px;
@@ -271,76 +190,51 @@
   gap: 18px;
   background: #fff;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-}
-
-.em-page .em-location-card:hover {
+}.em-page .em-location-card:hover{
   border-color: var(--em-accent);
   box-shadow: 0 18px 40px rgba(9, 47, 59, 0.08);
   transform: translateY(-3px);
-}
-
-.em-page .em-location-head {
+}.em-page .em-location-head{
   display: flex;
   align-items: center;
   gap: 14px;
-}
-
-.em-page .em-location-head h3 {
+}.em-page .em-location-head h3{
   margin: 0;
-  font: 800 20px/1.2 'Manrope';
+  font: 800 20px/1.2 'League Spartan', 'Outfit', sans-serif;
   color: var(--em-ink);
-}
-
-.em-page .em-location-fields {
+}.em-page .em-location-fields{
   margin: 0;
   display: grid;
-}
-
-.em-page .em-location-fields > div {
+}.em-page .em-location-fields > div{
   display: flex;
   justify-content: space-between;
   gap: 16px;
   padding: 9px 0;
   border-bottom: 1px dashed var(--em-line);
-}
-
-.em-page .em-location-fields > div:last-child {
+}.em-page .em-location-fields > div:last-child{
   border-bottom: 0;
-}
-
-.em-page .em-location-fields dt {
+}.em-page .em-location-fields dt{
   color: var(--em-muted);
   font-size: 13px;
-}
-
-.em-page .em-location-fields dd {
+}.em-page .em-location-fields dd{
   margin: 0;
   color: var(--em-ink);
   font-size: 13px;
   font-weight: 600;
   text-align: right;
   overflow-wrap: anywhere;
-}
-
-.em-page .em-location-card .em-btn {
+}.em-page .em-location-card .em-btn{
   margin-top: auto;
-}
-
-/* Notice */
-.em-page .em-notice {
+}/* Notice */ .em-page .em-notice{
   background: #fff8ec;
   border-top: 1px solid #f2e2c2;
   border-bottom: 1px solid #f2e2c2;
   padding: 34px 0;
-}
-
-.em-page .em-notice-inner {
+}.em-page .em-notice-inner{
   display: flex;
   align-items: center;
   gap: 22px;
-}
-
-.em-page .em-notice-icon {
+}.em-page .em-notice-icon{
   flex: 0 0 auto;
   width: 52px;
   height: 52px;
@@ -350,36 +244,23 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-}
-
-.em-page .em-notice-copy {
+}.em-page .em-notice-copy{
   flex: 1 1 auto;
-}
-
-.em-page .em-notice-copy h2 {
+}.em-page .em-notice-copy h2{
   margin: 0 0 6px;
-  font: 800 22px/1.25 'Manrope';
+  font: 800 22px/1 'League Spartan', 'Outfit', sans-serif;
   color: var(--em-ink);
-}
-
-.em-page .em-notice-copy p {
+}.em-page .em-notice-copy p{
   margin: 0;
   color: var(--em-muted);
   line-height: 1.7;
-}
-
-/* Technology */
-.em-page .em-technology {
+}/* Technology */ .em-page .em-technology{
   background: var(--em-cream);
-}
-
-.em-page .em-tech-grid {
+}.em-page .em-tech-grid{
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 26px;
-}
-
-.em-page .em-tech-card {
+}.em-page .em-tech-card{
   background: #fff;
   border: 1px solid var(--em-line);
   border-radius: 16px;
@@ -387,35 +268,24 @@
   display: grid;
   gap: 14px;
   align-content: start;
-}
-
-.em-page .em-tech-card h3 {
+}.em-page .em-tech-card h3{
   margin: 0;
-  font: 800 22px/1.25 'Manrope';
+  font: 800 22px/1.25 'League Spartan', 'Outfit', sans-serif;
   color: var(--em-ink);
-}
-
-.em-page .em-tech-card p {
+}.em-page .em-tech-card p{
   margin: 0;
   color: var(--em-muted);
   line-height: 1.75;
-}
-
-/* Process */
-.em-page .em-process {
+}/* Process */ .em-page .em-process{
   background: #fff;
-}
-
-.em-page .em-process-list {
+}.em-page .em-process-list{
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 18px;
-}
-
-.em-page .em-process-step {
+}.em-page .em-process-step{
   position: relative;
   border: 1px solid var(--em-line);
   border-radius: 14px;
@@ -426,8 +296,7 @@
   align-content: start;
 }
 
-@media (min-width: 1101px) {
-  .em-page .em-process-step:not(:last-child)::after {
+@media (min-width: 1101px) {.em-page .em-process-step:not(:last-child)::after{
     content: '→';
     position: absolute;
     top: 45px;
@@ -437,15 +306,11 @@
     font-size: 21px;
     line-height: 1;
   }
-}
-
-.em-page .em-step-number {
-  font: 800 13px/1 'Manrope';
+}.em-page .em-step-number{
+  font: 800 13px/1 'Plus Jakarta Sans', 'Outfit', sans-serif;
   color: var(--em-accent);
   letter-spacing: 0.12em;
-}
-
-.em-page .em-step-icon {
+}.em-page .em-step-icon{
   width: 44px;
   height: 44px;
   border-radius: 12px;
@@ -454,36 +319,25 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-}
-
-.em-page .em-process-step h3 {
+}.em-page .em-process-step h3{
   margin: 0;
-  font: 700 16px/1.3 'Manrope';
+  font: 700 16px/1.3 'League Spartan', 'Outfit', sans-serif;
   color: var(--em-ink);
-}
-
-.em-page .em-process-step p {
+}.em-page .em-process-step p{
   margin: 0;
   color: var(--em-muted);
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.65;
-}
-
-/* Site development */
-.em-page .em-development {
+}/* Site development */ .em-page .em-development{
   background: var(--em-cream);
-}
-
-.em-page .em-development-list {
+}.em-page .em-development-list{
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 18px;
-}
-
-.em-page .em-development-step {
+}.em-page .em-development-step{
   position: relative;
   background: #fff;
   border: 1px solid var(--em-line);
@@ -492,9 +346,7 @@
   display: grid;
   gap: 12px;
   align-content: start;
-}
-
-.em-page .em-development-icon {
+}.em-page .em-development-icon{
   width: 44px;
   height: 44px;
   border-radius: 12px;
@@ -503,35 +355,24 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-}
-
-.em-page .em-development-index {
+}.em-page .em-development-index{
   position: absolute;
   top: 24px;
   right: 22px;
-  font: 800 14px/1 'Manrope';
+  font: 800 14px/1 'Plus Jakarta Sans', 'Outfit', sans-serif;
   letter-spacing: 0.08em;
   color: #bdd0c9;
-}
-
-.em-page .em-development-step h3 {
+}.em-page .em-development-step h3{
   margin: 0;
-  font: 700 16px/1.3 'Manrope';
+  font: 700 16px/1.3 'League Spartan', 'Outfit', sans-serif;
   color: var(--em-ink);
-}
-
-/* Safety */
-.em-page .em-safety {
+}/* Safety */ .em-page .em-safety{
   background: #fff;
-}
-
-.em-page .em-safety-grid {
+}.em-page .em-safety-grid{
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 22px;
-}
-
-.em-page .em-safety-card {
+}.em-page .em-safety-card{
   border: 1px solid var(--em-line);
   border-radius: 14px;
   padding: 30px 26px;
@@ -539,33 +380,22 @@
   display: grid;
   gap: 14px;
   align-content: start;
-}
-
-.em-page .em-safety-card h3 {
+}.em-page .em-safety-card h3{
   margin: 0;
-  font: 700 18px/1.3 'Manrope';
+  font: 700 18px/1.3 'League Spartan', 'Outfit', sans-serif;
   color: var(--em-ink);
-}
-
-.em-page .em-safety-card p {
+}.em-page .em-safety-card p{
   margin: 0;
   color: var(--em-muted);
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.7;
-}
-
-/* Benefits */
-.em-page .em-benefits {
+}/* Benefits */ .em-page .em-benefits{
   background: var(--em-cream);
-}
-
-.em-page .em-benefit-grid {
+}.em-page .em-benefit-grid{
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 22px;
-}
-
-.em-page .em-benefit-card {
+}.em-page .em-benefit-card{
   background: #fff;
   border: 1px solid var(--em-line);
   border-radius: 14px;
@@ -573,61 +403,42 @@
   display: grid;
   gap: 14px;
   align-content: start;
-}
-
-.em-page .em-benefit-card h3 {
+}.em-page .em-benefit-card h3{
   margin: 0;
-  font: 700 18px/1.3 'Manrope';
+  font: 700 18px/1.3 'League Spartan', 'Outfit', sans-serif;
   color: var(--em-ink);
-}
-
-.em-page .em-benefit-card p {
+}.em-page .em-benefit-card p{
   margin: 0;
   color: var(--em-muted);
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.7;
-}
-
-/* Sustainability */
-.em-page .em-sustainability {
+}/* Sustainability */ .em-page .em-sustainability{
   background: var(--navy, #062e3b);
-}
-
-.em-page .em-sustainability-grid {
+}.em-page .em-sustainability-grid{
   display: grid;
   grid-template-columns: 1.05fr 0.95fr;
   gap: 60px;
   align-items: center;
-}
-
-.em-page .em-sustainability-copy h2 {
-  font: 800 36px/1.18 'Manrope';
+}.em-page .em-sustainability-copy h2{
+  font: 800 36px/1 'League Spartan', 'Outfit', sans-serif;
   letter-spacing: -0.03em;
   color: #fff;
   margin: 0 0 18px;
-}
-
-.em-page .em-sustainability-copy p {
+}.em-page .em-sustainability-copy p{
   color: rgba(255, 255, 255, 0.78);
   line-height: 1.8;
   margin: 0 0 16px;
-}
-
-.em-page .em-sustainability-note {
-  font-size: 13px;
+}.em-page .em-sustainability-note{
+  font-size: 14px;
   color: rgba(255, 255, 255, 0.6);
   font-style: italic;
-}
-
-.em-page .em-sustainability-list {
+}.em-page .em-sustainability-list{
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
   gap: 18px;
-}
-
-.em-page .em-sustainability-list li {
+}.em-page .em-sustainability-list li{
   display: flex;
   gap: 16px;
   align-items: flex-start;
@@ -635,9 +446,7 @@
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 14px;
   padding: 20px;
-}
-
-.em-page .em-sustainability-list li > span {
+}.em-page .em-sustainability-list li > span{
   flex: 0 0 auto;
   width: 44px;
   height: 44px;
@@ -647,84 +456,55 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-}
-
-.em-page .em-sustainability-list h3 {
+}.em-page .em-sustainability-list h3{
   margin: 0 0 6px;
   color: #fff;
-  font: 700 16px/1.3 'Manrope';
-}
-
-.em-page .em-sustainability-list p {
+  font: 700 16px/1.3 'League Spartan', 'Outfit', sans-serif;
+}.em-page .em-sustainability-list p{
   margin: 0;
   color: rgba(255, 255, 255, 0.72);
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.65;
-}
-
-/* Enquiry */
-.em-page .em-enquiry {
+}/* Enquiry */ .em-page .em-enquiry{
   background: #fff;
-}
-
-.em-page .em-enquiry-grid {
+}.em-page .em-enquiry-grid{
   display: grid;
   grid-template-columns: 0.85fr 1.15fr;
   gap: 60px;
   align-items: start;
-}
-
-.em-page .em-enquiry-copy h2 {
-  font: 800 34px/1.2 'Manrope';
+}.em-page .em-enquiry-copy h2{
+  font: 800 34px/1 'League Spartan', 'Outfit', sans-serif;
   letter-spacing: -0.03em;
   color: var(--em-ink);
   margin: 0 0 18px;
-}
-
-.em-page .em-enquiry-copy p {
+}.em-page .em-enquiry-copy p{
   color: var(--em-muted);
   line-height: 1.8;
   margin: 0 0 16px;
-}
-
-.em-page .em-enquiry-note {
-  font-size: 13px;
+}.em-page .em-enquiry-note{
+  font-size: 14px;
   color: #8a989e;
-}
-
-.em-page .em-form {
+}.em-page .em-form{
   background: var(--em-cream);
   border: 1px solid var(--em-line);
   border-radius: 16px;
   padding: 32px;
   display: grid;
   gap: 18px;
-}
-
-.em-page .em-form-row {
+}.em-page .em-form-row{
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 18px;
-}
-
-.em-page .em-field {
+}.em-page .em-field{
   display: grid;
   gap: 8px;
-}
-
-.em-page .em-field label {
+}.em-page .em-field label{
   font-size: 13px;
   font-weight: 700;
   color: var(--em-ink);
-}
-
-.em-page .em-field label span {
+}.em-page .em-field label span{
   color: var(--red, #d5101c);
-}
-
-.em-page .em-field input,
-.em-page .em-field select,
-.em-page .em-field textarea {
+}.em-page .em-field input, .em-page .em-field select, .em-page .em-field textarea{
   width: 100%;
   min-height: 46px;
   padding: 12px 14px;
@@ -734,98 +514,63 @@
   color: var(--em-ink);
   font: inherit;
   font-size: 14px;
-}
-
-.em-page .em-field textarea {
+}.em-page .em-field textarea{
   resize: vertical;
-}
-
-.em-page .em-field input:focus,
-.em-page .em-field select:focus,
-.em-page .em-field textarea:focus {
+}.em-page .em-field input:focus, .em-page .em-field select:focus, .em-page .em-field textarea:focus{
   outline: 2px solid var(--em-accent);
   outline-offset: 1px;
   border-color: var(--em-accent);
-}
-
-.em-page .em-field-error {
+}.em-page .em-field-error{
   color: #c02626;
   font-size: 12.5px;
-}
-
-.em-page .em-form-actions {
+}.em-page .em-form-actions{
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 18px;
-}
-
-.em-page .em-form-status {
+}.em-page .em-form-status{
   font-size: 14px;
-}
-
-.em-page .em-form-success {
+}.em-page .em-form-success{
   display: inline-flex;
   align-items: center;
   gap: 8px;
   color: #1b7a4f;
   font-weight: 600;
-}
-
-.em-page .em-form-error {
+}.em-page .em-form-error{
   display: inline-flex;
   align-items: center;
   gap: 8px;
   color: #c02626;
   font-weight: 600;
-}
-
-/* FAQ */
-.em-page .em-faq {
+}/* FAQ */ .em-page .em-faq{
   background: var(--em-cream);
-}
-
-.em-page .em-faq-grid {
+}.em-page .em-faq-grid{
   display: grid;
   grid-template-columns: 0.8fr 1.2fr;
   gap: 60px;
   align-items: start;
-}
-
-.em-page .em-faq-heading h2 {
-  font: 800 34px/1.2 'Manrope';
+}.em-page .em-faq-heading h2{
+  font: 800 34px/1 'League Spartan', 'Outfit', sans-serif;
   letter-spacing: -0.03em;
   color: var(--em-ink);
   margin: 0 0 16px;
-}
-
-.em-page .em-faq-heading p {
+}.em-page .em-faq-heading p{
   color: var(--em-muted);
   line-height: 1.75;
   margin: 0;
-}
-
-.em-page .em-faq-list {
+}.em-page .em-faq-list{
   display: grid;
   gap: 12px;
-}
-
-.em-page .em-faq-item {
+}.em-page .em-faq-item{
   background: #fff;
   border: 1px solid var(--em-line);
   border-radius: 12px;
   overflow: hidden;
-}
-
-.em-page .em-faq-item.is-open {
+}.em-page .em-faq-item.is-open{
   border-color: var(--em-accent);
-}
-
-.em-page .em-faq-question {
+}.em-page .em-faq-question{
   margin: 0;
-}
-
-.em-page .em-faq-question button {
+}.em-page .em-faq-question button{
   width: 100%;
   display: flex;
   align-items: center;
@@ -836,11 +581,9 @@
   border: 0;
   cursor: pointer;
   text-align: left;
-  font: 700 16px/1.35 'Manrope';
+  font: 700 16px/1.35 'Plus Jakarta Sans', 'Outfit', sans-serif;
   color: var(--em-ink);
-}
-
-.em-page .em-faq-toggle {
+}.em-page .em-faq-toggle{
   flex: 0 0 auto;
   width: 30px;
   height: 30px;
@@ -850,174 +593,101 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-}
-
-.em-page .em-faq-answer {
+}.em-page .em-faq-answer{
   padding: 0 22px 20px;
-}
-
-.em-page .em-faq-answer p {
+}.em-page .em-faq-answer p{
   margin: 0;
   color: var(--em-muted);
-  font-size: 14.5px;
+  font-size: 15.5px;
   line-height: 1.75;
-}
-
-/* CTA */
-.em-page .em-cta {
+}/* CTA */ .em-page .em-cta{
   background: var(--em-accent-dark);
   padding: 74px 0;
-}
-
-.em-page .em-cta-inner {
+}.em-page .em-cta-inner{
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 40px;
   flex-wrap: wrap;
-}
-
-.em-page .em-cta-copy h2 {
-  font: 800 34px/1.2 'Manrope';
+}.em-page .em-cta-copy h2{
+  font: 800 34px/1 'League Spartan', 'Outfit', sans-serif;
   letter-spacing: -0.03em;
   color: #fff;
   margin: 0 0 10px;
-}
-
-.em-page .em-cta-copy p {
+}.em-page .em-cta-copy p{
   color: rgba(255, 255, 255, 0.82);
   margin: 0;
   max-width: 560px;
   line-height: 1.7;
-}
-
-.em-page .em-cta-actions {
+}.em-page .em-cta-actions{
   display: flex;
   gap: 14px;
   flex-wrap: wrap;
-}
-
-.em-page .em-cta .em-btn--primary {
+}.em-page .em-cta .em-btn--primary{
   background: #fff;
   color: var(--em-accent-dark);
-}
-
-.em-page .em-cta .em-btn--primary:hover {
+}.em-page .em-cta .em-btn--primary:hover{
   background: var(--em-tint);
 }
 
 /* Responsive */
-@media (max-width: 1100px) {
-  .em-page .em-about-grid {
+@media (max-width: 1100px) {.em-page .em-about-grid{
     grid-template-columns: 1fr;
     gap: 42px;
-  }
-
-  .em-page .em-location-grid {
+  }.em-page .em-location-grid{
     grid-template-columns: repeat(2, 1fr);
-  }
-
-  .em-page .em-process-list {
+  }.em-page .em-process-list{
     grid-template-columns: repeat(3, 1fr);
-  }
-
-  .em-page .em-development-list,
-  .em-page .em-safety-grid,
-  .em-page .em-benefit-grid {
+  }.em-page .em-development-list, .em-page .em-safety-grid, .em-page .em-benefit-grid{
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (max-width: 900px) {
-  .em-page .em-section {
+@media (max-width: 900px) {.em-page .em-section{
     padding: 68px 0;
-  }
-
-  .em-page .em-section-heading {
+  }.em-page .em-section-heading{
     margin-bottom: 36px;
-  }
-
-  .em-page .em-section-heading h2,
-  .em-page .em-about-copy h2 {
+  }.em-page .em-section-heading h2, .em-page .em-about-copy h2{
     font-size: 32px;
-  }
-
-  .em-page .em-stat-grid {
+  }.em-page .em-stat-grid{
     grid-template-columns: 1fr;
-  }
-
-  .em-page .em-sustainability-grid,
-  .em-page .em-enquiry-grid,
-  .em-page .em-faq-grid {
+  }.em-page .em-sustainability-grid, .em-page .em-enquiry-grid, .em-page .em-faq-grid{
     grid-template-columns: 1fr;
     gap: 34px;
-  }
-
-  .em-page .em-notice-inner {
+  }.em-page .em-notice-inner{
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .em-page .em-cta-inner {
+  }.em-page .em-cta-inner{
     flex-direction: column;
     align-items: flex-start;
   }
 }
 
-@media (max-width: 620px) {
-  .em-page .em-section {
+@media (max-width: 620px) {.em-page .em-section{
     padding: 54px 0;
-  }
-
-  .em-page .em-section-heading h2,
-  .em-page .em-about-copy h2,
-  .em-page .em-sustainability-copy h2 {
+  }.em-page .em-section-heading h2, .em-page .em-about-copy h2, .em-page .em-sustainability-copy h2{
     font-size: 28px;
-  }
-
-  .em-page .em-location-grid,
-  .em-page .em-development-list,
-  .em-page .em-safety-grid,
-  .em-page .em-benefit-grid,
-  .em-page .em-process-list,
-  .em-page .em-tech-grid {
+  }.em-page .em-location-grid, .em-page .em-development-list, .em-page .em-safety-grid, .em-page .em-benefit-grid, .em-page .em-process-list, .em-page .em-tech-grid{
     grid-template-columns: 1fr;
-  }
-
-  .em-page .em-location-fields > div {
+  }.em-page .em-location-fields > div{
     flex-direction: column;
     gap: 2px;
-  }
-
-  .em-page .em-location-fields dd {
+  }.em-page .em-location-fields dd{
     text-align: left;
-  }
-
-  .em-page .em-form {
+  }.em-page .em-form{
     padding: 22px;
-  }
-
-  .em-page .em-form-row {
+  }.em-page .em-form-row{
     grid-template-columns: 1fr;
-  }
-
-  .em-page .em-stat-card b {
+  }.em-page .em-stat-card b{
     font-size: 34px;
-  }
-
-  .em-page .em-cta-actions {
+  }.em-page .em-cta-actions{
     width: 100%;
-  }
-
-  .em-page .em-cta-actions .em-btn {
+  }.em-page .em-cta-actions .em-btn{
     flex: 1 1 auto;
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .em-page *,
-  .em-page *::before,
-  .em-page *::after {
+@media (prefers-reduced-motion: reduce) {.em-page *, .em-page *::before, .em-page *::after{
     scroll-behavior: auto !important;
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;

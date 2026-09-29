@@ -1,5 +1,5 @@
 const PopupNotice = require("../models/PopupNotice");
-const { deleteAssets } = require("../utils/cloudinary");
+const { deleteAssets } = require("../utils/assetStorage");
 
 const sanitizeText = (value) =>
   String(value || "")

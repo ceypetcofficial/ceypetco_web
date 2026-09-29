@@ -32,6 +32,7 @@ const pageTitles = {
   "/admin/home": "Home Page Services",
   "/admin/about": "About Page",
   "/admin/history": "History Page",
+  "/admin/pages": "Website Page Editor",
 };
 
 const AdminHeader = ({ onToggleSidebar }) => {

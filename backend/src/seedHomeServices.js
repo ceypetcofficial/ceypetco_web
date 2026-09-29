@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const { closeDB } = require("./config/db");
 require("dotenv").config();
 const connectDB = require("./config/db");
 const HomeService = require("./models/HomeService");
@@ -99,7 +99,7 @@ const seedHomeServices = async () => {
     console.log(`Home service created: ${item.title}`);
   }
 
-  await mongoose.connection.close();
+  await closeDB();
   console.log("Home service seeding complete.");
   process.exit(0);
 };

@@ -38,7 +38,8 @@ const getPublishedById = async (req, res, next) => {
   try {
     const { identifier } = req.params;
     const query = { status: "published" };
-    if (/^[0-9a-fA-F]{24}$/.test(identifier)) {
+    const isId = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+    if (isId.test(identifier)) {
       query._id = identifier;
     } else {
       query.slug = identifier;

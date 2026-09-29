@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const { closeDB } = require("./config/db");
 require("dotenv").config();
 const connectDB = require("./config/db");
 const ManagementTeamMember = require("./models/ManagementTeamMember");
@@ -8,25 +8,25 @@ const team = [
   [
     "D J A S De S Rajakaruna",
     "Chairman",
-    "https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/chairman.jpeg",
+    "/images/chairman.jpeg",
     "Leads the governing board of Ceylon Petroleum Corporation, guiding corporate strategy, governance and long-term direction of the national petroleum entity.",
   ],
   [
     "Dr. Mayura Neththikumarage",
     "Managing Director",
-    "https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/managing-director.png",
+    "/images/managing-director.png",
     "Oversees day-to-day operations and business management of the Corporation, driving operational efficiency, service delivery and strategic execution across all divisions.",
   ],
   [
     "Mahendra Garusinghe",
     "Director",
-    "https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/director-1.jpeg",
+    "/images/director-1.jpeg",
     "Serves on the board of directors, providing governance oversight and contributing to key decisions on refined products, commercial operations and corporate policy.",
   ],
   [
     "R M S P S Bandara",
     "Director",
-    "https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images/director-2.jpeg",
+    "/images/director-2.jpeg",
     "Serves on the board of directors, supporting governance, financial stewardship and the strategic stewardship of the Corporation's operations and people.",
   ],
 ];
@@ -138,7 +138,7 @@ const seed = async () => {
     }
   }
 
-  await mongoose.connection.close();
+  await closeDB();
   console.log("Management team + directory seeding complete.");
   process.exit(0);
 };

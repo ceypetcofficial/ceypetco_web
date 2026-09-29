@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const { closeDB } = require("./config/db");
 require("dotenv").config();
 const connectDB = require("./config/db");
 const MobileApp = require("./models/MobileApp");
@@ -56,7 +56,7 @@ const seedMobileApps = async () => {
     }
   }
 
-  await mongoose.connection.close();
+  await closeDB();
   console.log("Mobile app seeding complete.");
   process.exit(0);
 };

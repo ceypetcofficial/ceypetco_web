@@ -16,9 +16,9 @@ router.route("/active").get(async (req, res, next) => {
   }
 });
 
-router.route("/").get(c.getAll);
-
 router.use(protect);
+
+router.route("/").get(c.getAll);
 
 router.route("/").post(authorize("super_admin", "admin", "editor"), c.create);
 

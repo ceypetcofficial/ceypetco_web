@@ -8,6 +8,7 @@ import PublicSite from "../App.jsx";
 import NewsManagement from "../admin/pages/News/NewsManagement";
 import NoticeManagement from "../admin/pages/Notices/NoticeManagement";
 import TenderManagement from "../admin/pages/Tenders/TenderManagement";
+import TenderDownloadManagement from "../admin/pages/Tenders/TenderDownloadManagement";
 import ProjectManagement from "../admin/pages/Projects/ProjectManagement";
 import SupplierResources from "../admin/pages/SupplierResources/SupplierResources";
 import CareerManagement from "../admin/pages/Careers/CareerManagement";
@@ -15,6 +16,7 @@ import AnnualReportsManagement from "../admin/pages/AnnualReports/AnnualReportsM
 import TeamMembersManagement from "../admin/pages/TeamMembers/TeamMembersManagement";
 import ManagementContactsManagement from "../admin/pages/ManagementContacts/ManagementContactsManagement";
 import FuelPriceManagement from "../admin/pages/FuelPrices/FuelPriceManagement";
+import AviationPriceManagement from "../admin/pages/AviationPrices/AviationPriceManagement";
 import HistoricalPriceManagement from "../admin/pages/FuelPrices/HistoricalPriceManagement";
 import FuelStationManagement from "../admin/pages/FuelStations/FuelStationManagement";
 import RegionalOfficeManagement from "../admin/pages/RegionalOffices/RegionalOfficeManagement";
@@ -27,6 +29,8 @@ import DivisionManagement from "../admin/pages/Services/DivisionManagement";
 import DivisionEditor from "../admin/pages/Services/DivisionEditor";
 import PopupNoticeManagement from "../admin/pages/Popups/PopupNoticeManagement";
 import HistoryManagement from "../admin/pages/History/HistoryManagement";
+import PageManagement from "../admin/pages/Pages/PageManagement";
+import ImageLibrary from "../admin/pages/Media/ImageLibrary";
 
 const AppRoutes = () => {
   return (
@@ -46,6 +50,7 @@ const AppRoutes = () => {
         <Route path="notices" element={<NoticeManagement />} />
         <Route path="projects" element={<ProjectManagement />} />
         <Route path="tenders" element={<TenderManagement />} />
+        <Route path="tender-downloads" element={<TenderDownloadManagement />} />
         <Route path="supplier-resources" element={<SupplierResources />} />
         <Route path="careers" element={<CareerManagement />} />
         <Route path="publications" element={<AnnualReportsManagement />} />
@@ -57,15 +62,17 @@ const AppRoutes = () => {
         <Route path="services-page/divisions/:slug" element={<DivisionEditor />} />
         <Route path="products-page" element={<Placeholder />} />
         <Route path="fuel-prices" element={<FuelPriceManagement />} />
+        <Route path="aviation-prices" element={<AviationPriceManagement />} />
         <Route path="historical-prices" element={<HistoricalPriceManagement />} />
         <Route path="fuel-stations" element={<FuelStationManagement />} />
         <Route path="regional-offices" element={<RegionalOfficeManagement />} />
         <Route path="messages" element={<ContactMessages />} />
-        <Route path="media" element={<Placeholder />} />
+        <Route path="media" element={<ImageLibrary />} />
         <Route path="users" element={<UserManagement />} />
         <Route path="popup-notices" element={<PopupNoticeManagement />} />
         <Route path="settings" element={<Placeholder />} />
         <Route path="home" element={<HomeServiceManagement />} />
+        <Route path="pages" element={<PageManagement />} />
         <Route path="mobile-apps" element={<MobileAppManagement />} />
       </Route>
 

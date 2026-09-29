@@ -34,10 +34,7 @@ api.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       localStorage.removeItem("ceypetco_token");
       localStorage.removeItem("ceypetco_user");
-      if (
-        !window.location.pathname.startsWith("/login") &&
-        !window.location.pathname.startsWith("/")
-      ) {
+      if (!window.location.pathname.startsWith("/login")) {
         window.location.href = "/login";
       }
     }

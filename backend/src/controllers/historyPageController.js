@@ -1,6 +1,7 @@
 const HistoryPage = require("../models/HistoryPage");
+const { deleteAssets } = require("../utils/assetStorage");
 
-const imageBase = "https://res.cloudinary.com/e9fb61tl/image/upload/f_auto,q_auto/ceypetco/images";
+const imageBase = "/images";
 
 const defaults = {
   heroLabel: "OUR HISTORY",
@@ -41,6 +42,7 @@ const get = async (req, res, next) => {
 
 const update = async (req, res, next) => {
   try {
+    const existing = await HistoryPage.findOne({ key: "history" });
     const fields = Object.keys(defaults);
     const data = Object.fromEntries(fields.filter((field) => Object.hasOwn(req.body, field)).map((field) => [field, req.body[field]]));
     const page = await HistoryPage.findOneAndUpdate(
@@ -48,6 +50,11 @@ const update = async (req, res, next) => {
       { $set: data },
       { new: true, upsert: true, runValidators: true, setDefaultsOnInsert: true }
     );
+    if (existing) {
+      const previousUrls = [existing.heroImage, ...(existing.gallery || []).map((item) => item.image)].filter(Boolean);
+      const currentUrls = [page.heroImage, ...(page.gallery || []).map((item) => item.image)].filter(Boolean);
+      await deleteAssets(previousUrls.filter((url) => !currentUrls.includes(url)));
+    }
     res.json({ success: true, data: page });
   } catch (error) {
     next(error);

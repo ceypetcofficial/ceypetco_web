@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const { closeDB } = require("./config/db");
 require("dotenv").config();
 const connectDB = require("./config/db");
 const Notice = require("./models/Notice");
@@ -78,7 +78,7 @@ const seedNotices = async () => {
     console.log(`Notice created: ${item.title}`);
   }
 
-  await mongoose.connection.close();
+  await closeDB();
   console.log("Notice seeding complete.");
   process.exit(0);
 };

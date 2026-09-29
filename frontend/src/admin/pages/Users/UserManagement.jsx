@@ -1,6 +1,22 @@
 import { useState, useEffect, useCallback } from "react";
 import toast from "react-hot-toast";
-import { Plus, Search, Edit3, Trash2, User as UserIcon, Pencil } from "lucide-react";
+import {
+  Plus,
+  Search,
+  Edit3,
+  Trash2,
+  User as UserIcon,
+  Pencil,
+  Eye,
+  EyeOff,
+  Loader2,
+  ShieldCheck,
+  CheckCircle2,
+  AlertCircle,
+  Lock,
+  Mail,
+  Dices,
+} from "lucide-react";
 import { userService } from "../../../services/contentService";
 import { useAuth } from "../../../context/AuthContext";
 import StatusBadge from "../../components/StatusBadge";
@@ -8,6 +24,92 @@ import Pagination from "../../components/Pagination";
 import Modal from "../../components/Modal";
 import Loading from "../../components/Loading";
 import { Field, inputClass, selectClass } from "../../components/form.jsx";
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const ROLE_INFO = {
+  super_admin: {
+    label: "Super Admin",
+    desc: "Full platform access, including user and role management.",
+    badge: "Has every permission",
+  },
+  admin: {
+    label: "Admin",
+    desc: "Manages all website content and user accounts.",
+    badge: "Content + user management",
+  },
+  editor: {
+    label: "Editor",
+    desc: "Authors and manages website content only.",
+    badge: "Content only \u00b7 no user management",
+  },
+};
+
+const STATUS_INFO = {
+  active: {
+    desc: "Can sign in to the dashboard.",
+    badge: "Login allowed",
+  },
+  inactive: {
+    desc: "Blocked from signing in. Existing sessions are invalidated.",
+    badge: "Login blocked",
+  },
+};
+
+const STRENGTH = [
+  { label: "Too short", color: "bg-slate-200", text: "text-slate-400" },
+  { label: "Very weak", color: "bg-red-500", text: "text-red-600" },
+  { label: "Weak", color: "bg-red-400", text: "text-red-600" },
+  { label: "Fair", color: "bg-amber-400", text: "text-amber-600" },
+  { label: "Strong", color: "bg-emerald-500", text: "text-emerald-600" },
+  { label: "Very strong", color: "bg-emerald-600", text: "text-emerald-700" },
+];
+
+const scorePassword = (pw) => {
+  if (!pw) return 0;
+  let score = 0;
+  if (pw.length >= 8) score++;
+  if (pw.length >= 12) score++;
+  if (/[a-z]/.test(pw) && /[A-Z]/.test(pw)) score++;
+  if (/\d/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+  return score;
+};
+
+const initialsOf = (name) =>
+  String(name || "")
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((w) => w.charAt(0).toUpperCase())
+    .join("") || "U";
+
+const generateStrongPassword = () => {
+  const chars =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+  const buf = new Uint32Array(16);
+  crypto.getRandomValues(buf);
+  return [...buf].map((n) => chars[n % chars.length]).join("");
+};
+
+const FieldError = ({ children }) => (
+  <p className="mt-1.5 flex items-center gap-1 text-xs font-medium text-red-600">
+    <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+    <span>{children}</span>
+  </p>
+);
+
+const SectionHeader = ({ icon, title }) => (
+  <div className="flex items-center gap-2 mb-4">
+    <span className="w-6 h-6 rounded-md bg-[#062e3b] text-white flex items-center justify-center shrink-0">
+      {icon}
+    </span>
+    <h4 className="text-[11px] font-extrabold tracking-[0.08em] uppercase text-[#092f3b] font-['Manrope']">
+      {title}
+    </h4>
+    <div className="flex-1 h-px bg-slate-100" />
+  </div>
+);
 
 const emptyForm = {
   name: "",
@@ -17,6 +119,27 @@ const emptyForm = {
   role: "admin",
   status: "active",
 };
+
+const PasswordField = ({ value, onChange, visible, onToggle, placeholder }) => (
+  <div className="relative">
+    <input
+      type={visible ? "text" : "password"}
+      className={`${inputClass} pr-11`}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      autoComplete="new-password"
+    />
+    <button
+      type="button"
+      onClick={onToggle}
+      title={visible ? "Hide password" : "Show password"}
+      className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-slate-400 hover:text-[#092f3b] hover:bg-slate-100 transition-colors"
+    >
+      {visible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+    </button>
+  </div>
+);
 
 const UserManagement = () => {
   const { user: currentUser } = useAuth();
@@ -30,6 +153,9 @@ const UserManagement = () => {
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(emptyForm);
+  const [errors, setErrors] = useState({});
+  const [showPw, setShowPw] = useState(false);
+  const [showConfirmPw, setShowConfirmPw] = useState(false);
   const [saving, setSaving] = useState(false);
   const [showDelete, setShowDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
@@ -54,9 +180,14 @@ const UserManagement = () => {
     load();
   }, [load]);
 
+  const isSelf = editing ? editing._id === currentUser?._id : false;
+
   const openCreate = () => {
     setEditing(null);
     setForm(emptyForm);
+    setErrors({});
+    setShowPw(false);
+    setShowConfirmPw(false);
     setShowModal(true);
   };
 
@@ -70,13 +201,41 @@ const UserManagement = () => {
       role: item.role || "admin",
       status: item.status || "active",
     });
+    setErrors({});
+    setShowPw(false);
+    setShowConfirmPw(false);
     setShowModal(true);
+  };
+
+  const validate = (f) => {
+    const e = {};
+    if (!f.name.trim()) {
+      e.name = "Full name is required";
+    } else if (f.name.trim().length < 2) {
+      e.name = "Name must be at least 2 characters";
+    }
+    if (!f.email.trim()) {
+      e.email = "Email address is required";
+    } else if (!EMAIL_RE.test(f.email)) {
+      e.email = "Enter a valid email address, e.g. name@ceypetco.gov.lk";
+    }
+    if (!editing && !f.password) {
+      e.password = "Password is required";
+    } else if (f.password && f.password.length < 8) {
+      e.password = "Use at least 8 characters";
+    }
+    if (f.password && f.password !== f.confirmPassword) {
+      e.confirmPassword = "Passwords do not match";
+    }
+    return e;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (form.password !== form.confirmPassword) {
-      toast.error("Passwords do not match");
+    const validation = validate(form);
+    setErrors(validation);
+    if (Object.keys(validation).length) {
+      toast.error("Please fix the highlighted fields");
       return;
     }
     setSaving(true);
@@ -114,7 +273,41 @@ const UserManagement = () => {
     }
   };
 
-  const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
+  const set = (key) => (e) => {
+    const value = e.target.value;
+    setForm((f) => ({ ...f, [key]: value }));
+    setErrors((prev) => {
+      if (!prev[key]) return prev;
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
+    if (key === "password" && form.confirmPassword) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next.confirmPassword;
+        return next;
+      });
+    }
+  };
+
+  const handleGeneratePassword = () => {
+    const pw = generateStrongPassword();
+    setForm((f) => ({ ...f, password: pw, confirmPassword: pw }));
+    setErrors((prev) => {
+      const next = { ...prev };
+      delete next.password;
+      delete next.confirmPassword;
+      return next;
+    });
+  };
+
+  const score = scorePassword(form.password);
+  const strength = STRENGTH[score];
+  const pwdMatched =
+    form.password.length > 0 && form.password === form.confirmPassword;
+  const pwdMismatch =
+    form.confirmPassword.length > 0 && !pwdMatched;
 
   return (
     <div>
@@ -183,7 +376,7 @@ const UserManagement = () => {
                         <div className="flex items-center gap-3">
                           <div className="w-9 h-9 bg-[#062e3b] rounded-full flex items-center justify-center shrink-0">
                             <span className="text-xs font-bold text-white uppercase">
-                              {item.name?.charAt(0) || "U"}
+                              {initialsOf(item.name)}
                             </span>
                           </div>
                           <div className="min-w-0">
@@ -245,39 +438,197 @@ const UserManagement = () => {
         title={editing ? "Edit User" : "Add User"}
         size="md"
       >
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Field label="Full Name" required>
-            <input className={inputClass} value={form.name} onChange={set("name")} placeholder="Full name" required />
-          </Field>
-          <Field label="Email" required>
-            <input type="email" className={inputClass} value={form.email} onChange={set("email")} placeholder="user@ceypetco.gov.lk" required />
-          </Field>
-          <Field label={editing ? "New Password (leave blank to keep)" : "Password"} required={!editing}>
-            <input type="password" className={inputClass} value={form.password} onChange={set("password")} placeholder={editing ? "••••••••" : "Minimum 6 characters"} required={!editing} minLength={editing ? undefined : 6} />
-          </Field>
-          <Field label={editing ? "Confirm New Password" : "Re-enter Password"} required={!editing}>
-            <input type="password" className={inputClass} value={form.confirmPassword} onChange={set("confirmPassword")} placeholder="Re-enter password" required={!editing} />
-          </Field>
+        <form onSubmit={handleSubmit} noValidate className="space-y-6">
+          <div className="flex items-center gap-4 -mt-1 pb-5 border-b border-slate-100">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#062e3b] to-[#0b4c5e] flex items-center justify-center shrink-0">
+              <span className="text-lg font-extrabold text-white uppercase">
+                {initialsOf(form.name || editing?.name)}
+              </span>
+            </div>
+            <div className="min-w-0">
+              <p className="text-base font-extrabold text-[#092f3b] font-['Manrope'] truncate">
+                {form.name.trim() || (editing ? editing.name : "New User")}
+              </p>
+              <p className="text-xs text-[#66767d] break-all">
+                {form.email.trim() || (editing ? editing.email : "Account details preview")}
+              </p>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Field label="Role">
-              <select className={selectClass} value={form.role} onChange={set("role")}>
-                <option value="admin">Admin</option>
-                <option value="editor">Editor</option>
-                <option value="super_admin">Super Admin</option>
-              </select>
+            <Field label="Full Name" required>
+              <input
+                className={`${inputClass} ${errors.name ? "border-red-400 focus:border-red-500 focus:ring-red-500/20" : ""}`}
+                value={form.name}
+                onChange={set("name")}
+                placeholder="e.g. Nimal Perera"
+                autoFocus
+              />
+              {errors.name && <FieldError>{errors.name}</FieldError>}
             </Field>
-            <Field label="Status">
-              <select className={selectClass} value={form.status} onChange={set("status")}>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-              </select>
+            <Field label="Email Address" required>
+              <div className="relative">
+                <input
+                  type="email"
+                  className={`${inputClass} pl-10 ${errors.email ? "border-red-400 focus:border-red-500 focus:ring-red-500/20" : ""}`}
+                  value={form.email}
+                  onChange={set("email")}
+                  placeholder="user@ceypetco.gov.lk"
+                />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+              </div>
+              {errors.email && <FieldError>{errors.email}</FieldError>}
             </Field>
           </div>
-          <div className="flex items-center justify-end gap-3 pt-2 border-t border-slate-100">
-            <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2.5 rounded-lg border border-slate-200 text-sm font-semibold text-[#092f3b] hover:bg-slate-50 transition-colors">Cancel</button>
-            <button type="submit" disabled={saving} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#dc2626] hover:bg-[#b91c1c] text-white text-sm font-semibold transition-colors disabled:opacity-50">
-              <Pencil className="w-4 h-4" />
-              {saving ? "Saving..." : editing ? "Update" : "Create"}
+
+          <div className="border-t border-slate-100 pt-5">
+            <SectionHeader icon={<ShieldCheck className="w-3.5 h-3.5" />} title="Access & Permissions" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Field label="Role" hint={isSelf ? "You cannot change your own role." : undefined}>
+                <select
+                  className={`${selectClass} ${isSelf ? "opacity-60 cursor-not-allowed" : ""}`}
+                  value={form.role}
+                  onChange={set("role")}
+                  disabled={isSelf}
+                >
+                  <option value="admin">Admin</option>
+                  <option value="editor">Editor</option>
+                  <option value="super_admin">Super Admin</option>
+                </select>
+              </Field>
+              <Field label="Status" hint={isSelf ? "You cannot change your own status." : undefined}>
+                <select
+                  className={`${selectClass} ${isSelf ? "opacity-60 cursor-not-allowed" : ""}`}
+                  value={form.status}
+                  onChange={set("status")}
+                  disabled={isSelf}
+                >
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                </select>
+              </Field>
+            </div>
+            <div className="mt-4">
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <div className="flex items-center justify-between gap-3 flex-wrap">
+                  <p className="text-sm font-bold text-[#092f3b]">
+                    {ROLE_INFO[form.role].label}
+                    <span className="ml-2 text-xs font-semibold text-[#66767d]">
+                      {ROLE_INFO[form.role].desc}
+                    </span>
+                  </p>
+                  <span className="text-[10px] font-bold text-white bg-[#062e3b] px-2 py-1 rounded-full">
+                    {ROLE_INFO[form.role].badge}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-3 flex-wrap mt-2.5 pt-2.5 border-t border-slate-200/70">
+                  <p className="text-sm font-bold text-[#092f3b]">
+                    {form.status === "active" ? "Active" : "Inactive"}
+                    <span className="ml-2 text-xs font-semibold text-[#66767d]">
+                      {STATUS_INFO[form.status].desc}
+                    </span>
+                  </p>
+                  <span className="text-[10px] font-bold text-white bg-[#062e3b] px-2 py-1 rounded-full">
+                    {STATUS_INFO[form.status].badge}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-slate-100 pt-5">
+            <div className="flex items-center justify-between mb-4">
+              <SectionHeader icon={<Lock className="w-3.5 h-3.5" />} title="Password" />
+              <button
+                type="button"
+                onClick={handleGeneratePassword}
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-[#dc2626] hover:text-[#b91c1c] transition-colors"
+              >
+                <Dices className="w-3.5 h-3.5" />
+                Generate strong password
+              </button>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Field
+                label={editing ? "New Password" : "Password"}
+                required={!editing}
+                hint={editing ? "Leave blank to keep current password" : undefined}
+              >
+                <PasswordField
+                  value={form.password}
+                  onChange={set("password")}
+                  visible={showPw}
+                  onToggle={() => setShowPw((v) => !v)}
+                  placeholder={editing ? "Leave blank to keep" : "At least 8 characters"}
+                />
+                {form.password && (
+                  <div className="mt-2">
+                    <div className="flex gap-1.5">
+                      {[1, 2, 3, 4, 5].map((i) => (
+                        <div
+                          key={i}
+                          className={`h-1.5 flex-1 rounded-full transition-colors ${
+                            score >= i ? strength.color : "bg-slate-200"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <p className={`mt-1 text-xs font-semibold ${strength.text}`}>
+                      {strength.label}
+                    </p>
+                  </div>
+                )}
+                {errors.password && <FieldError>{errors.password}</FieldError>}
+              </Field>
+              <Field label="Confirm Password" required={!editing}>
+                <PasswordField
+                  value={form.confirmPassword}
+                  onChange={set("confirmPassword")}
+                  visible={showConfirmPw}
+                  onToggle={() => setShowConfirmPw((v) => !v)}
+                  placeholder="Re-enter password"
+                />
+                {pwdMatched && (
+                  <p className="mt-1.5 flex items-center gap-1 text-xs font-medium text-emerald-600">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    Passwords match
+                  </p>
+                )}
+                {pwdMismatch && (
+                  <p className="mt-1.5 flex items-center gap-1 text-xs font-medium text-red-600">
+                    <AlertCircle className="w-3.5 h-3.5" />
+                    Passwords do not match
+                  </p>
+                )}
+                {errors.confirmPassword && <FieldError>{errors.confirmPassword}</FieldError>}
+              </Field>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+            <button
+              type="button"
+              onClick={() => setShowModal(false)}
+              className="px-4 py-2.5 rounded-lg border border-slate-200 text-sm font-semibold text-[#092f3b] hover:bg-slate-50 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={saving}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#dc2626] hover:bg-[#b91c1c] text-white text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-wait"
+            >
+              {saving ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  {editing ? "Updating..." : "Creating..."}
+                </>
+              ) : (
+                <>
+                  <Pencil className="w-4 h-4" />
+                  {editing ? "Update User" : "Create User"}
+                </>
+              )}
             </button>
           </div>
         </form>

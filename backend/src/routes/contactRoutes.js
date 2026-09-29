@@ -9,6 +9,6 @@ router.route("/").post(c.create);
 router.use(protect);
 
 router.route("/").get(c.getAll);
-router.route("/:id").get(c.getById).put(c.update).delete(authorize("super_admin", "admin"), c.remove);
+router.route("/:id").get(c.getById).put(authorize("super_admin", "admin", "editor"), c.update).delete(authorize("super_admin", "admin"), c.remove);
 
 module.exports = router;
