@@ -11,7 +11,7 @@ React + Vite + Tailwind CSS
 Node.js + Express.js
 
 **Database:**
-Microsoft SQL Server
+MySQL
 
 **Uploaded files:**
 Stored locally under `backend/uploads/images` and `backend/uploads/docs`. Admin dashboard uploads and CRUD operations use local storage.
@@ -47,7 +47,7 @@ cp backend/.env.example backend/.env
 ```
 
 - `frontend/.env` — set `VITE_API_BASE_URL` to the backend API base URL.
-- `backend/.env` — set `PORT`, `CLIENT_URL`, and the `SQL_*` connection variables.
+- `backend/.env` — set `PORT`, `CLIENT_URL`, and the `DB_*` connection variables.
 
 ### 2. Run the Backend
 
@@ -80,6 +80,12 @@ Frontend runs on http://localhost:5173.
 | frontend | `npm run dev`   | Start Vite dev server    |
 | frontend | `npm run build` | Build for production     |
 | frontend | `npm run preview` | Preview production build |
+
+## Plesk deployment
+
+See [PLESK_DEPLOYMENT.md](PLESK_DEPLOYMENT.md). The React frontend must be
+built and served as static files; the backend is the Node.js application and
+starts from `src/server.js`.
 
 ## Security Notes
 
