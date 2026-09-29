@@ -83,9 +83,9 @@ Frontend runs on http://localhost:5173.
 
 ## Plesk deployment
 
-See [PLESK_DEPLOYMENT.md](PLESK_DEPLOYMENT.md). The React frontend must be
-built and served as static files; the backend is the Node.js application and
-starts from `src/server.js`.
+See [PLESK_DEPLOYMENT.md](PLESK_DEPLOYMENT.md). For a Plesk Git deployment,
+the root `app.js` builds and serves the React frontend. The separate backend
+application starts from `backend/src/server.js`.
 
 ## Security Notes
 

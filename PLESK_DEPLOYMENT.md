@@ -1,7 +1,8 @@
 # Plesk deployment
 
-Deploy the frontend and backend as separate sites. The frontend is a static Vite
-build; only the backend should be configured as a Plesk Node.js application.
+Deploy the frontend and backend as separate sites. The repository root includes
+a small Node.js host for Plesk Git deployments: `npm install` builds the Vite
+frontend and `app.js` serves the generated files.
 
 ## Backend (`api.example.com`)
 
@@ -30,7 +31,7 @@ In Plesk, run **NPM Install**, restart the app, and verify:
 https://api.example.com/api/health
 ```
 
-## Frontend (`example.com`)
+## Frontend (`example.com`) with Plesk Node.js
 
 Set the production API URL before building:
 
@@ -38,7 +39,31 @@ Set the production API URL before building:
 VITE_API_BASE_URL=https://api.example.com/api
 ```
 
-Save it as `frontend/.env.production` locally, then build:
+When Plesk clones the whole repository, use these Node.js settings:
+
+| Setting | Value |
+| --- | --- |
+| Node.js version | 22 LTS or newer |
+| Application mode | `production` |
+| Application root | Repository root |
+| Document root | Repository root |
+| Startup file | `app.js` |
+
+Add `VITE_API_BASE_URL` under **Custom environment variables**, run **NPM
+Install**, and restart the application. The root `postinstall` script runs:
+
+```bash
+npm --prefix frontend ci
+npm --prefix frontend run build
+```
+
+The application then serves `frontend/dist`. A production page must load
+JavaScript from `/assets/...`, never `/src/main.jsx`.
+
+## Frontend as static hosting
+
+Alternatively, save the variable as `frontend/.env.production` locally, then
+build:
 
 ```bash
 cd frontend
@@ -47,7 +72,7 @@ npm run build
 ```
 
 Upload the **contents** of `frontend/dist` to the main domain's document root
-(normally `httpdocs`). Disable Node.js for the main frontend domain. The
+(normally `httpdocs`). Disable Node.js for the frontend domain. The
 `public/.htaccess` file is copied into `dist` during the build and makes direct
 visits to React routes fall back to `index.html`.
 
