@@ -1,4 +1,4 @@
-name: Build React Frontend
+name: Build and Prepare React Frontend
 
 on:
   push:
@@ -9,13 +9,12 @@ on:
       - '.github/workflows/frontend-build.yml'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: frontend
 
     steps:
       - name: Checkout repository
@@ -29,13 +28,16 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
+        working-directory: frontend
         run: npm ci
 
       - name: Build React frontend
+        working-directory: frontend
         run: npm run build
 
-      - name: Upload production build
-        uses: actions/upload-artifact@v4
+      - name: Deploy build to frontend-deploy branch
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          name: ceypetco-frontend-dist
-          path: frontend/dist
+          branch: frontend-deploy
+          folder: frontend/dist
+          clean: true
