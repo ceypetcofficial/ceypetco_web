@@ -1,15 +1,16 @@
 {
-  "name": "ceypetco-frontend-host",
+  "name": "ceypetco-backend-host",
   "version": "1.0.0",
   "private": true,
-  "description": "Plesk entry point for the CEYPETCO Vite frontend",
+  "description": "Plesk repository-root entry point for the CEYPETCO backend",
   "main": "app.js",
+  "workspaces": [
+    "backend"
+  ],
   "scripts": {
-    "build": "npm --prefix frontend ci && npm --prefix frontend run build",
-    "postinstall": "npm run build",
     "start": "node app.js"
   },
   "engines": {
-    "node": ">=22.12.0"
+    "node": ">=22"
   }
 }
