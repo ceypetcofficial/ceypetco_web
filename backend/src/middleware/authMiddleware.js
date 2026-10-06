@@ -19,7 +19,7 @@ const protect = async (req, res, next) => {
       });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET, { algorithms: ['HS256'] });
 
     const user = await User.findById(decoded.id);
 
@@ -38,6 +38,7 @@ const protect = async (req, res, next) => {
     }
 
     req.user = user;
+    res.setHeader('Cache-Control', 'no-store, private');
     next();
   } catch (error) {
     if (error.name === "JsonWebTokenError") {
@@ -69,7 +70,7 @@ const optionalAuth = async (req, res, next) => {
 
     if (!token) return next();
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET, { algorithms: ['HS256'] });
     const user = await User.findById(decoded.id);
 
     if (user && user.status === "active") {

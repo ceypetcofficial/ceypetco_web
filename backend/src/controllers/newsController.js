@@ -13,7 +13,13 @@ const getPublished = async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 50;
     const skip = (page - 1) * limit;
 
+    const search = req.query.search?.trim();
     const query = { status: "published" };
+    if (search) {
+      query.$or = ["title", "summary", "category", "author"].map((field) => ({
+        [field]: { $regex: search, $options: "i" },
+      }));
+    }
     const [items, total] = await Promise.all([
       News.find(query).sort("-publishedDate").skip(skip).limit(limit),
       News.countDocuments(query),

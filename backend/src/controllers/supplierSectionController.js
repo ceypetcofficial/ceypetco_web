@@ -7,16 +7,8 @@ const crud = createCrudController(SupplierSection, {
 
 const getFirst = async (req, res, next) => {
   try {
-    let section = await SupplierSection.findOne().sort("-createdAt");
-    if (!section) {
-      section = await SupplierSection.create({
-        eyebrow: "SUPPLIER ACCESS",
-        title: "Registration resources",
-        description:
-          "Guidance and application support for oil suppliers, foreign suppliers, independent inspectors and local contractors.",
-      });
-    }
-    res.status(200).json({ success: true, data: section });
+    const section = await SupplierSection.findOne().sort('-createdAt');
+    res.status(200).json({ success: true, data: section || null });
   } catch (error) {
     next(error);
   }

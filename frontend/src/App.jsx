@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from 'react';
 import sriLankaMap from './assets/sri-lanka-districts.svg?raw';
 import fuelStations from './data/fuelStations.json';
@@ -3712,35 +3713,45 @@ function AgroChemicalsPage() {
       </section>
       <section className="agro-flipper">
         <div className="container agro-flipper-grid">
-          <div>
-            <span>BIO-INSECTICIDE</span>
-            <h2>Flipper</h2>
-            <p>
-              A contact crop-protection option based on potassium salts of fatty
-              acids, developed to help manage soft-bodied pests.
-            </p>
-            <a
-              href="/documents/agro/Flipper.pdf"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Read the Flipper product leaflet{' '}
-              <Icon name="download" size={18} />
-            </a>
+          <div className="flipper-left-panel">
+            <div className="flipper-left-text">
+              <span>BIO-INSECTICIDE</span>
+              <h2>Flipper</h2>
+              <p>
+                A contact crop-protection option based on potassium salts of fatty
+                acids, developed to help manage soft-bodied pests.
+              </p>
+              <a
+                href="/documents/agro/Flipper.pdf"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Read the Flipper product leaflet{' '}
+                <Icon name="download" size={18} />
+              </a>
+            </div>
+            <div className="flipper-left-bottle">
+              <img
+                src="/images/flipper-bottle-transparent.png"
+                alt="Ceypetco Agro Flipper Bio-Insecticide bottle"
+              />
+            </div>
           </div>
-          <div>
-            <p className="eyebrow light">CROP PROTECTION</p>
-            <h3>More choice for responsible pest management</h3>
-            <p>
-              Flipper adds a bio-insecticide to the Ceypetco Agro range,
-              complementing its insecticide, fungicide and weed-control products.
-              It acts through direct contact with target pests.
-            </p>
-            <p>
-              The product leaflet identifies aphids and whiteflies among its
-              targets. Check the leaflet for approved crops, application rates
-              and safe-use instructions before use.
-            </p>
+          <div className="flipper-right-panel">
+            <div className="flipper-right-text">
+              <p className="eyebrow light">CROP PROTECTION</p>
+              <h3>More choice for responsible pest management</h3>
+              <p>
+                Flipper adds a bio-insecticide to the Ceypetco Agro range,
+                complementing its insecticide, fungicide and weed-control products.
+                It acts through direct contact with target pests.
+              </p>
+              <p>
+                The product leaflet identifies aphids and whiteflies among its
+                targets. Check the leaflet for approved crops, application rates
+                and safe-use instructions before use.
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -4299,6 +4310,27 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
     new URLSearchParams(window.location.search).get('subject') || '';
   const cameFromServices =
     new URLSearchParams(window.location.search).get('from') === 'services';
+  const [contactForm, setContactForm] = useState({ name: '', email: '', phone: '', subject: requestedSubject, message: '' });
+  const [contactSubmitting, setContactSubmitting] = useState(false);
+  const [contactResult, setContactResult] = useState(null);
+  const updateContactField = ({ target: { name, value } }) => {
+    setContactForm((current) => ({ ...current, [name]: value }));
+    setContactResult(null);
+  };
+  const submitContactForm = async (event) => {
+    event.preventDefault();
+    setContactSubmitting(true);
+    setContactResult(null);
+    try {
+      const response = await api.post('/admin/contact-messages', contactForm);
+      setContactResult({ type: 'success', message: response.data?.message || 'Your message has been sent successfully.' });
+      setContactForm({ name: '', email: '', phone: '', subject: requestedSubject, message: '' });
+    } catch (error) {
+      setContactResult({ type: 'error', message: error.response?.data?.message || 'We could not send your message. Please try again.' });
+    } finally {
+      setContactSubmitting(false);
+    }
+  };
 
   useEffect(() => {
     if (type !== '/news') return undefined;
@@ -5677,7 +5709,7 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
                               setDownloadTender({ ...item, url: item.documents[0].url });
                             }
                           }}
-                          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: 'var(--cpc-red)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: 'var(--cpc-red)', fontWeight: 700, fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}
                         >
                           Download tender <Icon name="download" size={16} />
                         </button>
@@ -5806,30 +5838,45 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
                 ))}
               </div>
             </div>
-            <form className="contact-form" onSubmit={(e) => e.preventDefault()}>
+            <form className="contact-form" onSubmit={submitContactForm}>
               <p className="eyebrow">SEND A MESSAGE</p>
               <h3>How can we help?</h3>
               <div className="field-row">
-                <input aria-label="Name" placeholder="Your name" />
+                <input aria-label="Name" name="name" placeholder="Your name" value={contactForm.name} onChange={updateContactField} maxLength="150" required />
                 <input
                   aria-label="Email"
+                  name="email"
                   placeholder="Email address"
                   type="email"
+                  value={contactForm.email}
+                  onChange={updateContactField}
+                  maxLength="254"
+                  required
                 />
               </div>
-              <input aria-label="Phone" placeholder="Phone number" />
+              <input aria-label="Phone" name="phone" placeholder="Phone number" type="tel" value={contactForm.phone} onChange={updateContactField} maxLength="40" />
               <input
                 aria-label="Subject"
+                name="subject"
                 placeholder="Subject"
-                defaultValue={requestedSubject}
+                value={contactForm.subject}
+                onChange={updateContactField}
+                maxLength="200"
+                required
               />
               <textarea
                 aria-label="Message"
+                name="message"
                 placeholder="Your message"
                 rows="5"
+                value={contactForm.message}
+                onChange={updateContactField}
+                maxLength="5000"
+                required
               ></textarea>
-              <button>
-                Send message <Icon name="arrow" size={17} />
+              {contactResult && <p className={`contact-form-result ${contactResult.type}`} role={contactResult.type === 'error' ? 'alert' : 'status'}>{contactResult.message}</p>}
+              <button type="submit" disabled={contactSubmitting}>
+                {contactSubmitting ? 'Sending…' : 'Send message'} <Icon name="arrow" size={17} />
               </button>
             </form>
           </div>
@@ -5859,12 +5906,22 @@ function App() {
   const [newsLoading, setNewsLoading] = useState(true);
   const [homeServices, setHomeServices] = useState([]);
   const [managedPage, setManagedPage] = useState(null);
+  const cleanPath = (path || '').split('?')[0].replace(/\/$/, '') || '/';
   const preserveOriginalTemplate = new Set([
     '/', '/about', '/history', '/services', '/management', '/subsidiaries', '/energy-ministries',
     '/marketing-sales', '/refinery', '/aviation', '/agro-chemicals', '/lubricants',
-    '/services/marine-bunkering', '/electric-mobility', '/news', '/notices', '/tenders',
-    '/projects', '/careers', '/annual-reports', '/contact',
-  ]).has(path);
+    '/services/marine-bunkering', '/bunkering', '/electric-mobility', '/ev-charging',
+    '/news', '/notices', '/tenders', '/projects', '/careers', '/annual-reports', '/contact',
+    '/regional-offices', '/right-to-information', '/consumer-registration', '/online-banking',
+    '/mobile-app', '/media',
+  ]).has(cleanPath);
+  const managedPageHasContent = Boolean(
+    managedPage &&
+      ((managedPage.sections && managedPage.sections.length > 0) ||
+        ['title', 'subtitle', 'eyebrow', 'image'].some(
+          (key) => managedPage.hero && managedPage.hero[key],
+        )),
+  );
   const changeSlide = (direction) =>
     setSlide(
       (current) =>
@@ -5910,13 +5967,9 @@ function App() {
     setNavMediaDropClosed(true);
     setNavCareersDropClosed(true);
 
-    setIsNavigating(true);
-    setTimeout(() => {
-      window.history.pushState({}, '', `${url.pathname}${url.search}${url.hash}`);
-      setPath(nextPath);
-      scrollAfterNavigation(url.hash);
-      setTimeout(() => setIsNavigating(false), 50);
-    }, 250);
+    window.history.pushState({}, '', `${url.pathname}${url.search}${url.hash}`);
+    setPath(nextPath);
+    scrollAfterNavigation(url.hash);
   };
 
   useEffect(() => {
@@ -5958,13 +6011,9 @@ function App() {
 
   useEffect(() => {
     const handlePopState = () => {
-      setIsNavigating(true);
-      setTimeout(() => {
-        if (!window.location.hash) jumpToPageTop();
-        setPath(window.location.pathname.replace(/\/$/, '') || '/');
-        scrollAfterNavigation(window.location.hash);
-        setTimeout(() => setIsNavigating(false), 50);
-      }, 250);
+      if (!window.location.hash) jumpToPageTop();
+      setPath(window.location.pathname.replace(/\/$/, '') || '/');
+      scrollAfterNavigation(window.location.hash);
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
@@ -6482,9 +6531,9 @@ function App() {
         </div>
       </header>
       <div className={`page-transition-wrapper ${isNavigating ? 'is-navigating' : ''}`}>
-      {managedPage && !preserveOriginalTemplate && !showOriginalPage ? (
+      {managedPage && managedPageHasContent && !preserveOriginalTemplate && !showOriginalPage ? (
         <ManagedPage page={managedPage} />
-      ) : path === '/' ? (
+      ) : cleanPath === '/' ? (
         <main>
           <section
             className="hero"
@@ -6743,17 +6792,17 @@ function App() {
               </div>
               <div className="division-grid">
                 {divisions.map(([title, text, image, href]) => (
-                  <article className="division-card" key={title}>
+                  <a className="division-card" href={href} key={title} aria-label={`Explore ${title}`}>
                     <img src={image} alt="" loading="lazy" decoding="async" />
                     <div className="division-overlay"></div>
                     <div className="division-content">
                       <h3>{title}</h3>
                       <p>{text}</p>
-                      <a href={href} aria-label={`Explore ${title}`}>
+                      <span className="division-arrow" aria-hidden="true">
                         <Icon name="arrow" size={20} />
-                      </a>
+                      </span>
                     </div>
-                  </article>
+                  </a>
                 ))}
               </div>
             </div>
@@ -6821,22 +6870,23 @@ function App() {
             <ManagedSections sections={managedPage.sections} />
           )}
         </main>
-      ) : districtFromPath(path) ? (
-        <FuelStationPage district={districtFromPath(path)} />
-      ) : path.startsWith('/management-team/') ? (
+      ) : districtFromPath(cleanPath) ? (
+        <FuelStationPage district={districtFromPath(cleanPath)} />
+      ) : cleanPath.startsWith('/management-team/') ? (
         <ManagementTeamProfile
-          key={path}
-          memberId={path.split('/').pop()}
+          key={cleanPath}
+          memberId={cleanPath.split('/').pop()}
         />
-      ) : path.startsWith('/news/') ? (
-        <NewsDetailPage key={path} newsId={path.split('/').pop()} />
-      ) : path === '/mobile-app' ? (
+      ) : cleanPath.startsWith('/news/') ? (
+        <NewsDetailPage key={cleanPath}
+          newsId={cleanPath.split('/').pop()} />
+      ) : cleanPath === '/mobile-app' ? (
         <MobileAppsPage />
-      ) : path === '/services/marine-bunkering' || path === '/bunkering' ? (
+      ) : cleanPath === '/services/marine-bunkering' || cleanPath === '/bunkering' ? (
         <MarineBunkeringPage />
       ) : (
         <InnerPage
-          type={path}
+          type={cleanPath}
           preserveTemplate={preserveOriginalTemplate}
           managedSections={
             managedPage && !showOriginalPage ? managedPage.sections : []
@@ -6909,7 +6959,7 @@ function App() {
           </div>
         </div>
         <div className="container footer-bottom">
-          <span>Â© 2026 Ceylon Petroleum Corporation</span>
+          <span>© 2026 Ceylon Petroleum Corporation</span>
           <span>{t('footerTagline')}</span>
         </div>
       </footer>

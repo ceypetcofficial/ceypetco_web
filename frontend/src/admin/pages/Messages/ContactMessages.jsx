@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import toast from "react-hot-toast";
-import { Search, Inbox, MailOpen, Mail } from "lucide-react";
+import { Search, Inbox, MailOpen, Mail, Check, Trash2 } from "lucide-react";
 import { contactService } from "../../../services/contentService";
 import StatusBadge from "../../components/StatusBadge";
 import Pagination from "../../components/Pagination";
@@ -18,6 +18,8 @@ const ContactMessages = () => {
   const [searchInput, setSearchInput] = useState("");
   const [viewing, setViewing] = useState(null);
   const [updating, setUpdating] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -41,19 +43,21 @@ const ContactMessages = () => {
 
   const markRead = async (item) => {
     if (item.status === "read" || item.status === "replied") return;
+    setUpdating(true);
     try {
       await contactService.update(item._id, { status: "read" });
-      load();
+      setViewing((current) => current?._id === item._id ? { ...current, status: "read" } : current);
+      await load();
+      toast.success("Marked as read");
     } catch {
       toast.error("Failed to update message");
+    } finally {
+      setUpdating(false);
     }
   };
 
-  const openMessage = async (item) => {
+  const openMessage = (item) => {
     setViewing(item);
-    if (item.status === "new") {
-      await markRead(item);
-    }
   };
 
   const updateStatus = async (status) => {
@@ -70,12 +74,29 @@ const ContactMessages = () => {
     }
   };
 
+  const deleteMessage = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      await contactService.remove(deleteTarget._id);
+      toast.success("Message deleted");
+      setDeleteTarget(null);
+      setViewing(null);
+      if (items.length === 1 && page > 1) setPage((current) => current - 1);
+      else await load();
+    } catch {
+      toast.error("Failed to delete message");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   return (
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
           <h1 className="text-xl font-extrabold text-[#092f3b] font-['Manrope']">
-            Contact Messages
+            Contact Us Details
           </h1>
           <p className="text-sm text-[#66767d] mt-1">
             Messages submitted through the website contact form.
@@ -211,7 +232,7 @@ const ContactMessages = () => {
               </p>
             </div>
 
-            <div className="flex items-center justify-between gap-3 pt-3 border-t border-slate-100">
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100">
               <div className="flex items-center gap-2">
                 <label className="text-sm font-semibold text-[#092f3b]">
                   Status:
@@ -228,15 +249,34 @@ const ContactMessages = () => {
                   <option value="archived">Archived</option>
                 </select>
               </div>
-              <button
-                onClick={() => setViewing(null)}
-                className="px-4 py-2 rounded-lg border border-slate-200 text-sm font-semibold text-[#092f3b] hover:bg-slate-50 transition-colors"
-              >
-                Close
-              </button>
+              <div className="flex items-center gap-2">
+                {viewing.status !== "read" && viewing.status !== "replied" && (
+                  <button type="button" disabled={updating} onClick={() => markRead(viewing)} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-emerald-200 text-sm font-semibold text-emerald-700 hover:bg-emerald-50 disabled:opacity-60 transition-colors">
+                    <Check size={16} /> Mark as read
+                  </button>
+                )}
+                <button type="button" onClick={() => setDeleteTarget(viewing)} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-red-200 text-sm font-semibold text-red-700 hover:bg-red-50 transition-colors">
+                  <Trash2 size={16} /> Delete
+                </button>
+                <button type="button" onClick={() => setViewing(null)} className="px-4 py-2 rounded-lg border border-slate-200 text-sm font-semibold text-[#092f3b] hover:bg-slate-50 transition-colors">
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         )}
+      </Modal>
+
+      <Modal open={!!deleteTarget} onClose={() => !deleting && setDeleteTarget(null)} title="Delete Contact Message" size="sm">
+        <p className="text-sm text-slate-600">
+          Delete the message from <strong className="text-[#092f3b]">{deleteTarget?.name}</strong>? This cannot be undone.
+        </p>
+        <div className="flex justify-end gap-3 mt-6">
+          <button type="button" disabled={deleting} onClick={() => setDeleteTarget(null)} className="px-4 py-2 rounded-lg border border-slate-200 text-sm font-semibold text-[#092f3b] hover:bg-slate-50 disabled:opacity-60">Cancel</button>
+          <button type="button" disabled={deleting} onClick={deleteMessage} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-semibold hover:bg-red-700 disabled:opacity-60">
+            <Trash2 size={16} /> {deleting ? "Deleting..." : "Delete message"}
+          </button>
+        </div>
       </Modal>
     </div>
   );

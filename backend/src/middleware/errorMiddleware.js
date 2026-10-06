@@ -21,15 +21,29 @@ const errorHandler = (err, req, res, next) => {
       .join(", ");
   }
 
+  if (err.name === "SyntaxError") {
+    statusCode = 400;
+    message = "Invalid JSON payload";
+  }
+
+  if (err.name === "PayloadTooLargeError" || err.type === 'entity.too.large') {
+    statusCode = 413;
+    message = "Payload too large";
+  }
+
+  if (err.type === 'cors' || (err.message && err.message.includes('CORS'))) {
+    statusCode = 403;
+    message = "CORS policy violation";
+  }
+
   if (statusCode >= 500) {
     console.error(err.stack || err.message || err);
-    if (process.env.NODE_ENV === "production") message = "Internal server error";
+    message = "Internal server error";
   }
 
   res.status(statusCode).json({
     success: false,
     message,
-    ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
   });
 };
 

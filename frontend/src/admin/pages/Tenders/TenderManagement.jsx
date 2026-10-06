@@ -461,7 +461,7 @@ const TenderManagement = () => {
             ) : (
               <div className="space-y-3">
                 {docs.map((doc, index) => (
-                  <div key={index} className="rounded-lg border border-slate-200 p-3 space-y-3 bg-slate-50/50">
+                  <div key={doc._id || doc.id || index} className="rounded-lg border border-slate-200 p-3 space-y-3 bg-slate-50/50">
                     <div className="flex items-center gap-2">
                       <input
                         className={inputClass}

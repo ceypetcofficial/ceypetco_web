@@ -24,7 +24,7 @@ const pageTitles = {
   "/admin/fuel-prices": "Fuel Prices",
   "/admin/fuel-stations": "Fuel Stations",
   "/admin/regional-offices": "Regional Offices",
-  "/admin/messages": "Contact Messages",
+  "/admin/messages": "Contact Us Details",
   "/admin/media": "Media Library",
   "/admin/users": "User Management",
   "/admin/popup-notices": "Popup Notice Management",

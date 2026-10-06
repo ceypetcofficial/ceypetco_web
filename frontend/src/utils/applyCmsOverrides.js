@@ -1,20 +1,41 @@
+import DOMPurify from 'dompurify';
+
 const SKIP_CLASSES = new Set(["home-services-grid", "directory-grid"]);
 
 const SETTLE_FRAMES = 4;
+
+const stripEditorArtifacts = (node) => {
+  if (!node || node.nodeType !== Node.ELEMENT_NODE) return;
+  node.removeAttribute("contenteditable");
+  node.removeAttribute("spellcheck");
+  for (const attr of [...node.attributes]) {
+    if (attr.name.startsWith("data-cms-") || attr.name.startsWith("data-visual-")) {
+      node.removeAttribute(attr.name);
+    }
+  }
+};
+
+DOMPurify.addHook("afterSanitizeAttributes", stripEditorArtifacts);
 
 const ownedNodes = new WeakMap();
 
 const appliedMarkup = new WeakMap();
 
+const sanitize = (html) => DOMPurify.sanitize(html == null ? '' : String(html), {
+  FORBID_TAGS: ['script', 'style', 'iframe', 'object', 'embed', 'form', 'base'],
+  FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'onfocus', 'onblur', 'onchange', 'onsubmit', 'javascript'],
+  ADD_ATTR: ['target'],  // allow target for links
+});
+
 const normalizeHtml = (html) => {
   const template = document.createElement("template");
-  template.innerHTML = html == null ? "" : String(html);
+  template.innerHTML = sanitize(html);
   return template.innerHTML;
 };
 
 const buildNodes = (html) => {
   const template = document.createElement("template");
-  template.innerHTML = html == null ? "" : String(html);
+  template.innerHTML = sanitize(html);
   return [...template.content.childNodes];
 };
 
@@ -37,7 +58,7 @@ const hasForeignElements = (element) => {
 
 const isTextOnlyHtml = (html) => {
   const probe = document.createElement("div");
-  probe.innerHTML = html == null ? "" : String(html);
+  probe.innerHTML = sanitize(html);
   return !probe.querySelector("*");
 };
 
@@ -84,7 +105,7 @@ const writeInlineMarkup = (element, html) => {
 
 const writeMarkup = (element, html) => {
   clearOwnedNodes(element);
-  element.innerHTML = html;
+  element.innerHTML = sanitize(html);
 };
 
 const applyEntry = (root, entry) => {

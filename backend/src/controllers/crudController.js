@@ -33,8 +33,10 @@ const createCrudController = (
 ) => {
   const getAll = async (req, res, next) => {
     try {
-      const page = parseInt(req.query.page) || 1;
-      const limit = parseInt(req.query.limit) || 50;
+      const rawPage = parseInt(req.query.page, 10);
+      const rawLimit = parseInt(req.query.limit, 10);
+      const page = Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1;
+      const limit = Number.isFinite(rawLimit) && rawLimit > 0 ? Math.min(rawLimit, 200) : 50;
       const skip = (page - 1) * limit;
       const search = req.query.search?.trim();
       const status = req.query.status;

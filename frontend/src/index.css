@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@700&family=Unbounded:wght@800;900&family=League+Spartan:wght@700;800;900&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=Space+Grotesk:wght@500;600;700&family=Syne:wght@700;800&family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Sinhala:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@700&family=Unbounded:wght@800;900&family=League+Spartan:wght@700;800;900&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Sinhala:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;500;600;700;800&display=swap');
 @import 'tailwindcss';
 
 .hero-slides{
@@ -154,9 +154,11 @@
   }
 }.hero-photo{
   opacity: 0;
-  transform: scale(1.04);
+  transform: scale(1.05);
+  will-change: opacity, transform;
+  backface-visibility: hidden;
   transition:
-    opacity 1s ease,
+    opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
     transform 6s ease;
 }.hero-photo.active{
   opacity: 1;
@@ -546,6 +548,9 @@
   overflow: hidden;
   border-radius: 4px;
   color: #fff;
+  display: block;
+  text-decoration: none;
+  cursor: pointer;
 }.division-card img{
   width: 100%;
   height: 100%;
@@ -579,7 +584,8 @@
   font-size: 14px;
   line-height: 1.55;
   color: #d6e0e2;
-}.division-content a{
+}.division-content a,
+.division-arrow{
   display: grid;
   place-items: center;
   width: 38px;
@@ -587,6 +593,7 @@
   background: #fff;
   color: var(--red);
   border-radius: 50%;
+  transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease;
 }
 .home-brands{
   background: #f8fafc;
@@ -1867,34 +1874,51 @@
   border-radius: 50%;
   color: #ff4a54;
   font:
-    800 17px 'Outfit', 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+    800 20px 'Outfit', 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
   place-items: center;
 }.notices-featured h3{
   margin: 9px 0 14px;
   color: #fff;
   font:
-    800 27px/1.28 'League Spartan', 'Outfit', 'Space Grotesk', sans-serif;
+    800 30px/1.25 'League Spartan', 'Outfit', 'Space Grotesk', sans-serif;
 }.notices-featured > div:last-child > p:not(.eyebrow){
   max-width: 880px;
   margin: 0;
   color: #cedadd;
-  font-size: 14px;
+  font-size: 15.5px;
   line-height: 1.75;
 }.notices-featured small{
   display: block;
   margin-top: 18px;
-  color: #91a9ae;
-  font-size: 10px;
+  color: #a1b8bd;
+  font-size: 13px;
+  font-weight: 500;
+}.notices-featured a{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  padding: 13px 22px;
+  background: #fff;
+  color: var(--navy);
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: transform 0.2s, background 0.2s;
+}.notices-featured a:hover{
+  background: #f1f5f9;
+  transform: translateY(-2px);
 }.notice-document-grid{
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 17px;
-  margin-top: 22px;
+  gap: 22px;
+  margin-top: 28px;
 }.notice-document-grid article{
   position: relative;
   display: flex;
-  min-height: 390px;
-  padding: 29px;
+  min-height: 420px;
+  padding: 32px 30px;
   flex-direction: column;
   border: 1px solid #dce2e1;
   background: #fff;
@@ -1908,44 +1932,64 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 32px;
+  margin-bottom: 26px;
   color: #98a5a8;
 }.notice-document-top span{
   font:
-    800 10px 'Outfit', 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+    800 13px 'Outfit', 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
   letter-spacing: 0.1em;
+  color: #64748b;
 }.notice-document-top svg{
   color: var(--red);
+}.notice-document-grid .eyebrow{
+  color: var(--red);
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
 }.notice-document-grid h3{
-  margin: 9px 0 15px;
+  margin: 0 0 14px;
   color: var(--navy);
   font:
-    800 17px/1.45 'League Spartan', 'Outfit', 'Space Grotesk', sans-serif;
+    800 20px/1.35 'League Spartan', 'Outfit', 'Space Grotesk', sans-serif;
+}.notice-document-date{
+  display: block;
+  margin: 0 0 14px;
+  color: #64748b;
+  font-size: 13.5px;
+  font-weight: 600;
 }.notice-document-grid article > p:not(.eyebrow){
   margin: 0;
   color: var(--muted);
-  font-size: 11px;
-  line-height: 1.7;
+  font-size: 14.5px;
+  line-height: 1.65;
 }.notice-document-grid article > a{
   display: flex;
-  gap: 9px;
+  gap: 10px;
   align-items: center;
   margin-top: auto;
   padding-top: 22px;
   border-top: 1px solid #e5e9e8;
   color: var(--navy);
   font:
-    800 9px 'Outfit', 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
-  letter-spacing: 0.07em;
+    800 13px 'Outfit', 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+  text-decoration: none;
+  transition: color 0.2s, transform 0.2s;
+}.notice-document-grid article > a:hover{
+  color: var(--red);
+  transform: translateX(3px);
 }.notice-document-grid article > a svg{
   color: var(--red);
 }.notice-unavailable{
   margin-top: auto;
-  padding-top: 20px;
+  padding-top: 22px;
   border-top: 1px solid #e5e9e8;
-  color: #8a989b;
-  font-size: 10px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
   line-height: 1.5;
 }.notices-support{
   display: grid;
@@ -2035,9 +2079,9 @@
     800 27px/1.2 'League Spartan', 'Outfit', 'Space Grotesk', sans-serif;
 }.supplier-registration-copy > p:last-child{
   margin: 0;
-  color: #c8d6d9;
-  font-size: 12px;
-  line-height: 1.7;
+  color: #d1dde0;
+  font-size: 14.5px;
+  line-height: 1.65;
 }.supplier-resource-grid{
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -2045,15 +2089,16 @@
 }.supplier-resource-grid a{
   display: grid;
   grid-template-columns: auto 1fr auto;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
-  min-height: 66px;
-  padding: 14px 15px;
+  min-height: 70px;
+  padding: 16px 18px;
   border-right: 1px solid rgba(255, 255, 255, 0.1);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  color: #e7edef;
-  font-size: 10px;
-  line-height: 1.35;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
   transition: background 0.25s ease;
 }.supplier-resource-grid a:hover{
   background: rgba(255, 255, 255, 0.08);
@@ -2077,9 +2122,10 @@
 }.tender-division-heading p{
   margin: 0;
 }.tender-division-heading span{
-  color: #8b999c;
-  font-size: 10px;
-  letter-spacing: 0.06em;
+  color: #64748b;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }.tender-division .tender-list{
   border-top: 2px solid var(--navy);
@@ -2164,13 +2210,19 @@
   display: flex;
   gap: 10px;
   align-items: center;
-  padding: 14px 18px;
+  padding: 14px 22px;
   background: #fff;
   color: var(--navy);
   font:
-    800 10px 'Outfit', 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+    800 13px 'Outfit', 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+  border-radius: 4px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.tender-rfq-note a:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
 
 @media (max-width: 950px) {.tenders-heading, .supplier-registration-panel{
@@ -2684,10 +2736,10 @@
   border-top: 2px solid var(--navy);
 }.tender-list article{
   display: grid;
-  grid-template-columns: 150px 1fr 180px 130px;
+  grid-template-columns: 160px 1fr 180px 170px;
   gap: 25px;
   align-items: center;
-  padding: 24px 18px;
+  padding: 24px 20px;
   border-bottom: 1px solid var(--line);
 }.tender-list article:hover{
   background: #fafafa;
@@ -2699,30 +2751,46 @@
   width: max-content;
   background: #e5f4eb;
   color: #227447;
-  font-size: 9px;
+  font-size: 11.5px;
   font-weight: 800;
-  padding: 5px 8px;
+  padding: 5px 10px;
   border-radius: 4px;
+  letter-spacing: 0.05em;
 }.tender-list b{
-  font-size: 13px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #0c2d38;
 }.tender-list h3{
-  font: 600 15px/1.45 'League Spartan', 'Outfit', 'Space Grotesk', sans-serif;
+  font: 700 17.5px/1.45 'League Spartan', 'Outfit', 'Space Grotesk', sans-serif;
+  color: #0f172a;
   margin: 0;
 }.tender-list small{
-  color: #9aa4a7;
-  font-size: 10px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
 }.tender-list p{
   margin: 4px 0 0;
-  font-size: 12px;
-}.tender-list a{
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #1e293b;
+}.tender-list a,
+.tender-list button,
+.tender-list .btn-text{
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 6px;
+  gap: 8px;
   color: var(--red);
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 700;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+.tender-list a:hover,
+.tender-list button:hover{
+  color: #b91c1c;
+  transform: translateX(3px);
 }.career-grid{
   display: grid;
   grid-template-columns: 0.8fr 1.2fr;
@@ -2833,6 +2901,16 @@
   font-weight: 700;
   cursor: pointer;
 }
+.contact-form-result{
+  margin: 0 0 13px;
+  padding: 12px 14px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.contact-form-result.success{background:#e8f7ef;color:#12633a}
+.contact-form-result.error{background:#fff0f0;color:#a42323}
+.contact-form button:disabled{cursor:not-allowed;opacity:.7}
 @media (max-width: 900px) {.page-hero{
     height: 370px;
   }.leadership-grid, .directory-grid{
@@ -3273,7 +3351,7 @@
   color: #fff;
 }.division-content a, .news-grid a svg, .text-link svg, .card-link svg{
   transition: transform 0.25s ease;
-}.division-card:hover .division-content a, .news-grid a:hover svg, .text-link:hover svg, .card-link:hover svg{
+}.division-card:hover .division-content a, .division-card:hover .division-arrow, .news-grid a:hover svg, .text-link:hover svg, .card-link:hover svg{
   transform: translateX(4px);
 }.service-card-image:after{
   transition: opacity 0.35s;
@@ -7539,102 +7617,102 @@
 }.agro-flipper{
   position: relative;
   background: linear-gradient(
-    115deg,
-    #cfdc38 0%,
-    #afc626 52%,
-    #0e3839 52%,
-    #062e3b 100%
+    118deg,
+    #9ec828 0%,
+    #9ec828 50%,
+    #0c3336 50%,
+    #082a2d 100%
   );
   color: #ffffff;
-  padding: 80px 0;
+  padding: 85px 0;
   overflow: hidden;
 }.agro-flipper-grid{
   display: grid;
-  grid-template-columns: 1.25fr 0.75fr;
-  gap: 40px;
+  grid-template-columns: 1.25fr 0.85fr;
+  gap: 48px;
   align-items: center;
 }.flipper-left-panel{
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
+  gap: 28px;
 }.flipper-left-text{
   flex: 1;
-  max-width: 320px;
+  max-width: 330px;
 }.flipper-left-text > span{
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 800;
-  letter-spacing: 0.14em;
-  color: #173325;
+  letter-spacing: 0.16em;
+  color: #173722;
   text-transform: uppercase;
 }.flipper-left-text h2{
   font-family: 'League Spartan', 'Outfit', sans-serif;
-  font-size: 3.85rem;
+  font-size: 4.25rem;
   font-weight: 900;
-  color: #122d1f;
+  color: #0d2817;
   line-height: 0.95;
   margin: 8px 0 16px 0;
   letter-spacing: -0.03em;
 }.flipper-left-text p{
-  font-size: 0.9375rem;
+  font-size: 0.95rem;
   line-height: 1.65;
-  color: #233e2a;
-  margin-bottom: 24px;
+  color: #1f3d26;
+  margin-bottom: 26px;
 }.flipper-left-text a{
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 14px 22px;
+  gap: 12px;
+  padding: 14px 24px;
   background: #ffffff;
   color: #0b3c3e;
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   text-decoration: none;
   border-radius: 4px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
   transition: all 0.25s ease;
 }.flipper-left-text a:hover{
   transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.14);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.16);
 }.flipper-left-bottle{
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 360px;
+  height: 380px;
   flex-shrink: 0;
 }.flipper-left-bottle img{
-  max-height: 350px;
+  max-height: 375px;
   width: auto;
   height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 14px 24px rgba(18, 45, 31, 0.35));
+  filter: drop-shadow(0 16px 28px rgba(0, 0, 0, 0.4));
   transition: transform 0.3s ease;
 }.agro-flipper:hover .flipper-left-bottle img{
-  transform: scale(1.05) translateY(-3px);
+  transform: scale(1.04) translateY(-3px);
 }.flipper-right-panel{
-  max-width: 440px;
-  padding-left: 20px;
+  max-width: 480px;
+  padding-left: 10px;
 }.flipper-right-text .eyebrow{
   color: #a3e635;
   font-size: 0.8125rem;
   font-weight: 800;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   margin-bottom: 12px;
 }.flipper-right-text h3{
   font-family: 'League Spartan', 'Outfit', sans-serif;
-  font-size: 1.95rem;
+  font-size: 2.2rem;
   font-weight: 800;
   color: #ffffff;
-  line-height: 1.3;
-  margin: 0 0 16px 0;
+  line-height: 1.25;
+  margin: 0 0 18px 0;
 }.flipper-right-text p{
-  font-size: 0.9375rem;
-  line-height: 1.7;
-  color: #d7e9dd;
-  margin-bottom: 14px;
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: #d1e5db;
+  margin-bottom: 16px;
 }@media (max-width: 1100px) {.agro-flipper-grid{ grid-template-columns: 1fr; gap: 40px; }.flipper-right-panel{ padding-left: 0; max-width: 100%; }
 }@media (max-width: 650px) {.flipper-left-panel{ flex-direction: column; align-items: flex-start; }.flipper-left-bottle{ height: 280px; width: 100%; }.flipper-left-bottle img{ max-height: 270px; }
 }.agro-products-section{

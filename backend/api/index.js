@@ -27,7 +27,7 @@ module.exports = async (req, res) => {
   } catch (err) {
     res
       .status(500)
-      .json({ success: false, message: "Database unavailable: " + err.message });
+      .json({ success: false, message: "Service temporarily unavailable" });
     return;
   }
   return app(req, res);

@@ -39,7 +39,7 @@ const { allowedOrigins, isProduction } = require("./config/env");
 const app = express();
 const isDevelopment = process.env.NODE_ENV === "development";
 
-if (isProduction) app.set("trust proxy", 1);
+app.set("trust proxy", 1);
 
 app.use(
   helmet({
@@ -53,9 +53,7 @@ app.use(
       if (!origin || allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
-      const error = new Error("Origin not allowed by CORS");
-      error.statusCode = 403;
-      return callback(error);
+      return callback(null, false);
     },
     credentials: true,
   })
@@ -65,7 +63,7 @@ app.use(
   "/uploads",
   express.static(path.resolve(__dirname, "../uploads"), {
     setHeaders: (res) => {
-      res.setHeader("Access-Control-Allow-Origin", allowedOrigins[0] || "*");
+      res.setHeader("Access-Control-Allow-Origin", allowedOrigins[0] || 'http://localhost:5173');
       res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
     },
   })
@@ -81,7 +79,6 @@ const loginLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
-  skip: () => isDevelopment,
 });
 
 const readLimiter = rateLimit({
@@ -94,7 +91,7 @@ const readLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   skip: (req) =>
-    isDevelopment || !["GET", "HEAD", "OPTIONS"].includes(req.method),
+    !["GET", "HEAD", "OPTIONS"].includes(req.method),
 });
 
 const writeLimiter = rateLimit({
@@ -107,7 +104,7 @@ const writeLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   skip: (req) =>
-    isDevelopment || ["GET", "HEAD", "OPTIONS"].includes(req.method),
+    ["GET", "HEAD", "OPTIONS"].includes(req.method),
 });
 
 app.get("/api/health", (req, res) => {

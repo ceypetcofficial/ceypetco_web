@@ -35,7 +35,7 @@ const getPublished = async (req, res, next) => {
 
 const getBySlug = async (req, res, next) => {
   try {
-    const item = await Division.findOne({ slug: req.params.slug });
+    const item = await Division.findOne({ slug: req.params.slug, status: 'published' });
     if (!item) {
       return res
         .status(404)

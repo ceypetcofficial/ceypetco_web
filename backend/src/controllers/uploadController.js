@@ -6,14 +6,14 @@ const { getPublicAssetOrigin, isProduction } = require("../config/env");
 
 const UPLOADS_DIR = path.resolve(__dirname, "../../uploads");
 
-const allowedImageTypes = /jpeg|jpg|png|webp|gif|avif|svg/;
+const allowedImageTypes = /jpeg|jpg|png|webp|gif|avif/;
 const imageFilter = (_req, file, cb) => {
   const extOk = allowedImageTypes.test(
     path.extname(file.originalname).toLowerCase()
   );
   const mimeOk = allowedImageTypes.test(file.mimetype);
   if (extOk && mimeOk) return cb(null, true);
-  cb(new Error("Only image files are allowed (jpeg, png, webp, gif, svg)"));
+  cb(new Error("Only image files are allowed (jpeg, png, webp, gif)"));
 };
 
 const allowedDocTypes = /pdf|doc|docx|xls|xlsx|csv|zip|rar|pptx|ppt/;
@@ -185,7 +185,7 @@ const renameImage = (req, res) => {
         .json({
           success: false,
           message:
-            "New name must be provided and must end in an image extension (jpeg, jpg, png, webp, gif, svg, avif)",
+            "New name must be provided and must end in an image extension (jpeg, jpg, png, webp, gif, avif)",
         });
     }
     const oldTarget = path.join(IMAGES_DIR, oldName);

@@ -33,8 +33,10 @@ const validateUserInput = ({ name, email, password, role, status }) => {
 
 const getAll = async (req, res, next) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 50;
+    const rawPage = parseInt(req.query.page, 10);
+    const rawLimit = parseInt(req.query.limit, 10);
+    const page = Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1;
+    const limit = Number.isFinite(rawLimit) && rawLimit > 0 ? Math.min(rawLimit, 200) : 50;
     const skip = (page - 1) * limit;
     const search = req.query.search?.trim();
 
@@ -95,6 +97,9 @@ const create = async (req, res, next) => {
     if (invalid) {
       return res.status(400).json({ success: false, message: invalid });
     }
+    if (role === 'super_admin' && req.user.role !== 'super_admin') {
+      return res.status(403).json({ success: false, message: 'Only super_admin can create super_admin accounts' });
+    }
     const existing = await User.findOne({ email: normalizedEmail });
     if (existing) {
       return res
@@ -126,6 +131,16 @@ const update = async (req, res, next) => {
         success: false,
         message: "You cannot change your own role or status",
       });
+    }
+
+    if (req.user.role !== 'super_admin') {
+      const target = await User.findById(req.params.id);
+      if (target && target.role === 'super_admin') {
+        return res.status(403).json({ success: false, message: 'Only super_admin can modify super_admin accounts' });
+      }
+      if (req.body.role === 'super_admin') {
+        return res.status(403).json({ success: false, message: 'Only super_admin can grant super_admin role' });
+      }
     }
 
     const invalid = validateUserInput(req.body);
@@ -183,6 +198,16 @@ const remove = async (req, res, next) => {
       return res
         .status(400)
         .json({ success: false, message: "You cannot delete your own account" });
+    }
+    if (req.user.role !== 'super_admin') {
+      return res.status(403).json({ success: false, message: 'Only super_admin can delete user accounts' });
+    }
+    const target = await User.findById(req.params.id);
+    if (target && target.role === 'super_admin') {
+      const superAdminCount = await User.countDocuments({ role: 'super_admin', status: 'active' });
+      if (superAdminCount <= 1) {
+        return res.status(400).json({ success: false, message: 'Cannot delete the last super_admin account' });
+      }
     }
     const user = await User.findByIdAndDelete(req.params.id);
     if (!user) {

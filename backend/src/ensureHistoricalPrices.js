@@ -25,19 +25,16 @@ async function ensureHistoricalPrices() {
     }),
   ];
 
-  const operations = records.map((record) => {
-    const parsed = parseHistoricalDate(record.kind, record.dateLabel);
-    if (!parsed) throw new Error(`Invalid historical price date: ${record.dateLabel}`);
-    return {
-      updateOne: {
-        filter: { seedId: record.seedId },
-        update: { $setOnInsert: { ...record, ...parsed, status: "active" } },
-        upsert: true,
-      },
-    };
-  });
+  const existing = await HistoricalPrice.find({});
+  const existingMap = new Map(existing.map(r => [r.seedId, r]));
 
-  await HistoricalPrice.bulkWrite(operations);
+  for (const record of records) {
+    if (!existingMap.has(record.seedId)) {
+      const parsed = parseHistoricalDate(record.kind, record.dateLabel);
+      if (!parsed) throw new Error(`Invalid historical price date: ${record.dateLabel}`);
+      await HistoricalPrice.create({ ...record, ...parsed, status: "active" });
+    }
+  }
   console.log(`Historical price archive ready (${records.length} source entries)`);
 }
 

@@ -69,7 +69,6 @@ const ContentCrud = ({
 
   useEffect(() => {
     if (new URLSearchParams(window.location.search).get("create") === "1") openCreate();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const openCreate = () => {

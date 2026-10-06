@@ -23,8 +23,8 @@ const navigation=[
   {text:"Careers",icon:GraduationCap,items:[
     [page("/careers"),"Careers Page",FileText],["/admin/careers","Current Opportunities",GraduationCap],
   ]},
-  {text:"Contact",icon:Contact,items:[
-    [page("/contact"),"Contact Page",FileText],["/admin/messages","Contact Messages",Mail],
+  {text:"Contact Us",icon:Contact,items:[
+    [page("/contact"),"Contact Us Page",FileText],["/admin/messages","Contact Us Details",Mail],
   ]},
   {text:"System",icon:Settings,items:[
     ["/admin/users","Users & Roles",Users],

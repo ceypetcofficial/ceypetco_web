@@ -3,10 +3,10 @@ const bcrypt = require("bcryptjs");
 const { getPool } = require("../config/db");
 
 const defaults = {
-  AnnualReport:{status:"published"},Career:{type:"Full-time",status:"draft"},ContactMessage:{status:"new"},Division:{order:0,status:"published"},FuelPrice:{type:"fuel",category:"White Oil",unit:"LKR",status:"active"},FuelStation:{status:"active"},HistoricalPrice:{note:"",status:"active",sourceIndex:0},HistoryPage:{key:"history",milestones:[],gallery:[]},HomeService:{icon:"globe",order:0,status:"published"},ManagementContact:{group:"Corporate Management",order:0,status:"published"},ManagementTeamMember:{order:0,status:"published"},MobileApp:{platform:"android",order:0,featured:false,status:"published"},News:{images:[],category:"general",status:"draft"},Notice:{category:"general",status:"draft"},PopupNotice:{description:"",imageUrl:"",status:"inactive",priority:0,showOnce:true,buttonEnabled:false,buttonText:"Learn More",buttonLink:"",linkType:"internal"},Project:{category:"general",documents:[],status:"draft"},RegionalOffice:{status:"active"},Service:{order:0,status:"published"},SupplierResource:{order:0,status:"published"},SupplierSection:{},Tender:{category:"general",documents:[],status:"draft"},TenderDownload:{},User:{role:"admin",status:"active",lastLogin:null}
+  AnnualReport:{status:"published"},AviationPrice:{status:"published"},Career:{type:"Full-time",status:"open"},ContactMessage:{status:"new"},Division:{order:0,status:"published"},FuelPrice:{type:"fuel",category:"White Oil",unit:"LKR",status:"active"},FuelStation:{status:"active"},HistoricalPrice:{note:"",status:"active",sourceIndex:0},HistoryPage:{key:"history",milestones:[],gallery:[]},HomeService:{icon:"globe",order:0,status:"published"},ManagementContact:{group:"Corporate Management",order:0,status:"published"},ManagementTeamMember:{order:0,status:"published"},MobileApp:{platform:"android",order:0,featured:false,status:"published"},News:{images:[],category:"general",status:"draft"},Notice:{category:"general",status:"draft"},PageContent:{status:"published",sections:[],overrides:[]},PopupNotice:{description:"",imageUrl:"",status:"inactive",priority:0,showOnce:true,buttonEnabled:false,buttonText:"Learn More",buttonLink:"",linkType:"internal"},Project:{category:"general",documents:[],status:"draft"},RegionalOffice:{status:"active"},Service:{order:0,status:"published"},SupplierResource:{order:0,status:"published"},SupplierSection:{},Tender:{category:"general",documents:[],status:"draft"},TenderDownload:{},User:{role:"admin",status:"active",lastLogin:null}
 };
-const cmp=v=>v instanceof Date?v.getTime():(typeof v==="string"&&/^\d{4}-\d{2}-\d{2}T/.test(v)?Date.parse(v):v);
-const matchValue=(actual,expected)=>{if(expected&&typeof expected==="object"&&!Array.isArray(expected)&&!(expected instanceof Date)){if("$regex"in expected)return new RegExp(expected.$regex,expected.$options||"").test(String(actual??""));if("$in"in expected)return expected.$in.includes(actual);if("$ne"in expected)return actual!==expected.$ne;if("$gte"in expected)return cmp(actual)>=cmp(expected.$gte);if("$exists"in expected)return expected.$exists?actual!==undefined:actual===undefined;}return cmp(actual)===cmp(expected);};
+const cmp=v=>v instanceof Date?v.getTime():(typeof v==="string"&&/^\d{4}-\d{2}-\d{2}(T|$)/.test(v)?Date.parse(v):v);
+const matchValue=(actual,expected)=>{if(expected&&typeof expected==="object"&&!Array.isArray(expected)&&!(expected instanceof Date)){if("$regex"in expected)return new RegExp(expected.$regex,expected.$options||"").test(String(actual??""));if("$in"in expected)return expected.$in.includes(actual);if("$nin"in expected)return !expected.$nin.includes(actual);if("$ne"in expected)return actual!==expected.$ne;if("$gte"in expected)return cmp(actual)>=cmp(expected.$gte);if("$gt"in expected)return cmp(actual)>cmp(expected.$gt);if("$lt"in expected)return cmp(actual)<cmp(expected.$lt);if("$lte"in expected)return cmp(actual)<=cmp(expected.$lte);if("$exists"in expected)return expected.$exists?actual!==undefined:actual===undefined;const unknownOp=Object.keys(expected).find(k=>k.startsWith('$'));if(unknownOp)throw new Error(`Unsupported query operator: ${unknownOp}`);}return cmp(actual)===cmp(expected);};
 const matches=(doc,filter={})=>Object.entries(filter).every(([key,val])=>key==="$or"?val.some(part=>matches(doc,part)):matchValue(doc[key],val));
 const sortSpec=spec=>typeof spec==="string"?{[spec.replace(/^-/,'')]:spec.startsWith("-")?-1:1}:(spec||{});
 
@@ -20,7 +20,16 @@ class Query{
 module.exports=function defineModel(modelName){
   let Model;
   class Document{
-    constructor(data,original={}){Object.assign(this,data);Object.defineProperty(this,"_original",{value:original,writable:true,enumerable:false});}
+    constructor(data, original = {}) {
+      const safe = {};
+      for (const [k, v] of Object.entries(data)) {
+        if (typeof Document.prototype[k] === 'function') continue; // don't overwrite methods
+        if (k === 'constructor') continue;
+        safe[k] = v;
+      }
+      Object.assign(this, safe);
+      Object.defineProperty(this, "_original", { value: original, writable: true, enumerable: false });
+    }
     isModified(f){return this[f]!==this._original[f];} set(v){Object.assign(this,v);return this;}
     toObject(){const out={};for(const[k,v]of Object.entries(this))out[k]=v;return out;}
     toJSON(){const out=this.toObject();if(modelName==="User")delete out.password;return out;}
@@ -35,7 +44,7 @@ module.exports=function defineModel(modelName){
   Model=class{
     static find(filter={}){return new Query(async()=>(await load()).filter(d=>matches(d,filter)));} static findOne(filter={}){return new Query(async()=>(await load()).filter(d=>matches(d,filter)),true);} static findById(id){return new Query(async()=>(await load()).filter(d=>d._id.toLowerCase()===String(id).toLowerCase()),true);} static async countDocuments(filter={}){return(await load()).filter(d=>matches(d,filter)).length;}
     static async create(values){const now=new Date(),data={...(defaults[modelName]||{}),...values},doc=new Document({...data,_id:crypto.randomUUID(),createdAt:now,updatedAt:now},{});if((modelName==="News"||modelName==="Notice")&&!doc.slug)doc.slug=`${modelName.toLowerCase()}-${doc._id}`;await doc.save();return doc;}
-    static async findByIdAndUpdate(id,update){const doc=await this.findById(id);if(!doc)return null;apply(doc,update);return doc.save();} static async findByIdAndDelete(id){const doc=await this.findById(id);if(!doc)return null;await remove(doc._id);return doc;}
+    static async findByIdAndUpdate(id,update,_opts={}){const doc=await this.findById(id);if(!doc)return null;apply(doc,update);return doc.save();} static async findByIdAndDelete(id){const doc=await this.findById(id);if(!doc)return null;await remove(doc._id);return doc;}
     static async findOneAndUpdate(filter,update,opts={}){let doc=await this.findOne(filter);if(!doc&&opts.upsert)doc=await this.create({...filter,...(update.$setOnInsert||{})});if(!doc)return null;apply(doc,update);return doc.save();}
     static async updateOne(filter,update,opts={}){const doc=await this.findOne(filter);if(doc){apply(doc,update);await doc.save();return{matchedCount:1};}if(opts.upsert){await this.create({...filter,...(update.$setOnInsert||{}),...(update.$set||{})});return{upsertedCount:1};}return{matchedCount:0};}
     static async bulkWrite(ops){for(const op of ops)if(op.updateOne)await this.updateOne(op.updateOne.filter,op.updateOne.update,{upsert:op.updateOne.upsert});}

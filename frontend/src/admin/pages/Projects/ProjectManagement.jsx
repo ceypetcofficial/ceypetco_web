@@ -570,7 +570,7 @@ const ProjectManagement = () => {
                 <ul className="space-y-2">
                   {docs.map((doc, index) => (
                     <li
-                      key={index}
+                      key={doc._id || doc.id || index}
                       className="flex items-center justify-between gap-3 px-3 py-2 rounded-lg bg-slate-50 border border-slate-200"
                     >
                       <div className="flex items-center gap-2 min-w-0">
@@ -579,7 +579,7 @@ const ProjectManagement = () => {
                         <a
                           href={doc.url}
                           target="_blank"
-                          rel="noreferrer"
+                          rel="noopener noreferrer"
                           className="inline-flex items-center gap-1 text-xs text-red-600 hover:text-red-700"
                         >
                           <ExternalLink className="w-3.5 h-3.5" />
