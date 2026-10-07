@@ -3,7 +3,8 @@ const User = require("../models/User");
 const ALLOWED_ROLES = ["super_admin", "admin", "editor"];
 const ALLOWED_STATUSES = ["active", "inactive"];
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const MIN_PASSWORD_LENGTH = 8;
+const MIN_PASSWORD_LENGTH = 12;
+const MAX_PASSWORD_BYTES = 72;
 
 const validateUserInput = ({ name, email, password, role, status }) => {
   if (name !== undefined) {
@@ -20,6 +21,9 @@ const validateUserInput = ({ name, email, password, role, status }) => {
   if (password !== undefined && password !== "") {
     if (typeof password !== "string" || password.length < MIN_PASSWORD_LENGTH) {
       return `Password must be at least ${MIN_PASSWORD_LENGTH} characters`;
+    }
+    if (Buffer.byteLength(password, "utf8") > MAX_PASSWORD_BYTES) {
+      return `Password must be no more than ${MAX_PASSWORD_BYTES} UTF-8 bytes`;
     }
   }
   if (role !== undefined && !ALLOWED_ROLES.includes(role)) {
@@ -173,6 +177,7 @@ const update = async (req, res, next) => {
           .json({ success: false, message: "User not found" });
       }
       user.password = password;
+      user.tokenVersion = (Number(user.tokenVersion) || 0) + 1;
       Object.assign(user, updates);
       await user.save();
       return res.status(200).json({ success: true, data: user });

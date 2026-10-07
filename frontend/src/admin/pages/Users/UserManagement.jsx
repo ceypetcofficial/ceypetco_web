@@ -129,6 +129,7 @@ const PasswordField = ({ value, onChange, visible, onToggle, placeholder }) => (
       onChange={onChange}
       placeholder={placeholder}
       autoComplete="new-password"
+      maxLength={72}
     />
     <button
       type="button"
@@ -221,8 +222,8 @@ const UserManagement = () => {
     }
     if (!editing && !f.password) {
       e.password = "Password is required";
-    } else if (f.password && f.password.length < 8) {
-      e.password = "Use at least 8 characters";
+    } else if (f.password && f.password.length < 12) {
+      e.password = "Use at least 12 characters";
     }
     if (f.password && f.password !== f.confirmPassword) {
       e.confirmPassword = "Passwords do not match";
@@ -493,7 +494,7 @@ const UserManagement = () => {
                 >
                   <option value="admin">Admin</option>
                   <option value="editor">Editor</option>
-                  <option value="super_admin">Super Admin</option>
+                  {currentUser?.role === "super_admin" && <option value="super_admin">Super Admin</option>}
                 </select>
               </Field>
               <Field label="Status" hint={isSelf ? "You cannot change your own status." : undefined}>
@@ -559,7 +560,7 @@ const UserManagement = () => {
                   onChange={set("password")}
                   visible={showPw}
                   onToggle={() => setShowPw((v) => !v)}
-                  placeholder={editing ? "Leave blank to keep" : "At least 8 characters"}
+                  placeholder={editing ? "Leave blank to keep" : "At least 12 characters"}
                 />
                 {form.password && (
                   <div className="mt-2">

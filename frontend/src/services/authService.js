@@ -11,13 +11,13 @@ const authService = {
     return response.data;
   },
 
-  logout: () => {
-    localStorage.removeItem("ceypetco_token");
+  logout: async () => {
+    try {
+      await api.post("/auth/logout");
+    } catch {
+      // Local session state is still cleared when the API is unavailable.
+    }
     localStorage.removeItem("ceypetco_user");
-  },
-
-  getToken: () => {
-    return localStorage.getItem("ceypetco_token");
   },
 
   getUser: () => {
@@ -25,13 +25,9 @@ const authService = {
     return user ? JSON.parse(user) : null;
   },
 
-  setAuth: (token, user) => {
-    localStorage.setItem("ceypetco_token", token);
+  setAuth: (user) => {
+    localStorage.removeItem("ceypetco_token");
     localStorage.setItem("ceypetco_user", JSON.stringify(user));
-  },
-
-  isAuthenticated: () => {
-    return !!localStorage.getItem("ceypetco_token");
   },
 };
 

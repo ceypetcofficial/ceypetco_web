@@ -2,8 +2,8 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Loader2 } from "lucide-react";
 
-const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth();
+const ProtectedRoute = ({ children, roles }) => {
+  const { isAuthenticated, loading, user } = useAuth();
 
   if (loading) {
     return (
@@ -20,6 +20,17 @@ const ProtectedRoute = ({ children }) => {
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
+  }
+
+  if (roles && !roles.includes(user?.role)) {
+    return (
+      <div className="min-h-[60vh] grid place-items-center p-6">
+        <div className="max-w-md rounded-2xl border border-red-200 bg-white p-8 text-center shadow-sm">
+          <h1 className="text-xl font-extrabold text-[#092f3b]">Access denied</h1>
+          <p className="mt-2 text-sm text-slate-600">You do not have permission to access this feature.</p>
+        </div>
+      </div>
+    );
   }
 
   return children;

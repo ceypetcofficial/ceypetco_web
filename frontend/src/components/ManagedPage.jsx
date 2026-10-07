@@ -1,7 +1,8 @@
 import displayImageUrl from "../utils/displayImageUrl";
+import safeUrl from "../utils/safeUrl";
 
 const Paragraphs=({text})=>(text||"").split(/\n\s*\n/).filter(Boolean).map((p,i)=><p key={i}>{p}</p>);
-const Button=({section})=>section.buttonText&&section.buttonLink?<a className="managed-button" href={section.buttonLink}>{section.buttonText}<span>→</span></a>:null;
+const Button=({section})=>section.buttonText&&section.buttonLink?<a className="managed-button" href={safeUrl(section.buttonLink)}>{section.buttonText}<span>→</span></a>:null;
 
 export function ManagedSections({sections}){
   return (sections||[]).map((section,index)=>{

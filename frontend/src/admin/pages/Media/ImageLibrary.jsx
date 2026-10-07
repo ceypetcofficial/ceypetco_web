@@ -14,7 +14,7 @@ import {
 import api from "../../../services/api";
 
 const imageTypePattern = /^image\//;
-const imageExtensionPattern = /\.(jpeg|jpe?g|png|webp|gif|svg|avif)$/i;
+const imageExtensionPattern = /\.(jpeg|jpe?g|png|webp|gif|avif)$/i;
 
 const formatBytes = (n) => {
   if (!n && n !== 0) return "0 B";
@@ -91,9 +91,9 @@ const ImageLibrary = () => {
     if (file) upload(file);
   };
 
-  const startRename = ({ filename }) => {
+  const startRename = ({ filename, name }) => {
     setEditing(filename);
-    setDraftName(filename);
+    setDraftName(name || filename);
   };
 
   const saveRename = async () => {
@@ -151,7 +151,7 @@ const ImageLibrary = () => {
       <input
         ref={fileRef}
         type="file"
-        accept="image/*"
+        accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
         hidden
         onChange={(e) => {
           upload(e.target.files && e.target.files[0]);
@@ -186,7 +186,7 @@ const ImageLibrary = () => {
               Click to choose an image, or drag &amp; drop it here
             </p>
             <p className="text-xs text-slate-400">
-              JPEG · PNG · WebP · GIF · SVG · AVIF · up to 4 MB
+              JPEG · PNG · WebP · GIF · AVIF · up to 4 MB
             </p>
           </div>
         )}
@@ -278,8 +278,8 @@ const ImageLibrary = () => {
                     className="w-full px-2 py-1 text-xs font-semibold text-[#092f3b] border border-slate-300 rounded-md outline-none"
                   />
                 ) : (
-                  <p className="text-xs font-semibold text-[#092f3b] truncate" title={img.filename}>
-                    {img.filename}
+                  <p className="text-xs font-semibold text-[#092f3b] truncate" title={img.name || img.filename}>
+                    {img.name || img.filename}
                   </p>
                 )}
                 <p className="text-[11px] text-slate-400">{formatBytes(img.size)}</p>

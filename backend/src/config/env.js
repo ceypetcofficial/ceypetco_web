@@ -70,6 +70,15 @@ const validateEnvironment = () => {
   if (process.env.JWT_SECRET.length < 32) {
     throw new Error("JWT_SECRET must contain at least 32 characters in production");
   }
+  if (/change[_-]?this|replace[_-]?me|example|secret/i.test(process.env.JWT_SECRET)) {
+    throw new Error("JWT_SECRET must not use an example or placeholder value in production");
+  }
+  if (process.env.DB_USER.trim().toLowerCase() === "root") {
+    throw new Error("DB_USER must be a least-privilege account in production, not root");
+  }
+  if (process.env.DB_PASSWORD.length < 16 || /change[_-]?this|replace[_-]?me/i.test(process.env.DB_PASSWORD)) {
+    throw new Error("DB_PASSWORD must be a non-placeholder value of at least 16 characters in production");
+  }
 
   allowedOrigins.forEach((origin) =>
     validateUrl(origin, "CLIENT_URL", { requireHttps: true })

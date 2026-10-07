@@ -37,7 +37,7 @@ const columns = [
 const fields = [
   { key: "customer", label: "Customer Category", required: true, placeholder: "e.g. Spot / One Time Customer" },
   { key: "location", label: "Location", required: true, placeholder: "e.g. CMB / RML / HRI / JAF" },
-  { key: "price", label: "Price (US$/USG)", type: "number", step: "0.01", required: true, placeholder: "e.g. 3.53" },
+  { key: "price", label: "Price (US$/USG)", type: "number", step: "0.01", min: 0, max: 100000, required: true, placeholder: "e.g. 3.53" },
   { key: "effectiveDate", label: "Effective Date", type: "date" },
   { key: "status", label: "Status", type: "select", options: ["active", "inactive"], default: "active" },
 ];

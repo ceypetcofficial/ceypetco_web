@@ -159,6 +159,7 @@ const ProjectManagement = () => {
     try {
       const fd = new FormData();
       fd.append("file", file);
+      fd.append("visibility", "public");
       const res = await api.post("/upload/document", fd, {
         headers: { "Content-Type": "multipart/form-data" },
       });

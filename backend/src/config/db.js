@@ -42,6 +42,20 @@ const connectDB = async () => {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     `);
     await pool.query(`
+      CREATE TABLE IF NOT EXISTS MediaAssets (
+        StorageName VARCHAR(255) NOT NULL,
+        DisplayName VARCHAR(255) NOT NULL,
+        DeletedAt DATETIME(3) NULL,
+        CreatedAt DATETIME(3) NOT NULL,
+        UpdatedAt DATETIME(3) NOT NULL,
+        PRIMARY KEY (StorageName)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `);
+    const [mediaColumns] = await pool.query("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA=? AND TABLE_NAME='MediaAssets'", [config.database]);
+    if (!mediaColumns.some((column) => column.COLUMN_NAME.toLowerCase() === "deletedat")) {
+      await pool.query("ALTER TABLE MediaAssets ADD COLUMN DeletedAt DATETIME(3) NULL AFTER DisplayName");
+    }
+    await pool.query(`
       INSERT IGNORE INTO ContactUsMessages
         (Id, Name, Email, Phone, Subject, Message, Status, CreatedAt, UpdatedAt)
       SELECT Id,

@@ -42,7 +42,7 @@ exports.getAll = async (req, res, next) => {
     if (["fuel", "bitumen"].includes(req.query.kind)) query.kind = req.query.kind;
     if (["active", "inactive"].includes(req.query.status)) query.status = req.query.status;
     if (req.query.search) {
-      const escaped = String(req.query.search).slice(0, 80).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const escaped = String(req.query.search).slice(0, 80);
       query.dateLabel = { $regex: escaped, $options: "i" };
     }
     const [data, total] = await Promise.all([

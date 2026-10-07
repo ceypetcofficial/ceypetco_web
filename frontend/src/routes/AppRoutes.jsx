@@ -31,6 +31,9 @@ import PopupNoticeManagement from "../admin/pages/Popups/PopupNoticeManagement";
 import HistoryManagement from "../admin/pages/History/HistoryManagement";
 import PageManagement from "../admin/pages/Pages/PageManagement";
 import ImageLibrary from "../admin/pages/Media/ImageLibrary";
+import RecycleBin from "../admin/pages/RecycleBin/RecycleBin";
+import PageRevisions from "../admin/pages/Pages/PageRevisions";
+import PriceAudit from "../admin/pages/FuelPrices/PriceAudit";
 
 const AppRoutes = () => {
   return (
@@ -50,7 +53,7 @@ const AppRoutes = () => {
         <Route path="notices" element={<NoticeManagement />} />
         <Route path="projects" element={<ProjectManagement />} />
         <Route path="tenders" element={<TenderManagement />} />
-        <Route path="tender-downloads" element={<TenderDownloadManagement />} />
+        <Route path="tender-downloads" element={<ProtectedRoute roles={["super_admin", "admin"]}><TenderDownloadManagement /></ProtectedRoute>} />
         <Route path="supplier-resources" element={<SupplierResources />} />
         <Route path="careers" element={<CareerManagement />} />
         <Route path="publications" element={<AnnualReportsManagement />} />
@@ -61,14 +64,17 @@ const AppRoutes = () => {
         <Route path="services-page/divisions" element={<DivisionManagement />} />
         <Route path="services-page/divisions/:slug" element={<DivisionEditor />} />
         <Route path="products-page" element={<Placeholder />} />
-        <Route path="fuel-prices" element={<FuelPriceManagement />} />
-        <Route path="aviation-prices" element={<AviationPriceManagement />} />
-        <Route path="historical-prices" element={<HistoricalPriceManagement />} />
+        <Route path="fuel-prices" element={<ProtectedRoute roles={["super_admin", "admin"]}><FuelPriceManagement /></ProtectedRoute>} />
+        <Route path="aviation-prices" element={<ProtectedRoute roles={["super_admin", "admin"]}><AviationPriceManagement /></ProtectedRoute>} />
+        <Route path="historical-prices" element={<ProtectedRoute roles={["super_admin", "admin"]}><HistoricalPriceManagement /></ProtectedRoute>} />
+        <Route path="price-audit" element={<ProtectedRoute roles={["super_admin", "admin"]}><PriceAudit /></ProtectedRoute>} />
         <Route path="fuel-stations" element={<FuelStationManagement />} />
         <Route path="regional-offices" element={<RegionalOfficeManagement />} />
-        <Route path="messages" element={<ContactMessages />} />
+        <Route path="messages" element={<ProtectedRoute roles={["super_admin", "admin"]}><ContactMessages /></ProtectedRoute>} />
         <Route path="media" element={<ImageLibrary />} />
-        <Route path="users" element={<UserManagement />} />
+        <Route path="users" element={<ProtectedRoute roles={["super_admin", "admin"]}><UserManagement /></ProtectedRoute>} />
+        <Route path="recycle-bin" element={<ProtectedRoute roles={["super_admin", "admin"]}><RecycleBin /></ProtectedRoute>} />
+        <Route path="page-revisions" element={<ProtectedRoute roles={["super_admin", "admin"]}><PageRevisions /></ProtectedRoute>} />
         <Route path="popup-notices" element={<PopupNoticeManagement />} />
         <Route path="settings" element={<Placeholder />} />
         <Route path="home" element={<HomeServiceManagement />} />

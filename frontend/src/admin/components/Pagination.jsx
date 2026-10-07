@@ -1,10 +1,10 @@
-const Pagination = ({ page, totalPages, total, onPageChange }) => {
+const Pagination = ({ page, totalPages, total, pageSize = 10, currentCount, onPageChange }) => {
   if (totalPages <= 1 && total === 0) return null;
   return (
     <div className="flex items-center justify-between px-4 py-3 border-t border-slate-200 bg-white rounded-b-xl">
       <p className="text-sm text-[#66767d]">
-        Showing <span className="font-semibold text-[#092f3b]">{total}</span>{" "}
-        {total === 1 ? "item" : "items"}
+        Showing <span className="font-semibold text-[#092f3b]">{total ? (page - 1) * pageSize + 1 : 0}–{Math.min((page - 1) * pageSize + (currentCount ?? pageSize), total)}</span>{" "}
+        of <span className="font-semibold text-[#092f3b]">{total}</span> {total === 1 ? "item" : "items"}
       </p>
       <div className="flex items-center gap-2">
         <button

@@ -13,6 +13,9 @@ const stripEditorArtifacts = (node) => {
       node.removeAttribute(attr.name);
     }
   }
+  if (node.tagName === "A" && node.getAttribute("target") === "_blank") {
+    node.setAttribute("rel", "noopener noreferrer");
+  }
 };
 
 DOMPurify.addHook("afterSanitizeAttributes", stripEditorArtifacts);

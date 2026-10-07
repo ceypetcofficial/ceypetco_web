@@ -1,6 +1,4 @@
-const jwt = require("jsonwebtoken");
 const MobileApp = require("../models/MobileApp");
-const User = require("../models/User");
 const createCrudController = require("./crudController");
 
 const crud = createCrudController(MobileApp, {
@@ -8,18 +6,6 @@ const crud = createCrudController(MobileApp, {
   sortBy: "order",
   assetFields: [{ field: "appIcon" }],
 });
-
-const isAdminRequest = async (req) => {
-  try {
-    const header = req.headers.authorization || "";
-    if (!header.startsWith("Bearer ")) return false;
-    const decoded = jwt.verify(header.slice(7), process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id);
-    return !!user && user.status === "active";
-  } catch {
-    return false;
-  }
-};
 
 const getPublished = async (req, res, next) => {
   try {
@@ -29,8 +15,7 @@ const getPublished = async (req, res, next) => {
     const search = req.query.search?.trim();
     const platform = req.query.platform;
 
-    const includeDrafts = await isAdminRequest(req);
-    const query = includeDrafts ? {} : { status: "published" };
+    const query = { status: "published" };
     if (platform) query.platform = platform;
     if (search) {
       query.$or = [

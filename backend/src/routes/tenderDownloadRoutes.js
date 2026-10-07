@@ -8,7 +8,7 @@ const { authorize } = require("../middleware/roleMiddleware");
 router.post("/", c.create);
 
 // Protected admin route
-router.get("/", protect, authorize("super_admin", "admin", "editor"), c.getAll);
+router.get("/", protect, authorize("super_admin", "admin"), c.getAll);
 router.delete("/:id", protect, authorize("super_admin", "admin"), c.remove);
 
 module.exports = router;

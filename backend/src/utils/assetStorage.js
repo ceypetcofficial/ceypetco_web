@@ -5,6 +5,7 @@ const uploadsDir = path.resolve(__dirname, "../../uploads");
 const ensureUploadDirectories = () => {
   fs.mkdirSync(path.join(uploadsDir, "images"), { recursive: true });
   fs.mkdirSync(path.join(uploadsDir, "docs"), { recursive: true });
+  fs.mkdirSync(path.resolve(__dirname, "../../private-docs"), { recursive: true });
 };
 const isLocalUploadUrl = (url) => {
   try { return new URL(url, "http://localhost").pathname.startsWith("/uploads/"); }

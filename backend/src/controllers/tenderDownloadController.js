@@ -3,10 +3,21 @@ const Tender = require("../models/sqlModel")("Tender");
 
 exports.create = async (req, res, next) => {
   try {
-    const { tenderId, email, mobileNumber } = req.body;
+    const tenderId = typeof req.body?.tenderId === "string" ? req.body.tenderId.trim() : "";
+    const email = typeof req.body?.email === "string" ? req.body.email.trim().toLowerCase() : "";
+    const mobileNumber = typeof req.body?.mobileNumber === "string" ? req.body.mobileNumber.trim() : "";
 
     if (!tenderId || !email || !mobileNumber) {
       return res.status(400).json({ success: false, message: "Missing required fields" });
+    }
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(tenderId)) {
+      return res.status(400).json({ success: false, message: "Invalid tender ID" });
+    }
+    if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.status(400).json({ success: false, message: "Please provide a valid email address" });
+    }
+    if (mobileNumber.length > 30 || !/^\+?[0-9][0-9 ()-]{6,28}[0-9]$/.test(mobileNumber)) {
+      return res.status(400).json({ success: false, message: "Please provide a valid mobile number" });
     }
 
     // Verify tender exists

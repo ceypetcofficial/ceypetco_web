@@ -5,6 +5,7 @@ import Pagination from "./Pagination";
 import Modal from "./Modal";
 import Loading from "./Loading";
 import { Field, inputClass, textareaClass, selectClass } from "./form";
+import { useAuth } from "../../context/AuthContext";
 
 const ContentCrud = ({
   title,
@@ -17,6 +18,8 @@ const ContentCrud = ({
   searchPlaceholder = "Search...",
   objectKey = null,
 }) => {
+  const { user } = useAuth();
+  const canDelete = user?.role === "super_admin" || user?.role === "admin";
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -173,7 +176,12 @@ const ContentCrud = ({
       placeholder: field.placeholder,
       required: field.required,
     };
-    if (field.type === "number") inputProps.type = "number";
+    if (field.type === "number") {
+      inputProps.type = "number";
+      inputProps.min = field.min;
+      inputProps.max = field.max;
+      inputProps.step = field.step;
+    }
     if (field.type === "date") inputProps.type = "date";
     return <input {...inputProps} />;
   };
@@ -266,13 +274,14 @@ const ContentCrud = ({
                           >
                             <Edit3 className="w-4 h-4" />
                           </button>
-                          <button
+                          {canDelete && <button
                             onClick={() => setShowDelete(item)}
+                            aria-label={`Delete ${item.title || item.name || "item"}`}
                             title="Delete"
                             className="p-2 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
                           >
                             <Trash2 className="w-4 h-4" />
-                          </button>
+                          </button>}
                         </div>
                       </td>
                     </tr>

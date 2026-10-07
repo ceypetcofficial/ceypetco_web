@@ -33,6 +33,8 @@ const historyPageRoutes = require("./routes/historyPageRoutes");
 const pageContentRoutes = require("./routes/pageContentRoutes");
 const googleDriveImageRoutes = require("./routes/googleDriveImageRoutes");
 const tenderDownloadRoutes = require("./routes/tenderDownloadRoutes");
+const recycleBinRoutes = require("./routes/recycleBinRoutes");
+const priceAuditRoutes = require("./routes/priceAuditRoutes");
 const errorHandler = require("./middleware/errorMiddleware");
 const { allowedOrigins, isProduction } = require("./config/env");
 
@@ -40,12 +42,24 @@ const app = express();
 const isDevelopment = process.env.NODE_ENV === "development";
 
 app.set("trust proxy", 1);
+app.set("query parser", "simple");
 
 app.use(
   helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" },
+    frameguard: { action: "deny" },
+    hsts: { maxAge: 63072000, includeSubDomains: true, preload: true },
+    contentSecurityPolicy: {
+      directives: {
+        frameAncestors: ["'none'"],
+      },
+    },
   })
 );
+app.use((_req, res, next) => {
+  res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=(), usb=()");
+  next();
+});
 
 app.use(
   cors({
@@ -58,13 +72,35 @@ app.use(
     credentials: true,
   })
 );
-app.use(express.json());
+app.use((req, res, next) => {
+  const origin = req.get("origin");
+  if (origin && !allowedOrigins.includes(origin)) {
+    return res.status(403).json({ success: false, message: "Origin is not allowed" });
+  }
+  return next();
+});
+app.use(express.json({ limit: "100kb", strict: true }));
 app.use(
-  "/uploads",
-  express.static(path.resolve(__dirname, "../uploads"), {
+  "/uploads/images",
+  (req, res, next) => [".jpg", ".jpeg", ".png", ".webp", ".gif", ".avif"].includes(path.extname(req.path).toLowerCase()) ? next() : res.status(404).end(),
+  express.static(path.resolve(__dirname, "../uploads/images"), {
     setHeaders: (res) => {
-      res.setHeader("Access-Control-Allow-Origin", allowedOrigins[0] || 'http://localhost:5173');
+      res.setHeader("Access-Control-Allow-Origin", "*");
       res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+      res.setHeader("X-Content-Type-Options", "nosniff");
+    },
+  })
+);
+app.use(
+  "/uploads/docs",
+  (req, res, next) => [".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx", ".csv", ".zip", ".rar"].includes(path.extname(req.path).toLowerCase()) ? next() : res.status(404).end(),
+  express.static(path.resolve(__dirname, "../uploads/docs"), {
+    setHeaders: (res, filePath) => {
+      const filename = path.basename(filePath).replace(/["\\\r\n]/g, "_");
+      res.setHeader("Access-Control-Allow-Origin", "*");
+      res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+      res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+      res.setHeader("X-Content-Type-Options", "nosniff");
     },
   })
 );
@@ -107,6 +143,23 @@ const writeLimiter = rateLimit({
     ["GET", "HEAD", "OPTIONS"].includes(req.method),
 });
 
+const publicFormLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 10,
+  message: { success: false, message: "Too many submissions, please try again later" },
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: (req) => req.method !== "POST",
+});
+
+const imageProxyLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 120,
+  message: { success: false, message: "Too many image requests, please try again later" },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 app.get("/api/health", (req, res) => {
   res.status(200).json({
     success: true,
@@ -116,6 +169,9 @@ app.get("/api/health", (req, res) => {
 });
 
 app.use("/api/auth/login", loginLimiter);
+app.use("/api/admin/contact-messages", publicFormLimiter);
+app.use("/api/tender-downloads", publicFormLimiter);
+app.use("/api/images/google-drive", imageProxyLimiter);
 app.use("/api", readLimiter);
 app.use("/api", writeLimiter);
 
@@ -147,6 +203,8 @@ app.use("/api/admin/popup-notices", popupNoticeRoutes);
 app.use("/api/admin/mobile-apps", mobileAppRoutes);
 app.use("/api/admin/history-page", historyPageRoutes);
 app.use("/api/admin/pages", pageContentRoutes);
+app.use("/api/admin/recycle-bin", recycleBinRoutes);
+app.use("/api/admin/price-audit", priceAuditRoutes);
 app.use("/api/images/google-drive", googleDriveImageRoutes);
 
 app.use((req, res) => {

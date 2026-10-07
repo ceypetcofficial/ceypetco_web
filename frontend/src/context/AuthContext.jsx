@@ -8,12 +8,6 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   const checkAuth = useCallback(async () => {
-    const token = authService.getToken();
-    if (!token) {
-      setLoading(false);
-      return;
-    }
-
     try {
       const response = await authService.getMe();
       if (response.success) {
@@ -37,7 +31,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     const response = await authService.login(email, password);
     if (response.success) {
-      authService.setAuth(response.data.token, response.data.user);
+      authService.setAuth(response.data.user);
       setUser(response.data.user);
     }
     return response;

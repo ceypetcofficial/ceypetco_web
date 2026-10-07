@@ -1,6 +1,7 @@
 const { deleteAssets } = require("../utils/assetStorage");
+const { findUnsafeUrl } = require("../utils/securityValidation");
 
-const PROTECTED_FIELDS = ["_id", "createdAt", "updatedAt"];
+const PROTECTED_FIELDS = ["_id", "createdAt", "updatedAt", "deletedAt", "__proto__", "prototype", "constructor"];
 
 const sanitizeBody = (body) => {
   if (!body || typeof body !== "object") return body || {};
@@ -29,7 +30,7 @@ const collectUrls = (doc, assetFields) => {
 
 const createCrudController = (
   Model,
-  { searchFields = [], sortBy = "-createdAt", assetFields = [] } = {}
+  { searchFields = [], sortBy = "-createdAt", assetFields = [], validate, onChange } = {}
 ) => {
   const getAll = async (req, res, next) => {
     try {
@@ -38,8 +39,8 @@ const createCrudController = (
       const page = Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1;
       const limit = Number.isFinite(rawLimit) && rawLimit > 0 ? Math.min(rawLimit, 200) : 50;
       const skip = (page - 1) * limit;
-      const search = req.query.search?.trim();
-      const status = req.query.status;
+      const search = typeof req.query.search === "string" ? req.query.search.trim() : "";
+      const status = typeof req.query.status === "string" ? req.query.status : undefined;
 
       const query = {};
       if (status) query.status = status;
@@ -85,7 +86,15 @@ const createCrudController = (
 
   const create = async (req, res, next) => {
     try {
-      const item = await Model.create(sanitizeBody(req.body));
+      const payload = sanitizeBody(req.body);
+      const unsafeUrl = findUnsafeUrl(payload);
+      if (unsafeUrl) return res.status(400).json({ success: false, message: unsafeUrl });
+      if (validate) {
+        const message = validate(payload, { action: "create", req });
+        if (message) return res.status(400).json({ success: false, message });
+      }
+      const item = await Model.create(payload);
+      if (onChange) await onChange({ action: "create", item, previous: null, req });
       res.status(201).json({ success: true, data: item });
     } catch (error) {
       next(error);
@@ -100,9 +109,16 @@ const createCrudController = (
           .status(404)
           .json({ success: false, message: "Resource not found" });
       }
+      const payload = sanitizeBody(req.body);
+      const unsafeUrl = findUnsafeUrl(payload);
+      if (unsafeUrl) return res.status(400).json({ success: false, message: unsafeUrl });
+      if (validate) {
+        const message = validate(payload, { action: "update", req, existing });
+        if (message) return res.status(400).json({ success: false, message });
+      }
       const item = await Model.findByIdAndUpdate(
         req.params.id,
-        sanitizeBody(req.body),
+        payload,
         {
           new: true,
           runValidators: true,
@@ -113,6 +129,7 @@ const createCrudController = (
           .status(404)
           .json({ success: false, message: "Resource not found" });
       }
+      if (onChange) await onChange({ action: "update", item, previous: existing, req });
       try {
         const oldUrls = collectUrls(existing, assetFields);
         const newUrls = collectUrls(item, assetFields);
@@ -138,15 +155,8 @@ const createCrudController = (
           .status(404)
           .json({ success: false, message: "Resource not found" });
       }
-      try {
-        const removed = collectUrls(existing, assetFields);
-        if (removed.length) {
-          await deleteAssets(removed);
-        }
-      } catch (cleanupErr) {
-        console.warn("Local asset cleanup warning:", cleanupErr.message);
-      }
-      res.status(200).json({ success: true, message: "Resource deleted" });
+      if (onChange) await onChange({ action: "delete", item, previous: existing, req });
+      res.status(200).json({ success: true, message: "Resource moved to the recycle bin" });
     } catch (error) {
       next(error);
     }

@@ -51,7 +51,7 @@ const fields = [
     options: ["fuel", "lubricant", "aviation", "other"],
     default: "fuel",
   },
-  { key: "price", label: "Price (LKR)", type: "number", required: true },
+  { key: "price", label: "Price (LKR)", type: "number", required: true, min: 0, max: 1000000, step: "0.01" },
   { key: "unit", label: "Unit", default: "LKR" },
   { key: "effectiveDate", label: "Effective Date", type: "date" },
   { key: "status", label: "Status", type: "select", options: ["active", "inactive"], default: "active" },
