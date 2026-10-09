@@ -8,7 +8,7 @@
     "backend"
   ],
   "scripts": {
-    "build": "node -e \"console.log('Backend requires no compilation')\"",
+    "build": "echo Backend requires no compilation",
     "start": "node app.js"
   },
   "engines": {

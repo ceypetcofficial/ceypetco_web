@@ -2,7 +2,6 @@ const path = require("path");
 const fs = require("fs");
 const crypto = require("crypto");
 const multer = require("multer");
-const sharp = require("sharp");
 const { getPublicAssetOrigin, isProduction } = require("../config/env");
 const { getPool } = require("../config/db");
 
@@ -87,20 +86,9 @@ const saveToDisk = async (req, isDoc) => {
   // Documents are private by default. Public-site editors must opt in explicitly.
   const isPrivate = isDoc && req.body?.visibility !== "public";
   const folder = isDoc ? "docs" : "images";
-  let uploadBuffer = req.file.buffer;
-  let uploadMime = req.file.mimetype;
-  let ext = path.extname(req.file.originalname).toLowerCase();
-  // Store ordinary photos in a web-friendly format and cap oversized dimensions.
-  // GIFs are left untouched so animated uploads keep their animation.
-  if (!isDoc && ext !== ".gif") {
-    uploadBuffer = await sharp(req.file.buffer)
-      .rotate()
-      .resize({ width: 2560, height: 2560, fit: "inside", withoutEnlargement: true })
-      .webp({ quality: 82, effort: 4 })
-      .toBuffer();
-    uploadMime = "image/webp";
-    ext = ".webp";
-  }
+  const uploadBuffer = req.file.buffer;
+  const uploadMime = req.file.mimetype;
+  const ext = path.extname(req.file.originalname).toLowerCase();
   const fileName = `${Date.now()}-${crypto.randomBytes(8).toString("hex")}${ext}`;
   const targetDir = isPrivate ? PRIVATE_DOCS_DIR : path.resolve(UPLOADS_DIR, folder);
   await fs.promises.mkdir(targetDir, { recursive: true });

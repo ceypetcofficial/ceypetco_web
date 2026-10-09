@@ -4,7 +4,7 @@
   "description": "CEYPETCO Website Redesign - Backend API",
   "main": "src/server.js",
   "scripts": {
-    "build": "node -e \"console.log('Backend requires no compilation')\"",
+    "build": "echo Backend requires no compilation",
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
     "seed": "node src/seedAdmin.js",
@@ -33,7 +33,6 @@
     "multer": "^2.4.0",
     "mysql2": "^3.24.4",
     "proxy-addr": "^2.0.8",
-    "sanitize-html": "^2.18.0",
-    "sharp": "^0.34.5"
+    "sanitize-html": "^2.18.0"
   }
 }
