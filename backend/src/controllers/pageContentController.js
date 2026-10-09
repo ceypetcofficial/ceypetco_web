@@ -2,6 +2,7 @@ const PageContent = require("../models/PageContent");
 const PageContentRevision = require("../models/PageContentRevision");
 const { deleteAssets } = require("../utils/assetStorage");
 const { findUnsafeUrl } = require("../utils/securityValidation");
+const { sanitizeCmsOverrides } = require("../utils/sanitizeCmsOverrides");
 
 const clean = (body = {}) => ({
   path: String(body.path || "/").trim().slice(0, 200).replace(/\/$/, "") || "/",
@@ -11,7 +12,7 @@ const clean = (body = {}) => ({
   seoDescription: String(body.seoDescription || "").trim().slice(0, 500),
   hero: body.hero && typeof body.hero === "object" ? body.hero : {},
   sections: Array.isArray(body.sections) ? body.sections.slice(0, 100) : [],
-  overrides: Array.isArray(body.overrides) ? body.overrides.slice(0, 500) : [],
+  overrides: sanitizeCmsOverrides(body.overrides),
 });
 const validatePage = (data) => {
   if (!/^\/[A-Za-z0-9/_-]*$/.test(data.path) || data.path.includes("//") || data.path.includes("..")) return "Page path must be a safe internal route";
@@ -19,16 +20,27 @@ const validatePage = (data) => {
   return findUnsafeUrl(data);
 };
 const assetUrls = (page) => [page?.hero?.image, ...(page?.sections || []).flatMap((section) => [section.image, ...(section.items || []).map((item) => item.image)])].filter(Boolean);
+const sanitizePageOutput = (page) => {
+  if (!page) return page;
+  const value = page?.toObject ? page.toObject() : page;
+  return {
+    ...value,
+    overrides: sanitizeCmsOverrides(value.overrides),
+    pendingDraft: value.pendingDraft
+      ? { ...value.pendingDraft, overrides: sanitizeCmsOverrides(value.pendingDraft.overrides) }
+      : value.pendingDraft,
+  };
+};
 
 const getPublic = async (req, res, next) => {
   try {
     const path = String(req.query.path || "/").replace(/\/$/, "") || "/";
     const page = await PageContent.findOne({ path, status: "published" }).lean();
-    res.json({ success: true, data: page || null });
+    res.json({ success: true, data: sanitizePageOutput(page) || null });
   } catch (error) { next(error); }
 };
 const editablePage = (page) => {
-  const plain = page?.toObject ? page.toObject() : page;
+  const plain = sanitizePageOutput(page);
   return plain?.pendingDraft ? { ...plain, ...plain.pendingDraft, pendingDraft: plain.pendingDraft, hasPendingDraft: true } : plain;
 };
 const snapshot = async (page, req, action) => {
@@ -41,7 +53,7 @@ const getAll = async (_req, res, next) => {
   catch (error) { next(error); }
 };
 const getById = async (req, res, next) => {
-  try { const data = await PageContent.findById(req.params.id); if (!data) return res.status(404).json({ success:false,message:"Page not found" }); res.json({success:true,data}); }
+  try { const data = await PageContent.findById(req.params.id); if (!data) return res.status(404).json({ success:false,message:"Page not found" }); res.json({success:true,data:editablePage(data)}); }
   catch(error){next(error);}
 };
 const create = async (req, res, next) => {
@@ -53,7 +65,11 @@ const update = async (req,res,next)=>{
   catch(error){next(error);}
 };
 const remove = async(req,res,next)=>{try{const existing=await PageContent.findById(req.params.id);if(!existing)return res.status(404).json({success:false,message:"Page not found"});await snapshot(existing,req,"delete");const page=await PageContent.findByIdAndDelete(req.params.id);res.json({success:true,message:"Managed page moved to the recycle bin"});}catch(error){next(error);}};
-const revisions = async(req,res,next)=>{try{const data=await PageContentRevision.find({pageId:req.params.id}).sort("-createdAt").limit(50);res.json({success:true,data});}catch(error){next(error);}};
-const allRevisions = async(_req,res,next)=>{try{const data=await PageContentRevision.find().sort("-createdAt").limit(200);res.json({success:true,data});}catch(error){next(error);}};
+const sanitizeRevision = (revision) => {
+  const value = revision?.toObject ? revision.toObject() : revision;
+  return value ? { ...value, snapshot: sanitizePageOutput(value.snapshot) } : value;
+};
+const revisions = async(req,res,next)=>{try{const data=await PageContentRevision.find({pageId:req.params.id}).sort("-createdAt").limit(50);res.json({success:true,data:data.map(sanitizeRevision)});}catch(error){next(error);}};
+const allRevisions = async(_req,res,next)=>{try{const data=await PageContentRevision.find().sort("-createdAt").limit(200);res.json({success:true,data:data.map(sanitizeRevision)});}catch(error){next(error);}};
 const restoreRevision = async(req,res,next)=>{try{const revision=await PageContentRevision.findById(req.params.revisionId);if(!revision||revision.pageId!==req.params.id)return res.status(404).json({success:false,message:"Revision not found"});const current=await PageContent.findById(req.params.id);if(!current)return res.status(404).json({success:false,message:"Page not found"});await snapshot(current,req,"before_restore");const restored=await PageContent.findByIdAndUpdate(req.params.id,{...clean(revision.snapshot),pendingDraft:null});res.json({success:true,data:restored,message:"Page revision restored"});}catch(error){next(error);}};
 module.exports={getPublic,getAll,getById,create,update,remove,revisions,allRevisions,restoreRevision};

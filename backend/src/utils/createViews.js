@@ -1,5 +1,5 @@
 const mysql = require("mysql2/promise");
-require("dotenv").config({ path: require('path').resolve(__dirname, '../../.env') });
+const { getDatabaseConfig } = require("../config/env");
 
 const schema = {
   "AnnualReport": ["year", "url", "status"],
@@ -28,13 +28,7 @@ const schema = {
 };
 
 const createViews = async () => {
-  const pool = await mysql.createPool({
-    host: process.env.DB_HOST || "127.0.0.1",
-    port: process.env.DB_PORT || 3306,
-    user: process.env.DB_USER || "root",
-    password: process.env.DB_PASSWORD || "root",
-    database: process.env.DB_NAME || "ceypetco_website"
-  });
+  const pool = await mysql.createPool(getDatabaseConfig());
 
   console.log("Generating MySQL Views...");
 
@@ -59,7 +53,7 @@ const createViews = async () => {
       await pool.query(sql);
       console.log(`✅ Created view: ${viewName}`);
     } catch (err) {
-      console.error(`❌ Failed to create view ${viewName}:`, err.message);
+      console.error("Failed to create database view", { viewName, error: err.message });
     }
   }
 

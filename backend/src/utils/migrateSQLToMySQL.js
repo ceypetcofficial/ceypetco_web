@@ -1,6 +1,6 @@
 const sql = require("mssql/msnodesqlv8");
 const mysql = require("mysql2/promise");
-require("dotenv").config({ path: require('path').resolve(__dirname, '../../.env') });
+const { getDatabaseConfig } = require("../config/env");
 
 const migrate = async () => {
   console.log("Starting Migration from MSSQL to MySQL...");
@@ -22,14 +22,8 @@ const migrate = async () => {
   }
 
   // MySQL config
-  const mysqlConfig = {
-    host: "127.0.0.1",
-    port: 3306,
-    user: "root",
-    password: "root", // as requested
-  };
-  
-  const mysqlDbName = "ceypetco_website";
+  const dbConfig = getDatabaseConfig();
+  const { database: mysqlDbName, ...mysqlConfig } = dbConfig;
 
   let mssqlPool;
   let mysqlPool;

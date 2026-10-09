@@ -101,7 +101,11 @@ const create = async (req, res, next) => {
     if (invalid) {
       return res.status(400).json({ success: false, message: invalid });
     }
-    if (role === 'super_admin' && req.user.role !== 'super_admin') {
+    if (req.user?.role !== "super_admin" && req.user?.role !== "admin") {
+      return res.status(403).json({ success: false, message: "Forbidden: insufficient permissions" });
+    }
+    const targetRole = typeof role === "string" ? role.trim().toLowerCase() : (role || "admin");
+    if (targetRole === 'super_admin' && req.user.role !== 'super_admin') {
       return res.status(403).json({ success: false, message: 'Only super_admin can create super_admin accounts' });
     }
     const existing = await User.findOne({ email: normalizedEmail });
@@ -114,7 +118,7 @@ const create = async (req, res, next) => {
       name: name.trim(),
       email: normalizedEmail,
       password,
-      role: role || "admin",
+      role: targetRole,
       status: status || "active",
     });
     res.status(201).json({ success: true, data: user });
@@ -125,10 +129,19 @@ const create = async (req, res, next) => {
 
 const update = async (req, res, next) => {
   try {
+    if (req.user?.role !== "super_admin" && req.user?.role !== "admin") {
+      return res.status(403).json({ success: false, message: "Forbidden: insufficient permissions" });
+    }
     const { password } = req.body;
+    const target = await User.findById(req.params.id);
+    if (!target) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
 
     if (
-      req.params.id === req.user._id.toString() &&
+      String(req.params.id).toLowerCase() === String(req.user._id).toLowerCase() &&
       (req.body.role !== undefined || req.body.status !== undefined)
     ) {
       return res.status(400).json({
@@ -138,12 +151,26 @@ const update = async (req, res, next) => {
     }
 
     if (req.user.role !== 'super_admin') {
-      const target = await User.findById(req.params.id);
-      if (target && target.role === 'super_admin') {
+      if (target.role === 'super_admin') {
         return res.status(403).json({ success: false, message: 'Only super_admin can modify super_admin accounts' });
       }
-      if (req.body.role === 'super_admin') {
+      if (req.body.role && String(req.body.role).trim().toLowerCase() === 'super_admin') {
         return res.status(403).json({ success: false, message: 'Only super_admin can grant super_admin role' });
+      }
+    }
+
+    const removesActiveSuperAdmin =
+      target.role === "super_admin" &&
+      target.status === "active" &&
+      (req.body.role !== undefined && req.body.role !== "super_admin" ||
+        req.body.status !== undefined && req.body.status !== "active");
+    if (removesActiveSuperAdmin) {
+      const superAdminCount = await User.countDocuments({ role: "super_admin", status: "active" });
+      if (superAdminCount <= 1) {
+        return res.status(400).json({
+          success: false,
+          message: "Cannot demote or deactivate the last active super_admin account",
+        });
       }
     }
 
@@ -170,15 +197,14 @@ const update = async (req, res, next) => {
       }
     }
     if (password) {
-      const user = await User.findById(req.params.id).select("+password");
-      if (!user) {
-        return res
-          .status(404)
-          .json({ success: false, message: "User not found" });
-      }
+      const user = target;
       user.password = password;
       user.tokenVersion = (Number(user.tokenVersion) || 0) + 1;
-      Object.assign(user, updates);
+      user.failedLoginAttempts = 0;
+      user.lockUntil = null;
+      for (const field of ["name", "email", "role", "status"]) {
+        if (updates[field] !== undefined) user[field] = updates[field];
+      }
       await user.save();
       return res.status(200).json({ success: true, data: user });
     }
@@ -199,7 +225,7 @@ const update = async (req, res, next) => {
 
 const remove = async (req, res, next) => {
   try {
-    if (req.params.id === req.user._id.toString()) {
+    if (String(req.params.id).toLowerCase() === String(req.user._id).toLowerCase()) {
       return res
         .status(400)
         .json({ success: false, message: "You cannot delete your own account" });

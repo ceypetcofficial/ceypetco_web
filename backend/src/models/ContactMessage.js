@@ -2,11 +2,14 @@ const crypto = require("crypto");
 const { getPool } = require("../config/db");
 
 const statuses = new Set(["new", "read", "replied", "archived"]);
-const literalRegex = (value) => String(value || "").slice(0, 100).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const matches = (item, filter = {}) => Object.entries(filter).every(([key, expected]) => {
   if (key === "$or") return expected.some((part) => matches(item, part));
   if (expected && typeof expected === "object" && "$regex" in expected) {
-    return new RegExp(literalRegex(expected.$regex), expected.$options === "i" ? "i" : "").test(String(item[key] || ""));
+    const needle = String(expected.$regex || "").slice(0, 100);
+    const haystack = String(item[key] || "");
+    return expected.$options === "i"
+      ? haystack.toLocaleLowerCase().includes(needle.toLocaleLowerCase())
+      : haystack.includes(needle);
   }
   if (expected && typeof expected === "object" && "$ne" in expected) return item[key] !== expected.$ne;
   return item[key] === expected;
@@ -55,7 +58,11 @@ class ContactMessage {
     const existing = await this.findById(id);
     if (!existing) return null;
     const status = update.status;
-    if (!statuses.has(status)) throw Object.assign(new Error("Invalid message status"), { statusCode: 400 });
+    if (!statuses.has(status)) {
+      const error = new Error("Invalid message status");
+      error.statusCode = 400;
+      throw error;
+    }
     const pool = await getPool();
     await pool.query("UPDATE ContactUsMessages SET Status=?, UpdatedAt=? WHERE Id=?", [status, new Date(), String(id)]);
     return { ...existing, status, updatedAt: new Date() };

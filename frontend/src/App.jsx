@@ -18,6 +18,7 @@ import MarineBunkeringPage from './components/marine-bunkering/MarineBunkeringPa
 import ElectricMobilityContent from './components/electric-mobility/ElectricMobilityContent.jsx';
 import HistoricalPricesPage from './components/HistoricalPricesPage.jsx';
 import ManagedPage, { ManagedSections } from './components/ManagedPage.jsx';
+import GalleryPage from './components/GalleryPage.jsx';
 
 const paymentBanks = [
   { name: 'Bank of Ceylon', branch: 'City Office', logo: 'boc.svg' },
@@ -2846,33 +2847,12 @@ function RefineryPage() {
       .filter(Boolean);
     return items.length ? items : fallback;
   };
-  const normalizeRows = (value, fallback) => {
-    if (!Array.isArray(value)) return fallback;
-    const rows = value
-      .map((row) => {
-        if (Array.isArray(row)) {
-          const [name, capacity] = row;
-          return name !== undefined && capacity !== undefined
-            ? [String(name), String(capacity)]
-            : null;
-        }
-        if (row && typeof row === 'object') {
-          return row.name !== undefined && row.value !== undefined
-            ? [String(row.name), String(row.value)]
-            : null;
-        }
-        return null;
-      })
-      .filter(Boolean);
-    return rows.length ? rows : fallback;
-  };
   const kicker = textValue(div.kicker, defaults.kicker);
   const heading = textValue(div.heading, defaults.heading);
   const gallery = stringList(div.gallery, defaults.gallery);
   const paragraphs = stringList(div.paragraphs, defaults.paragraphs);
   const importance = stringList(div.keyFacts, defaults.keyFacts);
   const copy = stringList(div.copy, defaults.copy);
-  const units = normalizeRows(div.detailRows, defaults.detailRows);
   const galleryImage = (img) =>
     !img
       ? ''
@@ -3025,30 +3005,6 @@ function RefineryPage() {
           </div>
         </div>
       </section>
-      <section className="process-units content-section">
-        <div className="container process-units-grid">
-          <div>
-            <p className="eyebrow">PROCESS UNITS</p>
-            <h2>Installed production capacity</h2>
-            <p>Rated capacity in metric tonnes per stream day</p>
-          </div>
-          <div className="unit-table">
-            <div className="unit-table-head">
-              <span>Unit</span>
-              <span>Capacity · MT/stream day</span>
-            </div>
-            {units.map(([unit, capacity], index) => (
-              <div className="unit-row" key={unit}>
-                <span>
-                  <small>{String(index + 1).padStart(2, '0')}</small>
-                  {unit}
-                </span>
-                <b>{capacity}</b>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
     </>
   );
 }
@@ -3124,7 +3080,6 @@ function MarketingSalesPage() {
 
   const categoryOrder = [
     'White Oil',
-    'Black Oil',
     'Lubricants',
     'Aviation Fuel',
   ];
@@ -3210,8 +3165,7 @@ function MarketingSalesPage() {
           ) : (
             grouped.map((g, i) => (
               <div
-                className={`price-category ${g.category === 'Black Oil' ? 'black-oil' : ''
-                  }`}
+                className="price-category"
                 key={g.category}
               >
                 <div className="price-category-title">
@@ -3235,7 +3189,7 @@ function MarketingSalesPage() {
           <a className="hp-marketing-link" href="/marketing-sales/historical-prices">
             <span>
               <small>EXPLORE THE ARCHIVE</small>
-              <b>Historical fuel prices</b>
+              <b>Historical Fuel Prices</b>
               <span>Browse published prices and bitumen revisions dating back to 1990.</span>
             </span>
             <Icon name="arrow" size={22} />
@@ -4546,11 +4500,7 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
     };
   }, [type]);
 
-  const todayLocal = new Date();
-  todayLocal.setHours(0, 0, 0, 0);
-  const currentCareers = careers.filter((job) =>
-    !job.applicationDeadline || new Date(job.applicationDeadline) >= todayLocal,
-  );
+  const currentCareers = careers;
 
   return (
     <main className="inner-page">
@@ -4588,6 +4538,7 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
             <a className={type === '/news' ? 'active' : ''} href="/news">News</a>
             <a className={type === '/notices' ? 'active' : ''} href="/notices">Notices</a>
             <a className={['/publications', '/annual-reports'].includes(type) ? 'active' : ''} href="/publications">Publications</a>
+            <a href="/gallery">Gallery</a>
           </div>
         </nav>
       )}
@@ -5479,6 +5430,7 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
                 { number: '01', title: 'News', description: 'Corporate announcements, activities and stories.', href: '/news', action: 'Browse news' },
                 { number: '02', title: 'Notices', description: 'Current official notices, circulars and documents.', href: '/notices', action: 'Read notices' },
                 { number: '03', title: 'Publications', description: 'Annual reports and published corporate records.', href: '/publications', action: 'View publications' },
+                { number: '04', title: 'Gallery', description: 'Photography and videos from across Ceypetco.', href: '/gallery', action: 'Explore gallery' },
               ].map((item) => (
                 <a href={item.href} className="media-hub-card" key={item.title}>
                   <span>{item.number}</span>
@@ -5798,18 +5750,18 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
               <p>Review available positions below, including role details, requirements and application deadlines where provided.</p>
             </div>
             <div className="current-opportunities-heading"><div><span>OPEN POSITIONS</span><h3>Current opportunities</h3></div></div>
-            {careersLoading ? <div className="careers-status">Loading opportunities…</div> : currentCareers.length === 0 ? <div className="careers-status"><h3>No current openings</h3><p>Please check back later for new vacancies.</p></div> : (
-              <div className="career-vacancy-list">
-                {currentCareers.map((job) => (
+            <div className="career-vacancy-list">
+              {careersLoading ? <div className="careers-status">Loading opportunities…</div> : currentCareers.length === 0 ? <div className="careers-status"><h3>No current openings</h3><p>Please check back later for new vacancies.</p></div> : (
+                currentCareers.map((job) => (
                   <article className="career-vacancy" key={job._id}>
                     <div className="career-vacancy-top"><div><span>{job.reference || 'CEYPETCO VACANCY'}</span><h3>{job.title}</h3></div>{job.applicationDeadline && <div className="career-deadline"><small>APPLICATION DEADLINE</small><strong>{new Date(job.applicationDeadline).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</strong></div>}</div>
                     <div className="career-vacancy-meta">{[job.department, job.location, job.type].filter(Boolean).map((item) => <span key={item}>{item}</span>)}</div>
                     {job.description && <p className="career-vacancy-description">{job.description}</p>}
                     {(job.responsibilities || job.requirements) && <div className="career-vacancy-details">{job.responsibilities && <div><h4>What the role involves</h4><p>{job.responsibilities}</p></div>}{job.requirements && <div><h4>What you will need</h4><p>{job.requirements}</p></div>}</div>}
                   </article>
-                ))}
-              </div>
-            )}
+                ))
+              )}
+            </div>
           </div>
         </section>
       )}
@@ -5913,7 +5865,7 @@ function App() {
     '/services/marine-bunkering', '/bunkering', '/electric-mobility', '/ev-charging',
     '/news', '/notices', '/tenders', '/projects', '/careers', '/annual-reports', '/contact',
     '/regional-offices', '/right-to-information', '/consumer-registration', '/online-banking',
-    '/mobile-app', '/media',
+    '/mobile-app', '/media', '/gallery',
   ]).has(cleanPath);
   const managedPageHasContent = Boolean(
     managedPage &&
@@ -6138,7 +6090,6 @@ function App() {
         '.refinery-history-grid > *',
         '.refinery-importance-grid article',
         '.process-visual',
-        '.process-units-grid > *',
         '.marketing-intro-grid > *',
         '.marketing-stats > div',
         '.pricing-heading > *',
@@ -6453,11 +6404,13 @@ function App() {
               </div>
             </div>
             <div
-              className={`nav-group media-nav-group ${navMediaDropClosed ? 'closed' : ''} ${['/media', '/news', '/notices', '/publications', '/annual-reports'].includes(path) || path.startsWith('/news/') ? 'active' : ''}`}
-              onMouseEnter={() => setNavMediaDropClosed(false)}
+              className={`nav-group media-nav-group ${navMediaDropClosed ? 'closed' : ''} ${['/media', '/news', '/notices', '/publications', '/annual-reports', '/gallery'].includes(path) || path.startsWith('/news/') ? 'active' : ''}`}
+              onMouseEnter={() => { setNavMediaDropClosed(false); setNavAboutDropClosed(true); setNavDropClosed(true); setNavCareersDropClosed(true); }}
+              onFocus={() => { setNavMediaDropClosed(false); setNavAboutDropClosed(true); setNavDropClosed(true); setNavCareersDropClosed(true); }}
             >
               <a
                 href="/media"
+                aria-haspopup="true"
                 aria-expanded={!navMediaDropClosed}
                 onClick={(event) => {
                   if (!window.matchMedia('(max-width: 900px)').matches) return;
@@ -6479,12 +6432,13 @@ function App() {
                 <div className="dropdown-heading">
                   <span>MEDIA CENTRE</span>
                   <b>Stay informed</b>
-                  <p>News, public notices and corporate publications in one place.</p>
+                  <p>News, public notices, publications and visual stories in one place.</p>
                 </div>
                 <div className="dropdown-links">
                   <a href="/news"><b>News</b><small>Stories and corporate updates</small></a>
                   <a href="/notices"><b>Notices</b><small>Official public information</small></a>
                   <a href="/publications"><b>Publications</b><small>Annual reports and records</small></a>
+                  <a href="/gallery"><b>Gallery</b><small>Photos and videos</small></a>
                 </div>
               </div>
             </div>
@@ -6882,6 +6836,8 @@ function App() {
           newsId={cleanPath.split('/').pop()} />
       ) : cleanPath === '/mobile-app' ? (
         <MobileAppsPage />
+      ) : cleanPath === '/gallery' ? (
+        <GalleryPage />
       ) : cleanPath === '/services/marine-bunkering' || cleanPath === '/bunkering' ? (
         <MarineBunkeringPage />
       ) : (

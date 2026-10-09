@@ -217,7 +217,9 @@ const update = async (req, res, next) => {
       return res.status(400).json({ success: false, message: errors.join(", ") });
     }
     const prevImage = existing.imageUrl;
-    Object.assign(existing, payload);
+    for (const field of ["title", "description", "imageUrl", "priority", "showOnce", "buttonEnabled", "buttonText", "buttonLink", "linkType"]) {
+      if (payload[field] !== undefined) existing[field] = payload[field];
+    }
     await existing.save();
     if (prevImage && prevImage !== existing.imageUrl) {
       try {

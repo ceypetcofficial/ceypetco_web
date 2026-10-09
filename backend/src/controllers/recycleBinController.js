@@ -1,6 +1,15 @@
 const registry = require("../models/modelRegistry");
 
 const excluded = new Set(["ContactMessage", "PageContentRevision"]);
+const IMAGE_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif", ".avif"]);
+const containedImagePath = (root, name) => {
+  const path = require("path");
+  if (typeof name !== "string" || !name || name !== path.basename(name) || name.includes("\0")) return null;
+  if (!IMAGE_EXTENSIONS.has(path.extname(name).toLowerCase())) return null;
+  const resolvedRoot = path.resolve(root);
+  const resolved = path.resolve(resolvedRoot, name);
+  return resolved.startsWith(`${resolvedRoot}${path.sep}`) ? resolved : null;
+};
 const getModel = (name) => {
   if (!registry.modelNames.includes(name) || excluded.has(name)) return null;
   try { return require(`../models/${name}`); }
@@ -35,16 +44,21 @@ const restore = async (req, res, next) => {
       const path = require("path");
       const fs = require("fs");
       const { getPool } = require("../config/db");
-      const name = path.basename(req.params.id);
-      if (name !== req.params.id) return res.status(400).json({ success: false, message: "Invalid image name" });
-      const source = path.resolve(__dirname, "../../uploads-trash/images", name);
-      const target = path.resolve(__dirname, "../../uploads/images", name);
+      const name = String(req.params.id || "");
+      const trashRoot = path.resolve(__dirname, "../../uploads-trash/images");
+      const imageRoot = path.resolve(__dirname, "../../uploads/images");
+      const source = containedImagePath(trashRoot, name);
+      const target = containedImagePath(imageRoot, name);
+      if (!source || !target) return res.status(400).json({ success: false, message: "Invalid image name" });
       try { await fs.promises.access(source); } catch { return res.status(404).json({ success: false, message: "Deleted image not found" }); }
       await fs.promises.mkdir(path.dirname(target), { recursive: true });
       await fs.promises.rename(source, target);
       const pool = await getPool();
       await pool.query("UPDATE MediaAssets SET DeletedAt=NULL, UpdatedAt=? WHERE StorageName=?", [new Date(), name]);
       return res.json({ success: true, message: "Image restored" });
+    }
+    if (req.params.model === "User" && req.user?.role !== "super_admin") {
+      return res.status(403).json({ success: false, message: "Only super_admin can restore user accounts" });
     }
     const Model = getModel(req.params.model);
     if (!Model?.restoreById) return res.status(400).json({ success: false, message: "This resource cannot be restored" });

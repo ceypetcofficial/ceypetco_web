@@ -35,8 +35,10 @@ const googleDriveImageRoutes = require("./routes/googleDriveImageRoutes");
 const tenderDownloadRoutes = require("./routes/tenderDownloadRoutes");
 const recycleBinRoutes = require("./routes/recycleBinRoutes");
 const priceAuditRoutes = require("./routes/priceAuditRoutes");
+const galleryRoutes = require("./routes/galleryRoutes");
 const errorHandler = require("./middleware/errorMiddleware");
 const { allowedOrigins, isProduction } = require("./config/env");
+const requireTrustedOrigin = require("./middleware/csrfMiddleware");
 
 const app = express();
 const isDevelopment = process.env.NODE_ENV === "development";
@@ -80,6 +82,7 @@ app.use((req, res, next) => {
   return next();
 });
 app.use(express.json({ limit: "100kb", strict: true }));
+app.use(requireTrustedOrigin);
 app.use(
   "/uploads/images",
   (req, res, next) => [".jpg", ".jpeg", ".png", ".webp", ".gif", ".avif"].includes(path.extname(req.path).toLowerCase()) ? next() : res.status(404).end(),
@@ -160,6 +163,14 @@ const imageProxyLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+const uploadLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,
+  message: { success: false, message: "Too many uploads, please try again later" },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 app.get("/api/health", (req, res) => {
   res.status(200).json({
     success: true,
@@ -172,6 +183,7 @@ app.use("/api/auth/login", loginLimiter);
 app.use("/api/admin/contact-messages", publicFormLimiter);
 app.use("/api/tender-downloads", publicFormLimiter);
 app.use("/api/images/google-drive", imageProxyLimiter);
+app.use("/api/upload", uploadLimiter);
 app.use("/api", readLimiter);
 app.use("/api", writeLimiter);
 
@@ -205,6 +217,7 @@ app.use("/api/admin/history-page", historyPageRoutes);
 app.use("/api/admin/pages", pageContentRoutes);
 app.use("/api/admin/recycle-bin", recycleBinRoutes);
 app.use("/api/admin/price-audit", priceAuditRoutes);
+app.use("/api/admin/gallery", galleryRoutes);
 app.use("/api/images/google-drive", googleDriveImageRoutes);
 
 app.use((req, res) => {

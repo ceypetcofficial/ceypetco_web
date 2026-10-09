@@ -1,3 +1,15 @@
+let fallbackSequence = 0;
+const secureSectionId = () => {
+  if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
+  if (globalThis.crypto?.getRandomValues) {
+    const bytes = new Uint8Array(16);
+    globalThis.crypto.getRandomValues(bytes);
+    return `s-${[...bytes].map((value) => value.toString(16).padStart(2, "0")).join("")}`;
+  }
+  fallbackSequence += 1;
+  return `s-${Date.now().toString(36)}-${fallbackSequence.toString(36)}`;
+};
+
 export default function snapshotLivePage(path, wait = 1400) {
   return new Promise((resolve) => {
     let settled = false;
@@ -87,10 +99,7 @@ export default function snapshotLivePage(path, wait = 1400) {
               let type = items.length > 1 ? "cards" : image ? "split" : "content";
               if (/stat|number|figure/.test(className) && items.length) type = "stats";
               return {
-                id:
-                  typeof crypto !== "undefined" && crypto.randomUUID
-                    ? crypto.randomUUID()
-                    : `s${Date.now()}-${Math.random().toString(36).slice(2)}`,
+                id: secureSectionId(),
                 type,
                 eyebrow,
                 title,

@@ -146,6 +146,7 @@ const GoogleTranslate = () => {
         "iframe.goog-te-balloon-frame, .goog-te-balloon-frame, .goog-te-spinner-pos, .goog-te-spinner { display: none !important; visibility: hidden !important; }",
         "#goog-gt-tt { display: none !important; visibility: hidden !important; }",
         "body > div.skiptranslate { display: none !important; visibility: hidden !important; }",
+        ".google-translate-engine, #google_translate_element, .goog-te-gadget, .goog-te-gadget-simple, .goog-te-gadget-icon, .VIpgJd-ZVi9od-xl07Ob-lTBxed, .VIpgJd-ZVi9od-aZ2wEe-wOHMyf { position: fixed !important; top: -10000px !important; left: -10000px !important; width: 1px !important; height: 1px !important; overflow: hidden !important; opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; }",
         ".goog-te-combo { position: fixed !important; top: -2000px !important; left: -2000px !important; width: 2px !important; height: 2px !important; opacity: 0 !important; pointer-events: none !important; }",
       ].join("");
       document.head.appendChild(style);

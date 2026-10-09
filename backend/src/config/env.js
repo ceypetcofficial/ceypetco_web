@@ -89,12 +89,17 @@ const validateEnvironment = () => {
 };
 
 const getDatabaseConfig = () => {
+  const required = ["DB_NAME", "DB_USER", "DB_PASSWORD"];
+  const missing = required.filter((name) => !process.env[name]?.trim());
+  if (missing.length) {
+    throw new Error(`Missing required database environment variables: ${missing.join(", ")}`);
+  }
   const config = {
     host: process.env.DB_HOST || "127.0.0.1",
     port: parsePort(process.env.DB_PORT, "DB_PORT", "3306"),
-    user: process.env.DB_USER || "root",
+    user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME || "ceypetco_website",
+    database: process.env.DB_NAME,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,

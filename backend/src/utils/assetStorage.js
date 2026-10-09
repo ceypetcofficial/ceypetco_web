@@ -8,12 +8,12 @@ const ensureUploadDirectories = () => {
   fs.mkdirSync(path.resolve(__dirname, "../../private-docs"), { recursive: true });
 };
 const isLocalUploadUrl = (url) => {
-  try { return new URL(url, "http://localhost").pathname.startsWith("/uploads/"); }
+  try { return new URL(url, "https://local.invalid").pathname.startsWith("/uploads/"); }
   catch { return false; }
 };
 const deleteLocalAsset = (url) => {
   try {
-    const pathname = decodeURIComponent(new URL(url, "http://localhost").pathname);
+    const pathname = decodeURIComponent(new URL(url, "https://local.invalid").pathname);
     const relativePath = pathname.replace(/^\/uploads\//, "");
     const absolutePath = path.resolve(uploadsDir, relativePath);
     if (!absolutePath.startsWith(uploadsDir + path.sep)) return { deleted: false, reason: "outside-uploads" };

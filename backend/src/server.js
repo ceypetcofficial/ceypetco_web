@@ -3,6 +3,7 @@ const app = require("./app");
 const connectDB = require("./config/db");
 const ensureHistoricalPrices = require("./ensureHistoricalPrices");
 const ensurePageContents = require("./ensurePageContents");
+const ensureGalleryItems = require("./ensureGalleryItems");
 const { ensureUploadDirectories } = require("./utils/assetStorage");
 
 const PORT = process.env.PORT || 5000;
@@ -15,6 +16,7 @@ const startServer = async () => {
     await connectDB();
     await ensureHistoricalPrices();
     await ensurePageContents();
+    await ensureGalleryItems();
 
     app.listen(PORT, HOST, () => {
       console.log(`Server listening on ${HOST}:${PORT}`);

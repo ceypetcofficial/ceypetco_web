@@ -17,10 +17,12 @@ const authService = {
     } catch {
       // Local session state is still cleared when the API is unavailable.
     }
+    localStorage.removeItem("ceypetco_token");
     localStorage.removeItem("ceypetco_user");
   },
 
   getUser: () => {
+    localStorage.removeItem("ceypetco_token");
     const user = localStorage.getItem("ceypetco_user");
     return user ? JSON.parse(user) : null;
   },

@@ -173,7 +173,7 @@ const Login = () => {
                   if (errors.email) setErrors({ ...errors, email: "" });
                   if (apiError) setApiError("");
                 }}
-                placeholder="admin@ceypetco.gov.lk"
+                placeholder="name@ceypetco.gov.lk"
                 className={`w-full h-12 px-4 border rounded-lg text-sm text-[#092f3b] placeholder-slate-400 outline-none transition-all duration-200 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 ${
                   errors.email ? "border-red-400 bg-red-50/50" : "border-slate-200 bg-slate-50/50"
                 }`}

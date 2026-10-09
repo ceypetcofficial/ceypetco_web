@@ -8,6 +8,15 @@ const { getPool } = require("../config/db");
 const UPLOADS_DIR = path.resolve(__dirname, "../../uploads");
 const PRIVATE_DOCS_DIR = path.resolve(__dirname, "../../private-docs");
 const TRASH_IMAGES_DIR = path.resolve(__dirname, "../../uploads-trash/images");
+const MAX_DOCUMENT_BYTES = 8 * 1024 * 1024;
+
+const resolveContainedPath = (root, filename, allowedTypes) => {
+  if (typeof filename !== "string" || !filename || filename !== path.basename(filename) || filename.includes("\0")) return null;
+  if (allowedTypes && !allowedTypes.has(path.extname(filename).toLowerCase())) return null;
+  const resolvedRoot = path.resolve(root);
+  const resolved = path.resolve(resolvedRoot, filename);
+  return resolved.startsWith(`${resolvedRoot}${path.sep}`) ? resolved : null;
+};
 
 const imageTypes = new Map([
   [".jpg", new Set(["image/jpeg"])], [".jpeg", new Set(["image/jpeg"])],
@@ -70,7 +79,7 @@ const upload = multer({
 const docUpload = multer({
   storage: multer.memoryStorage(),
   fileFilter: docFilter,
-  limits: { fileSize: 20 * 1024 * 1024 },
+  limits: { fileSize: MAX_DOCUMENT_BYTES, files: 1, fields: 2, parts: 3 },
 });
 
 const saveToDisk = async (req, isDoc) => {
@@ -81,7 +90,9 @@ const saveToDisk = async (req, isDoc) => {
   const fileName = `${Date.now()}-${crypto.randomBytes(8).toString("hex")}${ext}`;
   const targetDir = isPrivate ? PRIVATE_DOCS_DIR : path.resolve(UPLOADS_DIR, folder);
   await fs.promises.mkdir(targetDir, { recursive: true });
-  await fs.promises.writeFile(path.join(targetDir, fileName), req.file.buffer, { flag: "wx" });
+  const target = resolveContainedPath(targetDir, fileName, isDoc ? documentTypes : imageTypes);
+  if (!target) throw new Error("Generated upload path is invalid");
+  await fs.promises.writeFile(target, req.file.buffer, { flag: "wx", mode: 0o600 });
   if (!isDoc) {
     const pool = await getPool();
     await pool.query("INSERT IGNORE INTO MediaAssets (StorageName, DisplayName, CreatedAt, UpdatedAt) VALUES (?, ?, ?, ?)", [fileName, fileName, new Date(), new Date()]);
@@ -148,11 +159,8 @@ const uploadDocument = (req, res, next) => {
 const IMAGES_DIR = path.resolve(UPLOADS_DIR, "images");
 
 const safeImageName = (name) => {
-  if (typeof name !== "string" || !name) return null;
-  const base = path.basename(name);
-  if (base !== name) return null;
-  if (!imageTypes.has(path.extname(base).toLowerCase())) return null;
-  return base;
+  const target = resolveContainedPath(IMAGES_DIR, name, imageTypes);
+  return target ? path.basename(target) : null;
 };
 
 const listImages = async (req, res) => {
@@ -165,9 +173,11 @@ const listImages = async (req, res) => {
     const [aliases] = await pool.query("SELECT StorageName, DisplayName FROM MediaAssets WHERE DeletedAt IS NULL");
     const names = new Map(aliases.map((row) => [row.StorageName, row.DisplayName]));
     const images = (await Promise.all(filenames.map(async (filename) => {
-      const stat = await fs.promises.stat(path.join(IMAGES_DIR, filename));
+      const target = resolveContainedPath(IMAGES_DIR, filename, imageTypes);
+      if (!target) return null;
+      const stat = await fs.promises.stat(target);
       return { filename, name: names.get(filename) || filename, url: `${base}/uploads/images/${filename}`, size: stat.size, mtime: stat.mtime };
-    }))).sort((a, b) => b.mtime - a.mtime);
+    }))).filter(Boolean).sort((a, b) => b.mtime - a.mtime);
     return res.status(200).json({ success: true, data: images });
   } catch (err) {
     return res
@@ -189,12 +199,14 @@ const deleteImage = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Invalid image name" });
     }
-    const target = path.join(IMAGES_DIR, name);
+    const target = resolveContainedPath(IMAGES_DIR, name, imageTypes);
     try { await fs.promises.access(target); } catch {
       return res.status(404).json({ success: false, message: "Image not found" });
     }
     await fs.promises.mkdir(TRASH_IMAGES_DIR, { recursive: true });
-    await fs.promises.rename(target, path.join(TRASH_IMAGES_DIR, name));
+    const trashTarget = resolveContainedPath(TRASH_IMAGES_DIR, name, imageTypes);
+    if (!trashTarget) return res.status(400).json({ success: false, message: "Invalid image path" });
+    await fs.promises.rename(target, trashTarget);
     const pool = await getPool();
     await pool.query("UPDATE MediaAssets SET DeletedAt=?, UpdatedAt=? WHERE StorageName=?", [new Date(), new Date(), name]);
     return res.json({ success: true, message: "Image moved to the recycle bin" });
@@ -228,7 +240,7 @@ const renameImage = async (req, res) => {
             "Display name must be 255 characters or fewer and cannot contain path characters",
         });
     }
-    const oldTarget = path.join(IMAGES_DIR, oldName);
+    const oldTarget = resolveContainedPath(IMAGES_DIR, oldName, imageTypes);
     try { await fs.promises.access(oldTarget); } catch {
       return res.status(404).json({ success: false, message: "Image not found" });
     }
@@ -254,16 +266,16 @@ const renameImage = async (req, res) => {
 
 const servePrivateDocument = async (req, res, next) => {
   try {
-    const name = path.basename(String(req.params.filename || ""));
-    if (!name || name !== req.params.filename || !documentTypes.has(path.extname(name).toLowerCase())) {
+    const name = String(req.params.filename || "");
+    const target = resolveContainedPath(PRIVATE_DOCS_DIR, name, documentTypes);
+    if (!target) {
       return res.status(400).json({ success: false, message: "Invalid document name" });
     }
-    const target = path.join(PRIVATE_DOCS_DIR, name);
     try { await fs.promises.access(target); } catch { return res.status(404).json({ success: false, message: "Document not found" }); }
     res.setHeader("Cache-Control", "no-store, private");
     res.setHeader("Content-Disposition", `attachment; filename="${name.replace(/["\\\r\n]/g, "_")}"`);
     res.setHeader("X-Content-Type-Options", "nosniff");
-    return res.sendFile(target);
+    return res.sendFile(name, { root: PRIVATE_DOCS_DIR, dotfiles: "deny" });
   } catch (error) { return next(error); }
 };
 

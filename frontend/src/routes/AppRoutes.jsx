@@ -34,6 +34,7 @@ import ImageLibrary from "../admin/pages/Media/ImageLibrary";
 import RecycleBin from "../admin/pages/RecycleBin/RecycleBin";
 import PageRevisions from "../admin/pages/Pages/PageRevisions";
 import PriceAudit from "../admin/pages/FuelPrices/PriceAudit";
+import GalleryManagement from "../admin/pages/Media/GalleryManagement";
 
 const AppRoutes = () => {
   return (
@@ -71,7 +72,8 @@ const AppRoutes = () => {
         <Route path="fuel-stations" element={<FuelStationManagement />} />
         <Route path="regional-offices" element={<RegionalOfficeManagement />} />
         <Route path="messages" element={<ProtectedRoute roles={["super_admin", "admin"]}><ContactMessages /></ProtectedRoute>} />
-        <Route path="media" element={<ImageLibrary />} />
+        <Route path="media" element={<GalleryManagement />} />
+        <Route path="image-library" element={<ImageLibrary />} />
         <Route path="users" element={<ProtectedRoute roles={["super_admin", "admin"]}><UserManagement /></ProtectedRoute>} />
         <Route path="recycle-bin" element={<ProtectedRoute roles={["super_admin", "admin"]}><RecycleBin /></ProtectedRoute>} />
         <Route path="page-revisions" element={<ProtectedRoute roles={["super_admin", "admin"]}><PageRevisions /></ProtectedRoute>} />

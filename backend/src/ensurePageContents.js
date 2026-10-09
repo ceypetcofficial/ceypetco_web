@@ -22,6 +22,7 @@ const pages = [
   ["Projects","/projects","/images/refinery-card-1.jpg","Strategic projects strengthening national energy infrastructure."],
   ["Careers","/careers","/images/career-team.jpg","People, purpose and professional opportunities."],
   ["Annual Reports","/annual-reports","/images/publications-hero-v2.webp","Annual reports, publications and corporate records."],
+  ["Gallery","/gallery","/images/aviation-hero.jpg","Photographs and videos from across CEYPETCO."],
   ["Contact","/contact","/images/head-office.webp","Contact CEYPETCO offices and service teams."],
 ];
 module.exports = async function ensurePageContents(){

@@ -30,9 +30,10 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
+      localStorage.removeItem("ceypetco_token");
       localStorage.removeItem("ceypetco_user");
-      if (!window.location.pathname.startsWith("/login")) {
-        window.location.href = "/login";
+      if (window.location.pathname.startsWith("/admin")) {
+        window.location.replace("/login");
       }
     }
     return Promise.reject(error);

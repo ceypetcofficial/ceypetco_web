@@ -21,6 +21,7 @@ const pageManagers={
   "/news":[["News articles","/admin/news"]],
   "/notices":[["Notices","/admin/notices"]],
   "/media":[["News articles","/admin/news"],["Notices","/admin/notices"],["Annual reports","/admin/publications"]],
+  "/gallery":[["Gallery media","/admin/media"]],
   "/tenders":[["Tenders","/admin/tenders"],["Supplier resources","/admin/supplier-resources"]],
   "/projects":[["Projects","/admin/projects"]],
   "/careers":[["Career opportunities","/admin/careers"]],

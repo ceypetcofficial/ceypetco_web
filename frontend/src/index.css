@@ -120,6 +120,11 @@
   font-size: 10px;
   letter-spacing: 0.025em;
 }
+
+/* Public media gallery */
+.gallery-hero > img{object-position:center 45%}.gallery-content{background:#f7f9f9}.gallery-intro{max-width:760px;margin-bottom:28px}.gallery-intro h2{margin:8px 0 14px;color:var(--ink);font:800 clamp(30px,3.2vw,44px)/1 'League Spartan','Outfit','Space Grotesk',sans-serif;letter-spacing:-.035em}.gallery-intro>p:last-child{margin:0;color:var(--muted);font-size:17px;line-height:1.7}.gallery-filters{display:flex;gap:9px;margin:0 0 28px;padding-bottom:4px;overflow-x:auto;scrollbar-width:thin}.gallery-filters button{flex:0 0 auto;padding:10px 15px;border:1px solid #cfdcdf;border-radius:999px;background:#fff;color:#36535d;font:700 12px/1 'Outfit',sans-serif;cursor:pointer;transition:.2s ease}.gallery-filters button:hover,.gallery-filters button:focus-visible{border-color:var(--red);outline:0}.gallery-filters button[aria-pressed="true"]{border-color:var(--navy);background:var(--navy);color:#fff}.gallery-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}.gallery-card{position:relative;height:270px;padding:0;overflow:hidden;border:0;border-radius:4px;background:#dce5e7;color:#fff;text-align:left;cursor:pointer;box-shadow:0 12px 28px rgba(6,46,59,.09)}.gallery-card img{width:100%;height:100%;object-fit:cover;transition:transform .45s ease}.gallery-card-shade{position:absolute;inset:0;background:linear-gradient(180deg,transparent 30%,rgba(2,17,22,.9) 100%)}.gallery-card-copy{position:absolute;inset:auto 20px 19px;display:flex;flex-direction:column;align-items:flex-start}.gallery-card-copy small{color:#ffb2aa;font-size:10px;font-weight:800;letter-spacing:.13em;text-transform:uppercase}.gallery-card-copy strong{margin:7px 0 13px;font:800 20px/1.15 'League Spartan','Outfit',sans-serif}.gallery-card-copy em{display:flex;align-items:center;gap:8px;font-size:12px;font-style:normal;font-weight:800}.gallery-card-copy i{display:grid;width:25px;height:25px;place-items:center;border-radius:50%;background:var(--red);font-size:9px;font-style:normal}.gallery-card:hover img{transform:scale(1.055)}.gallery-card:focus-visible{outline:3px solid var(--red);outline-offset:3px}.gallery-status{min-height:180px;display:grid;place-items:center;margin:0;border:1px dashed #cfdcdf;color:var(--muted)}.gallery-error{color:#a61b1b}.gallery-viewer{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;z-index:10020;overflow:hidden;margin:0!important;padding:0!important;transform:none!important;background:rgba(2,17,22,.94);backdrop-filter:blur(10px)}.gallery-viewer-panel{position:fixed!important;top:50vh!important;left:50vw!important;width:min(1180px,calc(100vw - 64px))!important;max-width:calc(100vw - 64px)!important;max-height:calc(100vh - 48px);margin:0!important;transform:translate(-50%,-50%)!important;box-sizing:border-box;color:#fff}.gallery-viewer-top{height:40px;display:flex;align-items:center;justify-content:space-between;color:#b9c9cd;font-size:12px}.gallery-viewer-top button{width:38px;height:38px;border:1px solid rgba(255,255,255,.25);border-radius:50%;background:transparent;color:#fff;font-size:27px;line-height:1;cursor:pointer}.gallery-viewer-stage{position:relative;display:grid;height:min(68vh,720px);place-items:center;background:#011014}.gallery-viewer-stage img,.gallery-viewer-stage iframe{display:block;width:100%;height:100%;border:0;object-fit:contain}.gallery-viewer-prev,.gallery-viewer-next{position:absolute;z-index:2;top:50%;width:44px;height:52px;border:0;background:rgba(2,17,22,.72);color:#fff;font-size:34px;transform:translateY(-50%);cursor:pointer}.gallery-viewer-prev{left:12px}.gallery-viewer-next{right:12px}.gallery-viewer button:focus-visible{outline:3px solid #ff6458;outline-offset:2px}.gallery-viewer-caption{padding:17px 0}.gallery-viewer-caption span{color:#ff8c82;font-size:10px;font-weight:800;letter-spacing:.13em;text-transform:uppercase}.gallery-viewer-caption h2{margin:5px 0 0;font:800 clamp(22px,2.5vw,32px)/1.15 'League Spartan','Outfit',sans-serif}.gallery-viewer-caption p{margin:7px 0 0;max-width:760px;color:#c7d2d5;line-height:1.5}.gallery-viewer-error{color:#fff}.media-hub-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:1050px){.gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.gallery-card{height:280px}.media-hub-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.gallery-grid{grid-template-columns:1fr}.gallery-card{height:260px}.gallery-viewer-panel{width:calc(100vw - 24px)!important;max-width:calc(100vw - 24px)!important;max-height:calc(100vh - 20px)}.gallery-viewer-stage{height:60vh}.gallery-viewer-prev{left:5px}.gallery-viewer-next{right:5px}.media-hub-grid{grid-template-columns:1fr}}
 @media (max-width: 1000px) {.footer-main{
     grid-template-columns: 1.4fr 1fr 1fr;
   }.footer-contact{
@@ -132,6 +137,11 @@
     margin-bottom: 0;
   }
 }
+
+/* Refined fullscreen gallery viewer */
+.gallery-viewer{background:radial-gradient(circle at 50% 20%,rgba(21,71,82,.32),transparent 42%),rgba(1,13,18,.96);backdrop-filter:blur(18px) saturate(.8);animation:gallery-viewer-in .22s ease-out}.gallery-viewer-glow{position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,rgba(220,38,38,.08),transparent 28%,transparent 72%,rgba(20,92,107,.09))}.gallery-viewer-panel{display:grid;grid-template-rows:58px minmax(0,1fr) auto;width:min(1240px,calc(100vw - 72px))!important;max-width:calc(100vw - 72px)!important;max-height:calc(100vh - 44px);overflow:hidden;border:1px solid rgba(255,255,255,.14);border-radius:18px;background:#071b22;box-shadow:0 35px 100px rgba(0,0,0,.58),0 0 0 1px rgba(255,255,255,.025);animation:gallery-panel-in .28s cubic-bezier(.2,.75,.25,1)}.gallery-viewer-top{height:58px;padding:0 14px 0 22px;border-bottom:1px solid rgba(255,255,255,.1);background:rgba(7,27,34,.94)}.gallery-viewer-brand{display:flex;align-items:center;gap:12px}.gallery-viewer-brand span{color:#ff6c62;font-size:10px;font-weight:900;letter-spacing:.17em}.gallery-viewer-brand b{padding-left:12px;border-left:1px solid rgba(255,255,255,.18);color:#e8eff0;font-size:12px;letter-spacing:.02em}.gallery-viewer-tools{display:flex;align-items:center;gap:16px}.gallery-viewer-count{display:flex;align-items:baseline;gap:6px;color:#789097;font-size:11px;font-weight:800;letter-spacing:.08em}.gallery-viewer-count b{color:#fff;font-size:15px}.gallery-viewer-count i{color:#536d75;font-style:normal}.gallery-viewer-top button{display:grid;width:36px;height:36px;place-items:center;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);transition:background .2s,border-color .2s,transform .2s}.gallery-viewer-top button:hover{border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.12);transform:rotate(4deg)}.gallery-viewer-top button svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}.gallery-viewer-stage{height:min(65vh,720px);min-height:280px;background:linear-gradient(135deg,#020b0e,#051419);isolation:isolate}.gallery-viewer-stage:after{content:"";position:absolute;inset:0;z-index:-1;box-shadow:inset 0 0 80px rgba(0,0,0,.5);pointer-events:none}.gallery-viewer-stage img{padding:18px;filter:drop-shadow(0 16px 35px rgba(0,0,0,.38))}.gallery-viewer-stage iframe{background:#000}.gallery-viewer-type{position:absolute;z-index:3;top:16px;left:18px;padding:7px 10px;border:1px solid rgba(255,255,255,.14);border-radius:999px;background:rgba(2,17,22,.72);color:#d9e4e7;font-size:9px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;backdrop-filter:blur(8px)}.gallery-viewer-prev,.gallery-viewer-next{display:grid;width:46px;height:46px;place-items:center;border:1px solid rgba(255,255,255,.18);border-radius:50%;background:rgba(3,20,26,.8);box-shadow:0 8px 25px rgba(0,0,0,.28);transition:background .2s,border-color .2s,transform .2s}.gallery-viewer-prev:hover,.gallery-viewer-next:hover{border-color:#ff6c62;background:#dc2626}.gallery-viewer-prev:hover{transform:translateY(-50%) translateX(-2px)}.gallery-viewer-next:hover{transform:translateY(-50%) translateX(2px)}.gallery-viewer-prev svg,.gallery-viewer-next svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.gallery-viewer-prev{left:18px}.gallery-viewer-next{right:18px}.gallery-viewer-caption{display:flex;align-items:center;justify-content:space-between;gap:28px;min-height:112px;padding:19px 24px 22px;border-top:1px solid rgba(255,255,255,.09);background:linear-gradient(90deg,#09242d,#071b22)}.gallery-viewer-copy{min-width:0}.gallery-viewer-caption h2{margin:6px 0 0;font-size:clamp(23px,2.3vw,34px)}.gallery-viewer-caption p{margin-top:7px;font-size:13px;line-height:1.55}.gallery-viewer-hint{display:flex;flex:none;gap:20px;color:#789097;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em}.gallery-viewer-hint span{display:flex;align-items:center;gap:5px}.gallery-viewer-hint kbd{min-width:26px;padding:5px 6px;border:1px solid rgba(255,255,255,.15);border-bottom-color:rgba(255,255,255,.28);border-radius:5px;background:rgba(255,255,255,.06);color:#c8d5d8;font:700 9px/1 'Outfit',sans-serif;text-align:center}.gallery-viewer button:focus-visible{outline:2px solid #ff6c62;outline-offset:3px}@keyframes gallery-viewer-in{from{opacity:0}to{opacity:1}}@keyframes gallery-panel-in{from{opacity:0;transform:translate(-50%,-48%) scale(.985)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@media(max-width:700px){.gallery-viewer-panel{grid-template-rows:52px minmax(0,1fr) auto;width:calc(100vw - 20px)!important;max-width:calc(100vw - 20px)!important;max-height:calc(100vh - 18px);border-radius:13px}.gallery-viewer-top{height:52px;padding:0 9px 0 14px}.gallery-viewer-brand b{display:none}.gallery-viewer-brand span{font-size:9px}.gallery-viewer-tools{gap:10px}.gallery-viewer-stage{height:min(61vh,620px);min-height:230px}.gallery-viewer-stage img{padding:8px}.gallery-viewer-type{top:10px;left:10px}.gallery-viewer-prev,.gallery-viewer-next{width:40px;height:40px}.gallery-viewer-prev{left:9px}.gallery-viewer-next{right:9px}.gallery-viewer-caption{min-height:98px;padding:15px 17px 17px}.gallery-viewer-caption h2{font-size:22px}.gallery-viewer-caption p{display:-webkit-box;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2}.gallery-viewer-hint{display:none}}
+@media(prefers-reduced-motion:reduce){.gallery-viewer,.gallery-viewer-panel{animation:none}.gallery-viewer-stage img,.gallery-viewer button{transition:none}}
 @media (max-width: 700px) {.footer-main{
     grid-template-columns: 1fr 1fr;
     gap: 28px 25px;
@@ -240,6 +250,11 @@
 }a{
   text-decoration: none;
   color: inherit;
+}.gallery-dashboard-action, .gallery-dashboard-action:visited, .gallery-dashboard-action:hover, .gallery-dashboard-action:focus-visible{
+  color: #fff !important;
+}.gallery-dashboard-action svg{
+  color: #fff !important;
+  stroke: #fff !important;
 }.container{
   width: min(1180px, calc(100% - 48px));
   margin: auto;
@@ -6161,18 +6176,12 @@
   color: var(--red);
 }.price-effective b{
   color: var(--ink);
-}.black-oil .price-category-title > span, .black-oil .fuel-price-card{
-  border-color: var(--navy);
-}.black-oil .price-category-title > span{
-  background: var(--red);
-}.black-oil .price-card-top span{
-  color: var(--navy);
 }.pricing-note{
   display: flex;
   align-items: center;
   gap: 17px;
-  margin-top: 35px;
-  padding: 22px 25px;
+  margin-top: 48px;
+  padding: 34px 35px;
   background: #fff;
   border-left: 3px solid var(--red);
 }.pricing-note svg{
@@ -6180,9 +6189,47 @@
 }.pricing-note b{
   font: 700 12px 'Outfit', 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
 }.pricing-note p{
-  font-size: 11px;
+  font-size: 15px;
   color: var(--muted);
-  margin: 5px 0 0;
+  margin: 8px 0 0;
+}.hp-marketing-link{
+  min-height: 182px;
+  margin-top: 44px;
+  padding: 36px 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  color: #fff;
+  background: linear-gradient(110deg, #073a49 0%, #123b4b 38%, #2e3445 68%, #752536 100%);
+  border-radius: 3px;
+  box-shadow: 0 14px 28px rgba(6, 46, 59, 0.12);
+  text-decoration: none;
+}.hp-marketing-link > span:first-child{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}.hp-marketing-link small{
+  color: #ff9da6;
+  font: 700 11px 'Outfit', 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: 0.14em;
+}.hp-marketing-link b{
+  margin-top: 13px;
+  font: 800 27px/1.1 'League Spartan', 'Outfit', 'Space Grotesk', sans-serif;
+}.hp-marketing-link > span:first-child > span{
+  margin-top: 13px;
+  font-size: 14px;
+}.hp-marketing-link > svg{
+  flex: 0 0 auto;
+  width: 76px;
+  height: 76px;
+  padding: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 50%;
+  transition: transform 0.25s, background 0.25s;
+}.hp-marketing-link:hover > svg{
+  transform: translateX(5px);
+  background: rgba(255, 255, 255, 0.08);
 }.marketing-resources{
   padding: 85px 0;
   background: var(--navy);
@@ -6247,6 +6294,26 @@
     margin-top: 55px;
   }.fuel-price-card{
     min-height: 230px;
+  }.pricing-note{
+    align-items: flex-start;
+    margin-top: 32px;
+    padding: 22px 20px;
+  }.pricing-note p{
+    font-size: 12px;
+    line-height: 1.55;
+  }.hp-marketing-link{
+    min-height: 0;
+    margin-top: 28px;
+    padding: 28px 22px;
+  }.hp-marketing-link b{
+    font-size: 23px;
+  }.hp-marketing-link > span:first-child > span{
+    font-size: 12px;
+    line-height: 1.55;
+  }.hp-marketing-link > svg{
+    width: 48px;
+    height: 48px;
+    padding: 14px;
   }.marketing-resources{
     padding: 65px 0;
   }
@@ -6719,6 +6786,18 @@
 }.goog-te-banner-frame, .goog-te-banner-frame.skiptranslate, .goog-te-balloon-frame, .goog-te-spinner-pos, .goog-te-spinner, .goog-te-gadget-icon, .goog-te-menu-frame, .goog-te-ftr, .goog-te-gadget + .skiptranslate, #goog-gt-tt, .goog-logo-link, .goog-te-gadget-simple .goog-te-gadget-icon, iframe.goog-te-banner-frame, iframe.goog-te-balloon-frame{
   display: none !important;
   visibility: hidden !important;
+}.google-translate-engine, #google_translate_element, .goog-te-gadget,
+.goog-te-gadget-simple, .goog-te-gadget-icon,
+.VIpgJd-ZVi9od-xl07Ob-lTBxed, .VIpgJd-ZVi9od-aZ2wEe-wOHMyf{
+  position: fixed !important;
+  top: -10000px !important;
+  left: -10000px !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }body{
   top: 0 !important;
   margin-top: 0 !important;
@@ -10635,6 +10714,7 @@
     flex-direction: column;
     flex-wrap: nowrap;
     align-items: stretch;
+    justify-content: flex-start;
     overflow-x: hidden;
     overflow-y: auto;
   }.site-shell .header .nav.open{
@@ -10676,7 +10756,7 @@
     background: var(--red);
   }.site-shell .header .nav{
     gap: 0;
-    padding: 18px 20px max(28px, env(safe-area-inset-bottom));
+    padding: 12px 20px max(22px, env(safe-area-inset-bottom));
     border: 0;
     border-top: 1px solid #edf0ef;
     border-radius: 4px;
@@ -10688,7 +10768,7 @@
   }.site-shell .header .nav::before{
     content: 'Navigation';
     display: block;
-    margin: 2px 4px 12px;
+    margin: 2px 4px 8px;
     color: #829297;
     font-size: 10px;
     font-weight: 800;
@@ -10696,7 +10776,7 @@
     text-transform: uppercase;
     flex: 0 0 auto;
   }.site-shell .header .nav > a:not(.nav-cta), .site-shell .header .nav-group > a{
-    min-height: 52px;
+    min-height: 48px;
     padding: 0 15px !important;
     display: flex;
     align-items: center;
@@ -11674,7 +11754,7 @@
   line-height: 1.7;
 }.media-hub-grid{
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 20px;
 }.media-hub-card{
   display: flex;
@@ -12400,4 +12480,394 @@
     height: 38px !important;
     background-color: #e31837 !important;
     border-radius: 4px !important;
+}
+
+/* Unified public-site mobile polish. Desktop and tablet rules are untouched. */
+@media (max-width: 700px) {
+  html, body, #root, .site-shell, .page-transition-wrapper, .site-shell main {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
+  }
+  .site-shell *, .site-shell *::before, .site-shell *::after { box-sizing: border-box; }
+  .site-shell main :where(section, article, div, form, nav, header, footer),
+  .site-shell main :where(h1, h2, h3, h4, p, a, span, strong, small) { min-width: 0; }
+  .site-shell .container, .site-shell .nav-wrap, .site-shell .payment-options > .container {
+    width: calc(100% - 32px);
+    max-width: 100%;
+    margin-right: auto;
+    margin-left: auto;
+  }
+  .site-shell :where(h1, h2, h3, h4, p, li, dd, dt, a, strong, small) {
+    overflow-wrap: break-word;
+  }
+
+  /* Header and navigation */
+  .site-shell .header .nav-wrap { width: calc(100% - 28px); }
+  .site-shell .header .brand { max-width: calc(100% - 58px); }
+  .site-shell .header .menu-button { display: block; margin-left: auto; }
+
+  /* Inner-page heroes */
+  .site-shell .page-hero {
+    display: flex;
+    min-height: 430px;
+    height: auto;
+    align-items: flex-end;
+  }
+  .site-shell .page-hero::after {
+    width: 100%;
+    background: linear-gradient(180deg, rgba(3,25,33,.18) 0%, rgba(3,25,33,.82) 100%);
+  }
+  .site-shell .page-hero > img { object-position: center; }
+  .site-shell .page-hero-copy {
+    position: relative;
+    width: calc(100% - 32px);
+    padding: 64px 0 34px;
+  }
+  .site-shell .page-hero-copy .eyebrow {
+    margin-bottom: 12px;
+    font-size: 10px;
+    line-height: 1.4;
+    letter-spacing: .14em;
+  }
+  .site-shell .page-hero-copy h1 {
+    width: 100%;
+    max-width: 350px;
+    margin: 0;
+    font-size: clamp(36px, 10.5vw, 42px);
+    line-height: .98;
+    letter-spacing: -.035em;
+    text-wrap: balance;
+    word-break: normal;
+  }
+  .site-shell .page-hero-copy > p:not(.eyebrow) {
+    max-width: 350px;
+    margin-top: 18px;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .site-shell .page-hero-caption, .site-shell .page-hero-logo { display: none; }
+  .site-shell .breadcrumbs {
+    display: flex;
+    max-width: 100%;
+    margin-top: 22px;
+    flex-wrap: wrap;
+    gap: 6px 9px;
+    font-size: 11px;
+    line-height: 1.45;
+  }
+  .site-shell .breadcrumbs b { max-width: calc(100% - 54px); }
+
+  /* Horizontally scrollable secondary navigation */
+  .site-shell .media-section-nav, .site-shell .subpage-nav {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .site-shell .media-section-nav::-webkit-scrollbar,
+  .site-shell .subpage-nav::-webkit-scrollbar { display: none; }
+  .site-shell .media-section-nav > .container,
+  .site-shell .subpage-nav > .container {
+    width: max-content;
+    min-width: 100%;
+    max-width: none;
+    padding: 0 16px;
+    gap: 24px !important;
+  }
+  .site-shell .media-section-nav a, .site-shell .subpage-nav a,
+  .site-shell .subpage-nav span { flex: 0 0 auto; white-space: nowrap; }
+  .site-shell .subpage-nav span { display: none; }
+  .site-shell .public-access-backbar .container { width: calc(100% - 32px); }
+  .site-shell .public-access-backbar a { min-height: 56px; font-size: 10px; line-height: 1.35; }
+
+  /* Consistent mobile typography and spacing */
+  .site-shell :where(.section, .content-section) { padding-top: 52px; padding-bottom: 52px; }
+  .site-shell :where(
+    .page-title-row h2, .section-heading h2, .services-intro h2,
+    .notices-heading h2, .tenders-heading h2, .annual-reports-heading h2,
+    .regional-offices-heading h2, .media-hub-heading h2, .careers-intro h2,
+    .current-opportunities-heading h3, .contact-directory-heading h2,
+    .refinery-opening h2, .refinery-sticky-title h2, .refinery-importance-heading h2,
+    .marketing-intro h2, .aviation-opening h2, .agro-opening h2,
+    .lubricant-intro h2, .additional-operation-section-heading h2,
+    .bulk-section-heading h2, .rti-heading h2
+  ) {
+    max-width: 100%;
+    font-size: clamp(29px, 8.6vw, 35px);
+    line-height: 1.04;
+    letter-spacing: -.035em;
+    text-wrap: balance;
+    word-break: normal;
+  }
+  .site-shell :where(.section, .content-section) p,
+  .site-shell :where(.services-intro, .careers-intro, .page-title-row) > p {
+    max-width: 100%;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  .site-shell :where(.content-section, .contact-directory) .container > * {
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+  .site-shell .content-section h2,
+  .site-shell .contact-directory-heading h2,
+  .site-shell .refinery-opening h2,
+  .site-shell .refinery-sticky-title h2,
+  .site-shell .refinery-importance-heading h2 {
+    width: calc(100vw - 32px) !important;
+    max-width: calc(100vw - 32px) !important;
+    font-size: clamp(28px, 8vw, 32px) !important;
+    line-height: 1.04 !important;
+    letter-spacing: -.035em !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: normal !important;
+    text-wrap: wrap;
+  }
+  .site-shell .content-section :where(p, li, dd),
+  .site-shell .contact-directory :where(p, address) {
+    max-width: calc(100vw - 32px) !important;
+  }
+  .site-shell .contact-directory-heading {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+    align-items: start;
+  }
+  .site-shell .contact-directory-heading address {
+    max-width: 100%;
+    margin-top: 0;
+    text-align: left;
+  }
+
+  /* Collapse every major content grid to one readable column. */
+  .site-shell :where(
+    .about-grid, .story-grid, .vision-grid, .directory-grid, .news-grid,
+    .notice-document-grid, .annual-report-grid, .regional-office-grid,
+    .contact-grid, .contact-location-grid, .management-profile-grid,
+    .careers-hub-grid, .career-vacancy-details, .corporate-life-lead,
+    .corporate-life-pillars, .corporate-life-path-grid, .subsidiaries-grid,
+    .energy-institutions-grid, .mobile-apps-grid, .mobile-apps-intro-grid,
+    .mobile-apps-steps-grid, .additional-operation-detail-grid,
+    .additional-operation-spec-grid, .additional-operation-faq-grid,
+    .additional-operation-enquiry-grid, .bulk-consumer-intro-grid,
+    .bulk-step-grid, .bulk-resource-grid, .bulk-region-grid,
+    .refinery-opening-grid, .refinery-history-grid, .process-units-grid,
+    .refinery-importance-grid, .marketing-intro-grid, .aviation-opening-grid,
+    .aviation-payment-grid, .aviation-fuel-grid, .aviation-location-grid,
+    .agro-opening-grid, .agro-role-grid, .agro-strategy-grid, .agro-cert-grid,
+    .agro-product-grid, .lubricant-intro-grid, .lubricant-purpose-grid
+  ) { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+
+  /* Cards and media */
+  .site-shell :where(
+    .service-card, .news-preview, .notice-card, .tender-card,
+    .regional-office-card, .career-vacancy, .careers-hub-card,
+    .media-hub-card, .subsidiary-card, .energy-institution-card,
+    .mobile-app-card, .division-card, .fuel-price-card
+  ) { width: 100%; max-width: 100%; border-radius: 8px; }
+  .site-shell :where(.service-card, .news-preview, .tender-card, .career-vacancy) img {
+    max-width: 100%;
+    height: auto;
+  }
+  .site-shell .career-vacancy-list { width: 100%; max-width: 100%; }
+  .site-shell .career-vacancy { padding: 22px 18px; }
+  .site-shell .career-vacancy-top {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  .site-shell .career-vacancy-top h3 { font-size: 24px; line-height: 1.12; }
+  .site-shell .career-vacancy-meta { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  /* Forms and data */
+  .site-shell :where(input, select, textarea, button) { max-width: 100%; font-size: 16px; }
+  .site-shell :where(input, select) { min-height: 48px; }
+  .site-shell textarea { min-height: 132px; }
+  .site-shell .contact-form { width: 100%; padding: 22px 18px; }
+  .site-shell :where(.table-wrap, .price-table-wrap, .historical-price-table-wrap) {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Home hero and footer */
+  .site-shell .hero { min-height: 600px; height: calc(100svh - 68px); }
+  .site-shell .hero-copy-panel h1 {
+    max-width: 330px;
+    font-size: clamp(39px, 11.5vw, 47px);
+    line-height: .98;
+    word-break: normal;
+  }
+  .site-shell .hero-copy-panel .hero-copy {
+    max-width: 330px;
+    font-size: 15px;
+    line-height: 1.58;
+  }
+  .site-shell .footer-main, .site-shell .footer-bottom > .container {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+}
+
+@media (min-width: 701px) {
+  .site-shell .page-hero-caption {
+    max-width: 440px;
+    padding: 13px 18px;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.55;
+    background: rgba(5, 30, 38, 0.48);
+  }
+}
+
+/* Compact phone and narrow-tablet scale. Kept separate to override legacy
+   component dimensions without changing any desktop declaration. */
+@media (max-width: 700px) {
+  .site-shell .header {
+    position: fixed !important;
+    top: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    height: 68px;
+    z-index: 1000;
+  }
+  .site-shell .page-transition-wrapper {
+    padding-top: 68px;
+  }
+  .site-shell .header .nav {
+    top: 68px !important;
+    height: calc(100dvh - 68px) !important;
+    max-height: calc(100dvh - 68px) !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  .site-shell .hero {
+    min-height: 520px !important;
+    height: min(620px, calc(100svh - 68px)) !important;
+  }
+  .site-shell .hero-inner { padding-bottom: 34px !important; }
+  .site-shell .hero-copy-panel { padding-left: 14px !important; }
+  .site-shell .hero-copy-panel h1 {
+    max-width: 300px !important;
+    font-size: clamp(32px, 8.7vw, 38px) !important;
+    line-height: 1 !important;
+    letter-spacing: -.035em !important;
+  }
+  .site-shell .hero-copy-panel .eyebrow {
+    margin-bottom: 9px !important;
+    font-size: 9px !important;
+  }
+  .site-shell .hero-copy-panel .hero-copy {
+    max-width: 300px !important;
+    margin: 14px 0 18px !important;
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+  }
+  .site-shell .hero-link {
+    width: auto !important;
+    min-height: 44px !important;
+    padding: 0 15px !important;
+    font-size: 10px !important;
+  }
+  .site-shell .slider-arrow {
+    width: 36px !important;
+    height: 46px !important;
+  }
+  .site-shell .slider-arrow svg { width: 16px; height: 16px; }
+  .site-shell .hero-slide-progress { width: 56px !important; }
+
+  .site-shell .page-hero { min-height: 380px !important; }
+  .site-shell .page-hero-copy { padding: 48px 0 28px !important; }
+  .site-shell .page-hero-copy h1 {
+    max-width: 310px !important;
+    font-size: clamp(30px, 8vw, 34px) !important;
+    line-height: 1 !important;
+  }
+  .site-shell .page-hero-copy > p:not(.eyebrow) {
+    margin-top: 13px !important;
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+  }
+  .site-shell .breadcrumbs { margin-top: 17px !important; font-size: 10px !important; }
+
+  .site-shell :where(.section, .content-section) {
+    padding-top: 42px !important;
+    padding-bottom: 42px !important;
+  }
+  .site-shell .content-section h2,
+  .site-shell .contact-directory-heading h2,
+  .site-shell .refinery-opening h2,
+  .site-shell .refinery-sticky-title h2,
+  .site-shell .refinery-importance-heading h2,
+  .site-shell .section-heading h2,
+  .site-shell .page-title-row h2 {
+    font-size: clamp(25px, 7vw, 29px) !important;
+    line-height: 1.08 !important;
+  }
+  .site-shell :where(.section, .content-section) p,
+  .site-shell .contact-directory p,
+  .site-shell .contact-directory address {
+    font-size: 14px !important;
+    line-height: 1.6 !important;
+  }
+  .site-shell .eyebrow {
+    margin-bottom: 8px !important;
+    font-size: 9px !important;
+  }
+
+  .site-shell :where(
+    .about-grid, .story-grid, .vision-grid, .directory-grid, .news-grid,
+    .notice-document-grid, .annual-report-grid, .regional-office-grid,
+    .contact-grid, .contact-location-grid, .careers-hub-grid,
+    .career-vacancy-details, .corporate-life-pillars, .corporate-life-path-grid,
+    .subsidiaries-grid, .energy-institutions-grid, .mobile-apps-grid,
+    .mobile-apps-steps-grid, .bulk-step-grid, .bulk-resource-grid,
+    .bulk-region-grid, .process-units-grid, .refinery-importance-grid,
+    .aviation-location-grid, .agro-cert-grid, .agro-product-grid
+  ) { gap: 14px !important; }
+
+  .site-shell :where(
+    .home-service-card, .home-services-all, .service-card-body,
+    .regional-office-card, .career-vacancy, .careers-hub-card,
+    .media-hub-card, .subsidiary-card, .energy-institution-card,
+    .mobile-app-card, .division-card, .fuel-price-card,
+    .contact-location-grid article, .corporate-life-pillars article,
+    .corporate-life-path-grid article, .bulk-step-grid article,
+    .bulk-region-grid article, .process-units-grid article
+  ) {
+    min-height: 0 !important;
+    padding: 18px !important;
+  }
+  .site-shell .service-card-body { min-height: 0 !important; }
+  .site-shell :where(.service-card-image, .news-image) { height: 160px !important; }
+  .site-shell :where(
+    .home-service-card h3, .service-card-body h3, .regional-office-card h3,
+    .career-vacancy h3, .careers-hub-card h3, .media-hub-card h3,
+    .subsidiary-card h3, .energy-institution-card h3, .mobile-app-card h3,
+    .division-card h3, .fuel-price-card h3, .news-grid h3, .tender-card h3
+  ) {
+    margin-top: 8px !important;
+    margin-bottom: 8px !important;
+    font-size: 18px !important;
+    line-height: 1.2 !important;
+  }
+  .site-shell :where(
+    .home-service-card p, .service-card-body p, .regional-office-card p,
+    .career-vacancy p, .careers-hub-card p, .media-hub-card p,
+    .subsidiary-card p, .energy-institution-card p, .mobile-app-card p,
+    .division-card p, .fuel-price-card p, .news-grid p, .tender-card p
+  ) { font-size: 13px !important; line-height: 1.55 !important; }
+  .site-shell .home-service-icon { width: 42px !important; height: 42px !important; }
+  .site-shell .career-vacancy { padding: 18px !important; }
+  .site-shell .career-vacancy-top h3 { font-size: 19px !important; }
+  .site-shell :where(.button, .career-button, .contact-form button) {
+    min-height: 44px !important;
+    padding: 0 15px !important;
+    font-size: 11px !important;
+  }
 }
