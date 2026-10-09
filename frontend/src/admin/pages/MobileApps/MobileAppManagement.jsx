@@ -20,6 +20,7 @@ import Pagination from "../../components/Pagination";
 import Modal from "../../components/Modal";
 import Loading from "../../components/Loading";
 import { Field, inputClass, textareaClass, selectClass } from "../../components/form.jsx";
+import displayImageUrl from "../../../utils/displayImageUrl.js";
 
 const getApiOrigin = () =>
   (import.meta.env.VITE_API_BASE_URL || "")
@@ -287,7 +288,7 @@ const MobileAppManagement = () => {
                           <div className="w-11 h-11 rounded-lg bg-red-50 border border-red-100 flex items-center justify-center shrink-0 overflow-hidden">
                             {item.appIcon ? (
                               <img
-                                src={item.appIcon}
+                                src={displayImageUrl(item.appIcon)}
                                 alt={item.title}
                                 className="w-full h-full object-cover"
                               />
@@ -427,7 +428,7 @@ const MobileAppManagement = () => {
               <div className="w-16 h-16 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden shrink-0">
                 {form.appIcon ? (
                   <img
-                    src={form.appIcon}
+                    src={displayImageUrl(form.appIcon)}
                     alt="App icon preview"
                     className="w-full h-full object-cover"
                   />

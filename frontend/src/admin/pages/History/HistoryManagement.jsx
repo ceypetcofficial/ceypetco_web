@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { ArrowDown, ArrowUp, Edit3, Plus, Trash2, Upload } from "lucide-react";
 import api from "../../../services/api";
+import displayImageUrl from "../../../utils/displayImageUrl.js";
 import { historyPageService } from "../../../services/contentService";
 import Modal from "../../components/Modal";
 import Loading from "../../components/Loading";
@@ -177,7 +178,7 @@ export default function HistoryManagement() {
           <div className="space-y-3">
             {data[kind].map((item, index) => (
               <div key={item._id || index} className="flex items-center gap-4 rounded-lg border border-slate-200 p-3">
-                {kind === "gallery" && <img src={item.image} alt={item.alt || ""} className="w-20 h-14 rounded object-cover shrink-0" />}
+                {kind === "gallery" && <img src={displayImageUrl(item.image)} alt={item.alt || ""} className="w-20 h-14 rounded object-cover shrink-0" />}
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-[#092f3b]">{kind === "milestones" ? item.year : item.caption || `Image ${index + 1}`}</p>
                   <p className="text-sm text-slate-500 truncate">{kind === "milestones" ? item.text : item.image}</p>

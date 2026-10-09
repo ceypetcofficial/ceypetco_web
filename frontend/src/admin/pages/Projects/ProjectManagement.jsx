@@ -22,6 +22,7 @@ import Pagination from "../../components/Pagination";
 import Modal from "../../components/Modal";
 import Loading from "../../components/Loading";
 import { Field, inputClass, textareaClass, selectClass } from "../../components/form.jsx";
+import displayImageUrl from "../../../utils/displayImageUrl.js";
 
 const emptyForm = {
   title: "",
@@ -312,7 +313,7 @@ const ProjectManagement = () => {
                         <div className="flex items-center gap-3">
                           {item.featuredImage ? (
                             <img
-                              src={item.featuredImage}
+                              src={displayImageUrl(item.featuredImage)}
                               alt=""
                               className="w-12 h-12 rounded-lg object-cover shrink-0"
                             />

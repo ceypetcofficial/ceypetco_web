@@ -20,6 +20,7 @@ import Pagination from "../../components/Pagination";
 import Modal from "../../components/Modal";
 import Loading from "../../components/Loading";
 import { Field, inputClass, textareaClass, selectClass } from "../../components/form.jsx";
+import displayImageUrl from "../../../utils/displayImageUrl.js";
 
 const emptyForm = {
   title: "",
@@ -259,7 +260,7 @@ const ServicesManagement = () => {
                           <div className="w-12 h-12 rounded-lg bg-slate-50 border border-slate-200 overflow-hidden shrink-0 flex items-center justify-center">
                             {item.image ? (
                               <img
-                                src={item.image}
+                                src={displayImageUrl(item.image)}
                                 alt=""
                                 className="w-full h-full object-cover"
                               />

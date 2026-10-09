@@ -6,12 +6,16 @@ node_modules/
 .env.*
 !.env.example
 !.env.*.example
+!frontend/.env.production
 *.env
 !*.env.example
 
 # Build output
 dist/
 build/
+frontend-dist-*.zip
+ceypetco-backend-upload-images.zip
+ceypetco-backend-upload-images.tar.gz
 
 # Logs
 logs/

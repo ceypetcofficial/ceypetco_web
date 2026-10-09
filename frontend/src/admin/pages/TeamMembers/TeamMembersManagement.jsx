@@ -15,6 +15,7 @@ import StatusBadge from "../../components/StatusBadge";
 import Modal from "../../components/Modal";
 import Loading from "../../components/Loading";
 import { Field, inputClass, selectClass, textareaClass } from "../../components/form.jsx";
+import displayImageUrl from "../../../utils/displayImageUrl.js";
 
 const getApiOrigin = () =>
   (import.meta.env.VITE_API_BASE_URL || "")
@@ -254,7 +255,7 @@ const TeamMembersManagement = () => {
                     <td className="px-4 py-4">
                       {item.photo ? (
                         <img
-                          src={item.photo}
+                          src={displayImageUrl(item.photo)}
                           alt={item.name}
                           className="w-10 h-10 rounded-lg object-cover"
                         />
@@ -333,7 +334,7 @@ const TeamMembersManagement = () => {
           <div className="flex items-center gap-4">
             {form.photo ? (
               <img
-                src={form.photo}
+                src={displayImageUrl(form.photo)}
                 alt="preview"
                 className="w-16 h-16 rounded-xl object-cover border border-slate-200"
               />

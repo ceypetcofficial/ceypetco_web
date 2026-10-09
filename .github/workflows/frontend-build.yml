@@ -1,20 +1,26 @@
-name: Build and Prepare React Frontend
+name: Deploy React frontend to CloudPanel
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
     paths:
-      - 'frontend/**'
-      - '.github/workflows/frontend-build.yml'
+      - "frontend/**"
+      - "deploy/cloudpanel-frontend-deploy.sh"
+      - ".github/workflows/frontend-build.yml"
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: ceypetco-production-frontend
+  cancel-in-progress: false
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 20
 
     steps:
       - name: Checkout repository
@@ -23,21 +29,55 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: '22'
-          cache: 'npm'
+          node-version: "22"
+          cache: npm
           cache-dependency-path: frontend/package-lock.json
 
-      - name: Install dependencies
+      - name: Install locked dependencies
         working-directory: frontend
         run: npm ci
 
-      - name: Build React frontend
+      - name: Build production frontend
         working-directory: frontend
+        env:
+          VITE_API_BASE_URL: https://api.ceypetco.gov.lk
         run: npm run build
 
-      - name: Deploy build to frontend-deploy branch
-        uses: JamesIves/github-pages-deploy-action@6c2d9db40f9296374acc17b90404b6e8864128c8 # v4.7.3
-        with:
-          branch: frontend-deploy
-          folder: frontend/dist
-          clean: true
+      - name: Validate build output
+        run: |
+          test -s frontend/dist/index.html
+          test -d frontend/dist/assets
+          grep -Rqs "https://api.ceypetco.gov.lk" frontend/dist/assets
+
+      - name: Package build
+        run: tar -C frontend/dist -czf "frontend-${GITHUB_SHA}.tar.gz" .
+
+      - name: Configure SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.CLOUDPANEL_SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.CLOUDPANEL_SSH_KNOWN_HOSTS }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Upload and deploy frontend only
+        env:
+          SSH_HOST: ${{ secrets.CLOUDPANEL_SSH_HOST }}
+          SSH_PORT: ${{ secrets.CLOUDPANEL_SSH_PORT }}
+          SSH_USER: ${{ secrets.CLOUDPANEL_SSH_USER }}
+        run: |
+          remote="${SSH_USER}@${SSH_HOST}"
+          ssh -p "$SSH_PORT" "$remote" 'mkdir -p "$HOME/ceypetco-deployments" "$HOME/.local/bin"'
+          scp -P "$SSH_PORT" deploy/cloudpanel-frontend-deploy.sh "$remote:.local/bin/ceypetco-frontend-deploy"
+          scp -P "$SSH_PORT" "frontend-${GITHUB_SHA}.tar.gz" "$remote:ceypetco-deployments/frontend-${GITHUB_SHA}.tar.gz"
+          ssh -p "$SSH_PORT" "$remote" "chmod 700 ~/.local/bin/ceypetco-frontend-deploy && ~/.local/bin/ceypetco-frontend-deploy '${GITHUB_SHA}' ~/ceypetco-deployments/frontend-${GITHUB_SHA}.tar.gz"
+
+      - name: Verify production
+        run: |
+          curl --fail --silent --show-error --retry 5 --retry-delay 3 https://ceypetco.gov.lk/ >/dev/null
+          curl --fail --silent --show-error --retry 5 --retry-delay 3 https://ceypetco.gov.lk/gallery >/dev/null
+          curl --fail --silent --show-error https://api.ceypetco.gov.lk/api/health >/dev/null
+

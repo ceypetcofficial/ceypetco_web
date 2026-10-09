@@ -23,6 +23,7 @@ import StatusBadge from "../../components/StatusBadge";
 import Modal from "../../components/Modal";
 import Loading from "../../components/Loading";
 import { Field, inputClass, textareaClass, selectClass } from "../../components/form.jsx";
+import displayImageUrl from "../../../utils/displayImageUrl.js";
 
 const getApiOrigin = () =>
   (import.meta.env.VITE_API_BASE_URL || "")
@@ -373,7 +374,7 @@ const SupplierResources = () => {
                     <td className="px-4 py-4 hidden md:table-cell">
                       {item.url ? (
                         <a
-                          href={item.url}
+                          href={displayImageUrl(item.url)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1.5 text-xs text-red-600 hover:text-red-700 max-w-xs truncate"

@@ -1253,7 +1253,7 @@ function ManagementTeam() {
 
   const renderPhoto = (member) =>
     member.photo ? (
-      <img src={member.photo} alt={member.name} />
+      <img src={displayImageUrl(member.photo)} alt={member.name} />
     ) : (
       <span className="leader-photo-fallback">
         {member.name
@@ -1406,7 +1406,7 @@ function ManagementTeamProfile({ memberId }) {
           <div className="management-profile-grid">
             <figure className="management-profile-photo">
               {member.photo ? (
-                <img src={member.photo} alt={member.name} />
+                <img src={displayImageUrl(member.photo)} alt={member.name} />
               ) : (
                 <span>{member.name.slice(0, 2).toUpperCase()}</span>
               )}
@@ -1776,7 +1776,7 @@ function HistoryPage({ data }) {
                 key={item._id || index}
               >
                 <img
-                  src={item.image}
+                  src={displayImageUrl(item.image)}
                   alt={item.alt || ''}
                 />
                 {item.caption && <figcaption>{item.caption}</figcaption>}
@@ -1921,7 +1921,7 @@ function MobileAppsPage() {
     return app.appIcon ? (
       <img
         className={`mobile-app-icon-img${size ? ` mobile-app-icon-img-${size}` : ''}`}
-        src={app.appIcon}
+        src={displayImageUrl(app.appIcon)}
         alt={`${app.title} icon`}
         loading="lazy"
       />
@@ -5212,7 +5212,7 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
                   <div className="annual-report-grid">
                     {annualReports.slice(1).map((report, index) => (
                       <a
-                        href={report.url}
+                        href={displayImageUrl(report.url)}
                         target="_blank"
                         rel="noreferrer"
                         key={report._id}
@@ -5536,7 +5536,7 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
                 ) : (
                   supplierResources.map((resource) => (
                     <a
-                      href={resource.url || '#'}
+                      href={displayImageUrl(resource.url) || '#'}
                       key={resource._id}
                       target="_blank"
                       rel="noreferrer"
@@ -6497,7 +6497,7 @@ function App() {
               {heroSlides.map((item, index) => (
                 <img
                   className={`hero-photo hero-photo-${index + 1} ${index === slide ? 'active' : ''}`}
-                  src={item.image}
+                  src={displayImageUrl(item.image)}
                   alt={item.alt}
                   key={item.image}
                 />

@@ -21,6 +21,7 @@ import Modal from "../../components/Modal";
 import Loading from "../../components/Loading";
 import { Field, inputClass, textareaClass, selectClass } from "../../components/form.jsx";
 import PopupNotice from "../../../components/PopupNotice";
+import displayImageUrl from "../../../utils/displayImageUrl.js";
 
 const emptyForm = {
   title: "",
@@ -296,7 +297,7 @@ const PopupNoticeManagement = () => {
                         <div className="flex items-center gap-3">
                           {item.imageUrl ? (
                             <img
-                              src={item.imageUrl}
+                              src={displayImageUrl(item.imageUrl)}
                               alt=""
                               className="w-10 h-10 rounded-lg object-cover border border-slate-200 shrink-0"
                             />
@@ -459,7 +460,7 @@ const PopupNoticeManagement = () => {
               </div>
               {form.imageUrl && (
                 <img
-                  src={form.imageUrl}
+                  src={displayImageUrl(form.imageUrl)}
                   alt="Popup banner preview"
                   className="w-full max-h-44 object-cover rounded-lg border border-slate-200"
                 />

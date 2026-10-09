@@ -6,6 +6,7 @@ import { divisionService } from "../../../services/contentService";
 import StatusBadge from "../../components/StatusBadge";
 import Pagination from "../../components/Pagination";
 import Loading from "../../components/Loading";
+import displayImageUrl from "../../../utils/displayImageUrl.js";
 
 const DivisionManagement = () => {
   const [items, setItems] = useState([]);
@@ -112,7 +113,7 @@ const DivisionManagement = () => {
                           <div className="w-14 h-14 rounded-lg bg-slate-50 border border-slate-200 overflow-hidden shrink-0 flex items-center justify-center">
                             {item.image ? (
                               <img
-                                src={item.image}
+                                src={displayImageUrl(item.image)}
                                 alt=""
                                 className="w-full h-full object-cover"
                               />
