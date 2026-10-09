@@ -751,7 +751,7 @@ const pageData = {
     title: 'Precision refining for national growth',
     intro:
       'Transforming crude oil into quality fuels through experienced people, proven processes and rigorous standards',
-    image: 'https://ceypetco.gov.lk/wp-content/uploads/2025/03/ref9.jpg',
+    image: '/images/refinery.png',
   },
   '/marketing-sales': {
     label: 'OUR SERVICES · MARKETING',
