@@ -2,6 +2,7 @@ const path = require("path");
 const fs = require("fs");
 const crypto = require("crypto");
 const multer = require("multer");
+const sharp = require("sharp");
 const { getPublicAssetOrigin, isProduction } = require("../config/env");
 const { getPool } = require("../config/db");
 
@@ -86,13 +87,26 @@ const saveToDisk = async (req, isDoc) => {
   // Documents are private by default. Public-site editors must opt in explicitly.
   const isPrivate = isDoc && req.body?.visibility !== "public";
   const folder = isDoc ? "docs" : "images";
-  const ext = path.extname(req.file.originalname).toLowerCase();
+  let uploadBuffer = req.file.buffer;
+  let uploadMime = req.file.mimetype;
+  let ext = path.extname(req.file.originalname).toLowerCase();
+  // Store ordinary photos in a web-friendly format and cap oversized dimensions.
+  // GIFs are left untouched so animated uploads keep their animation.
+  if (!isDoc && ext !== ".gif") {
+    uploadBuffer = await sharp(req.file.buffer)
+      .rotate()
+      .resize({ width: 2560, height: 2560, fit: "inside", withoutEnlargement: true })
+      .webp({ quality: 82, effort: 4 })
+      .toBuffer();
+    uploadMime = "image/webp";
+    ext = ".webp";
+  }
   const fileName = `${Date.now()}-${crypto.randomBytes(8).toString("hex")}${ext}`;
   const targetDir = isPrivate ? PRIVATE_DOCS_DIR : path.resolve(UPLOADS_DIR, folder);
   await fs.promises.mkdir(targetDir, { recursive: true });
   const target = resolveContainedPath(targetDir, fileName, isDoc ? documentTypes : imageTypes);
   if (!target) throw new Error("Generated upload path is invalid");
-  await fs.promises.writeFile(target, req.file.buffer, { flag: "wx", mode: 0o600 });
+  await fs.promises.writeFile(target, uploadBuffer, { flag: "wx", mode: 0o600 });
   if (!isDoc) {
     const pool = await getPool();
     await pool.query("INSERT IGNORE INTO MediaAssets (StorageName, DisplayName, CreatedAt, UpdatedAt) VALUES (?, ?, ?, ?)", [fileName, fileName, new Date(), new Date()]);
@@ -101,8 +115,8 @@ const saveToDisk = async (req, isDoc) => {
   return {
     filename: fileName,
     originalname: req.file.originalname,
-    size: req.file.size,
-    mimetype: req.file.mimetype,
+    size: uploadBuffer.length,
+    mimetype: uploadMime,
     visibility: isPrivate ? "private" : "public",
     url: isPrivate ? `${base}/api/upload/private/${fileName}` : `${base}/uploads/${folder}/${fileName}`,
   };

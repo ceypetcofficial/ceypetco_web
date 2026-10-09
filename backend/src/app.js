@@ -87,6 +87,8 @@ app.use(
   "/uploads/images",
   (req, res, next) => [".jpg", ".jpeg", ".png", ".webp", ".gif", ".avif"].includes(path.extname(req.path).toLowerCase()) ? next() : res.status(404).end(),
   express.static(path.resolve(__dirname, "../uploads/images"), {
+    maxAge: "1y",
+    immutable: true,
     setHeaders: (res) => {
       res.setHeader("Access-Control-Allow-Origin", "*");
       res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");

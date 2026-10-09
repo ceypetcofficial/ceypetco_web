@@ -33,6 +33,7 @@
     "multer": "^2.4.0",
     "mysql2": "^3.24.4",
     "proxy-addr": "^2.0.8",
-    "sanitize-html": "^2.18.0"
+    "sanitize-html": "^2.18.0",
+    "sharp": "^0.34.5"
   }
 }
