@@ -5,6 +5,7 @@
   "main": "app.js",
   "scripts": {
     "build": "echo Backend requires no compilation",
+    "test": "node scripts/diagnose.js",
     "dev": "node --watch src/server.js",
     "start": "node app.js",
     "diagnose": "node scripts/diagnose.js",
