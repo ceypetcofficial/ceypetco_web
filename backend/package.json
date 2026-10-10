@@ -2,7 +2,7 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "CEYPETCO Website Redesign - Backend API",
-  "main": "src/server.js",
+  "main": "app.js",
   "scripts": {
     "build": "echo Backend requires no compilation",
     "dev": "node --watch src/server.js",
