@@ -4,9 +4,9 @@ Deploy the frontend and backend as separate sites. The repository root is a
 Plesk-compatible backend workspace; `app.js` delegates to the existing backend
 entry point without duplicating application logic.
 
-## Backend (`api-dev.ceypetco.gov.lk`)
+## Backend (`api.ceypetco.gov.lk`)
 
-When Plesk clones the whole repository into `api-dev.ceypetco.gov.lk`, the
+When Plesk clones the whole repository into `api.ceypetco.gov.lk`, the
 preferred configuration points directly at `backend`:
 
 Use these Plesk Node.js settings:
@@ -15,8 +15,8 @@ Use these Plesk Node.js settings:
 | --- | --- |
 | Node.js version | 22 LTS |
 | Application mode | `production` |
-| Application root | `api-dev.ceypetco.gov.lk/backend` |
-| Document root | `api-dev.ceypetco.gov.lk/backend/public` |
+| Application root | `api.ceypetco.gov.lk/backend` |
+| Document root | `api.ceypetco.gov.lk/backend/public` |
 | Startup file | `src/server.js` |
 
 Add the environment variables from `backend/.env.example` under **Custom
@@ -31,7 +31,7 @@ must be named `backend`.
 In Plesk, run **NPM Install**, restart the app, and verify:
 
 ```text
-https://api-dev.ceypetco.gov.lk/api/health
+https://api.ceypetco.gov.lk/api/health
 ```
 
 If Plesk keeps the application at the repository root, use this supported
@@ -41,8 +41,8 @@ fallback instead:
 | --- | --- |
 | Node.js version | 22 LTS |
 | Application mode | `production` |
-| Application root | `api-dev.ceypetco.gov.lk` |
-| Document root | `api-dev.ceypetco.gov.lk/backend/public` |
+| Application root | `api.ceypetco.gov.lk` |
+| Document root | `api.ceypetco.gov.lk/backend/public` |
 | Startup file | `app.js` |
 
 The root package must be named `ceypetco-backend-host`. NPM Install at the root
@@ -54,7 +54,7 @@ command.
 Set the production API URL before building:
 
 ```text
-VITE_API_BASE_URL=https://api-dev.ceypetco.gov.lk/api
+VITE_API_BASE_URL=https://api.ceypetco.gov.lk/api
 ```
 
 Save the variable as `frontend/.env.production`, then build:
@@ -78,7 +78,13 @@ visits to React routes fall back to `index.html`.
   pull and deploy the latest `main`; that obsolete package has been replaced
   by `ceypetco-backend-host` without a postinstall script.
 - `nodenv: npm: command not found`: select Node.js 22 in Plesk and redeploy the
-  latest root package before running NPM Install again.
+  latest root package before running NPM Install again. The repository includes
+  `scripts-prepend-node-path=true` in `.npmrc` for both supported application
+  roots, as required by Plesk when lifecycle scripts cannot find Node.js.
+- Plesk HTML `404 Not Found` at `/api/health`: Node.js is disabled or is not
+  attached to the API domain. Open **Websites & Domains > api.ceypetco.gov.lk >
+  Node.js**, verify the application root, document root, and startup file above,
+  then click **Enable Node.js** (or **Restart App** when already enabled).
 - `DB_PASSWORD is required`: configure the `DB_*` variables in Plesk. The
   backend uses MySQL, not the obsolete `SQL_*` names.
 - Browser CORS error: set backend `CLIENT_URL` to the exact frontend origin,
