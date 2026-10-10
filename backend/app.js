@@ -1,12 +1,5 @@
-// Direct entry point for Plesk configurations that select app.js instead of
-// the generated .plesk.startup.cjs Passenger wrapper.
+// Entry point for Plesk configurations where the startup file is set to app.js,
+// as well as for standard 'npm start' execution.
 const app = require("./src/server");
-
-if (require.main === module) {
-  app.startServer().catch((error) => {
-    console.error(`Failed to start server: ${error.message}`);
-    process.exit(1);
-  });
-}
 
 module.exports = app;

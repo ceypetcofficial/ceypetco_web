@@ -7,9 +7,6 @@ const ensurePageContents = require("./ensurePageContents");
 const ensureGalleryItems = require("./ensureGalleryItems");
 const { ensureUploadDirectories } = require("./utils/assetStorage");
 
-const PORT = process.env.PORT || 5000;
-const HOST = process.env.HOST || "0.0.0.0";
-
 let startPromise;
 
 const startServer = async () => {
@@ -18,19 +15,55 @@ const startServer = async () => {
   startPromise = (async () => {
     validateEnvironment();
     ensureUploadDirectories();
-    await connectDB();
-    await ensureHistoricalPrices();
-    await ensurePageContents();
-    await ensureGalleryItems();
 
-    return new Promise((resolve, reject) => {
-      const server = app.listen(PORT, HOST);
-      server.once("error", reject);
-      server.once("listening", () => {
-        console.log(`Server listening on ${HOST}:${PORT}`);
-        resolve(server);
+    const server = await new Promise((resolve, reject) => {
+      let s;
+
+      if (typeof PhusionPassenger !== "undefined") {
+        // Under Phusion Passenger, passenger hooks the listen call.
+        // Calling listen('passenger') is the documented Passenger reverse port binding target.
+        s = app.listen("passenger");
+      } else {
+        const rawPort = process.env.PORT;
+        if (typeof rawPort === "string" && (rawPort === "passenger" || rawPort.startsWith("/") || rawPort.startsWith("\\\\.\\pipe\\"))) {
+          // Named pipe or UNIX domain socket
+          s = app.listen(rawPort);
+        } else {
+          const port = Number(rawPort) || 5001;
+          const host = process.env.HOST || "0.0.0.0";
+          s = app.listen(port, host);
+        }
+      }
+
+      s.once("error", reject);
+      s.once("listening", () => {
+        const addr = s.address();
+        const bind = typeof addr === "string" ? addr : `${addr?.address || "0.0.0.0"}:${addr?.port || "port"}`;
+        console.log(`Server listening on ${bind}`);
+        resolve(s);
       });
     });
+
+    // Database connection and startup seeds run after the listener is open.
+    // This ensures reverse port binding completes immediately under Passenger/Plesk
+    // and health check requests (/api/health) respond without waiting for DB sync.
+    connectDB()
+      .then(async () => {
+        await ensureHistoricalPrices().catch((err) =>
+          console.error(`Historical prices sync warning: ${err.message}`)
+        );
+        await ensurePageContents().catch((err) =>
+          console.error(`Page content sync warning: ${err.message}`)
+        );
+        await ensureGalleryItems().catch((err) =>
+          console.error(`Gallery items sync warning: ${err.message}`)
+        );
+      })
+      .catch((err) => {
+        console.error(`Database initialization warning: ${err.message}`);
+      });
+
+    return server;
   })();
 
   try {
@@ -46,13 +79,10 @@ const reportStartupFailure = (error) => {
   process.exit(1);
 };
 
-// Plesk's generated .plesk.startup.cjs loads this module after Passenger has
-// patched http.Server.prototype.listen. Direct Node execution is also
-// supported for local development and non-Passenger hosting.
-const parentFile = path.basename(module.parent?.filename || "");
-const loadedByPlesk = parentFile.startsWith(".plesk.startup.");
-
-if (require.main === module || loadedByPlesk) {
+// Start the server automatically whenever this file is executed directly OR
+// loaded by Phusion Passenger / Plesk. Only skip if explicitly running in a test suite.
+const isTest = process.env.NODE_ENV === "test";
+if (!isTest) {
   startServer().catch(reportStartupFailure);
 }
 

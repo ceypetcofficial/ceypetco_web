@@ -7,11 +7,11 @@ import { useLanguage } from './i18n/LanguageContext.jsx';
 import GoogleTranslate from './components/GoogleTranslate.jsx';
 import PopupNotice from './components/PopupNotice.jsx';
 import api from './api';
-import aboutHeroImage from './images/about.png';
-import managementHeroImage from './images/management.png';
-import subsidiariesHeroImage from './images/subsidiaries.JPG';
-import ministryHeroImage from './images/ministry.jpeg';
-import allServicesHeroImage from './images/allservices.JPG';
+import aboutHeroImage from './images/about.webp';
+import managementHeroImage from './images/management.webp';
+import subsidiariesHeroImage from './images/subsidiaries.webp';
+import ministryHeroImage from './images/ministry.webp';
+import allServicesHeroImage from './images/allservices.webp';
 import displayImageUrl from './utils/displayImageUrl.js';
 import applyCmsOverrides, { scheduleCmsOverrides } from './utils/applyCmsOverrides.js';
 import MarineBunkeringPage from './components/marine-bunkering/MarineBunkeringPage.jsx';
@@ -224,13 +224,13 @@ const divisions = [
   [
     'Refinery',
     'At the heart of CPC operations, strengthening the nation’s petroleum supply',
-    '/images/refinery.png',
+    '/images/refinery.webp',
     '/refinery',
   ],
   [
     'Aviation',
     'Specialised aviation fuel handling supporting Sri Lanka’s air transport sector',
-    '/images/aviation-mattala-refuelling.png',
+    '/images/aviation-mattala-refuelling.webp',
     '/aviation',
   ],
   [
@@ -271,7 +271,8 @@ const pageBrandLogos = {
 };
 const heroSlides = [
   {
-    image: 'https://images.squarespace-cdn.com/content/v1/693bf5941493ec4ce40a537d/f2785c86-6ee9-429c-a714-cd0e945aea44/Billboard+Image.jpg',
+    image: '/images/home-hero/offshore-1280.webp',
+    srcSet: '/images/home-hero/offshore-640.webp 640w, /images/home-hero/offshore-960.webp 960w, /images/home-hero/offshore-1280.webp 1280w',
     alt: 'Offshore oil rig and support vessels at sunset',
     eyebrow: 'ISLANDWIDE DISTRIBUTION.',
     title: (
@@ -288,7 +289,8 @@ const heroSlides = [
     href: 'https://www.srilankalicensinground.com/',
   },
   {
-    image: '/images/distribution.jpg',
+    image: '/images/home-hero/distribution-1920.webp',
+    srcSet: '/images/home-hero/distribution-640.webp 640w, /images/home-hero/distribution-960.webp 960w, /images/home-hero/distribution-1280.webp 1280w, /images/home-hero/distribution-1600.webp 1600w, /images/home-hero/distribution-1920.webp 1920w',
     alt: 'Ceypetco fuel distribution truck travelling through Sri Lanka',
     eyebrow: 'ISLANDWIDE DISTRIBUTION',
     title: (
@@ -303,7 +305,8 @@ const heroSlides = [
     href: '#fuel-network',
   },
   {
-    image: '/images/refinery.png',
+    image: '/images/home-hero/refinery-1920.webp',
+    srcSet: '/images/home-hero/refinery-640.webp 640w, /images/home-hero/refinery-960.webp 960w, /images/home-hero/refinery-1280.webp 1280w, /images/home-hero/refinery-1600.webp 1600w, /images/home-hero/refinery-1920.webp 1920w',
     alt: 'Ceypetco refinery under a clear blue sky',
     eyebrow: 'REFINING WITH PURPOSE',
     title: (
@@ -318,7 +321,8 @@ const heroSlides = [
     href: '/refinery',
   },
   {
-    image: '/images/agro-products.jpg',
+    image: '/images/home-hero/agro-640.webp',
+    srcSet: '/images/home-hero/agro-640.webp 640w',
     alt: 'Ceypetco agrochemical products supporting Sri Lankan agriculture',
     eyebrow: 'SUPPORTING SRI LANKAN AGRICULTURE',
     title: (
@@ -333,7 +337,8 @@ const heroSlides = [
     href: '/agro-chemicals',
   },
   {
-    image: '/images/fuel-train.jpg',
+    image: '/images/home-hero/fuel-train-1920.webp',
+    srcSet: '/images/home-hero/fuel-train-640.webp 640w, /images/home-hero/fuel-train-960.webp 960w, /images/home-hero/fuel-train-1280.webp 1280w, /images/home-hero/fuel-train-1600.webp 1600w, /images/home-hero/fuel-train-1920.webp 1920w',
     alt: 'Fuel transport train travelling through Sri Lanka',
     eyebrow: 'ENERGY IN MOTION',
     title: (
@@ -677,7 +682,7 @@ const pageData = {
     title: 'Modernising Sri Lanka’s refining future',
     intro:
       'The Sapugaskanda Oil Refinery Expansion and Modernization Project is designed to strengthen capacity, product quality and national energy resilience',
-    image: '/images/refinery.png',
+    image: '/images/refinery.webp',
   },
   '/annual-reports': {
     label: 'CORPORATE PUBLICATIONS · ANNUAL REPORTS',
@@ -751,7 +756,7 @@ const pageData = {
     title: 'Precision refining for national growth',
     intro:
       'Transforming crude oil into quality fuels through experienced people, proven processes and rigorous standards',
-    image: '/images/refinery.png',
+    image: '/images/refinery.webp',
   },
   '/marketing-sales': {
     label: 'OUR SERVICES · MARKETING',
@@ -771,7 +776,7 @@ const pageData = {
     title: 'Reliable energy for every takeoff',
     intro:
       'Round-the-clock aviation fueling built around quality, safety and on-time service',
-    image: '/images/aviation-mattala-refuelling.png',
+    image: '/images/aviation-mattala-refuelling.webp',
   },
   '/agro-chemicals': {
     label: 'OUR SERVICES · AGRO',
@@ -2312,7 +2317,7 @@ const divisionPages = {
       ['20+', 'Product families'],
       ['Automotive +', 'Industrial use'],
     ],
-    image: '/images/control-room.png',
+    image: '/images/control-room.webp',
     features: [
       'Internationally aligned specifications',
       'Automotive and industrial product ranges',
@@ -4187,7 +4192,7 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
       title: 'Supplier Registration',
       category: 'Procurement',
       text: 'Register interest in supplying products and professional services to CPC',
-      image: 'refinery.png',
+      image: 'refinery.webp',
       href: '/tenders?from=services#supplier-registration',
     },
     {
@@ -4505,7 +4510,7 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
   return (
     <main className="inner-page">
       <section className={`page-hero${type === '/about' ? ' page-hero--about' : ''}${type === '/management' ? ' page-hero--management' : ''}${type === '/refinery' ? ' page-hero--refinery' : ''}${type === '/lubricants' ? ' page-hero--lubricants' : ''}${type === '/tenders' ? ' page-hero--tenders' : ''}${pageBrandLogos[type] ? ' page-hero--' + type.slice(1) : ''}`}>
-        <img src={page.image} alt="" />
+        <img src={page.image} alt="" loading="eager" decoding="async" fetchPriority="high" />
         {pageBrandLogos[type] && (
           <div className="page-hero-logo">
             <img src={pageBrandLogos[type]} alt={`${page.title} logo`} />
@@ -5854,6 +5859,8 @@ function App() {
   const [navMediaDropClosed, setNavMediaDropClosed] = useState(true);
   const [navCareersDropClosed, setNavCareersDropClosed] = useState(true);
   const [slide, setSlide] = useState(0);
+  const slideRef = useRef(0);
+  const [loadedHeroSlides, setLoadedHeroSlides] = useState(() => new Set([0]));
   const [news, setNews] = useState([]);
   const [newsLoading, setNewsLoading] = useState(true);
   const [homeServices, setHomeServices] = useState([]);
@@ -5874,11 +5881,18 @@ function App() {
           (key) => managedPage.hero && managedPage.hero[key],
         )),
   );
-  const changeSlide = (direction) =>
-    setSlide(
-      (current) =>
-        (current + direction + heroSlides.length) % heroSlides.length,
-    );
+  const showSlide = (next) => {
+    slideRef.current = next;
+    setLoadedHeroSlides((loaded) => new Set([
+      ...loaded,
+      next,
+      (next + 1) % heroSlides.length,
+    ]));
+    setSlide(next);
+  };
+  const changeSlide = (direction) => showSlide(
+    (slideRef.current + direction + heroSlides.length) % heroSlides.length,
+  );
   const scrollAfterNavigation = (hash) => {
     window.requestAnimationFrame(() =>
       window.requestAnimationFrame(() => {
@@ -6497,8 +6511,17 @@ function App() {
               {heroSlides.map((item, index) => (
                 <img
                   className={`hero-photo hero-photo-${index + 1} ${index === slide ? 'active' : ''}`}
-                  src={displayImageUrl(item.image)}
+                  src={loadedHeroSlides.has(index) ? displayImageUrl(item.image) : undefined}
+                  srcSet={loadedHeroSlides.has(index) ? item.srcSet : undefined}
+                  sizes="100vw"
                   alt={item.alt}
+                  loading={index === 0 ? 'eager' : 'lazy'}
+                  decoding="async"
+                  fetchPriority={index === 0 ? 'high' : 'low'}
+                  onLoad={index === 0 ? () => setLoadedHeroSlides((loaded) => {
+                    if (loaded.has(1)) return loaded;
+                    return new Set([...loaded, 1]);
+                  }) : undefined}
                   key={item.image}
                 />
               ))}
@@ -6567,7 +6590,7 @@ function App() {
               {heroSlides.map((item, index) => (
                 <button
                   className={index === slide ? 'active' : ''}
-                  onClick={() => setSlide(index)}
+                  onClick={() => showSlide(index)}
                   aria-label={`Show image ${index + 1}`}
                   key={item.image}
                 ></button>
@@ -6618,7 +6641,7 @@ function App() {
                 <div className="every-drop-image-col">
                   <div className="every-drop-image-wrapper">
                     <div className="image-overlay-gradient"></div>
-                    <img src="/images/bunkering/jupiter-sun.jpg" alt="Sea Platform" className="every-drop-img" /> 
+                    <img src="/images/bunkering/jupiter-sun.jpg" alt="Sea Platform" className="every-drop-img" loading="lazy" decoding="async" />
                   </div>
                   <div className="every-drop-accents">
                     <span></span><span></span><span></span>
@@ -6856,6 +6879,8 @@ function App() {
               <img
                 src="/images/ceypetco-logo.png"
                 alt="Ceylon Petroleum Corporation logo"
+                loading="lazy"
+                decoding="async"
               />
               <div>
                 <h3>Ceylon Petroleum Corporation</h3>

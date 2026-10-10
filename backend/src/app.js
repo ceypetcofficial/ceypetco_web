@@ -173,7 +173,15 @@ const uploadLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-app.get("/api/health", (req, res) => {
+app.get(["/api/health", "/health"], (req, res) => {
+  res.status(200).json({
+    success: true,
+    status: "ok",
+    message: "CEYPETCO backend is running successfully",
+  });
+});
+
+app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
     status: "ok",

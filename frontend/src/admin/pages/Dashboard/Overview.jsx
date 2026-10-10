@@ -15,7 +15,7 @@ const fallbackImages={
   "/":"/images/hero.png","/about":"/images/about-banner.webp","/history":"/images/history-1.jpg",
   "/services":"/images/distribution.jpg","/products":"/images/lubricants-hero.jpg","/management":"/images/management-energy-leadership.webp",
   "/subsidiaries":"/images/subsidiaries-petroleum-storage.webp","/energy-ministries":"/images/related-ministries-hero-v2.webp",
-  "/marketing-sales":"/images/distribution.jpg","/refinery":"/images/refinery.png","/aviation":"/images/aviation-aircraft-refuelling.jpg",
+  "/marketing-sales":"/images/distribution.jpg","/refinery":"/images/refinery.webp","/aviation":"/images/aviation-aircraft-refuelling.jpg",
   "/agro-chemicals":"/images/agro-hero.webp","/lubricants":"/images/lubricants-hero.jpg","/services/marine-bunkering":"/images/bunkering/marine-bunkering-hero.webp",
   "/electric-mobility":"/images/operations/ev-charging.jpg","/news":"/images/news-hero-v2.webp","/notices":"/images/notices-hero-v2.webp",
     "/tenders":"/images/tenders-hero.webp","/projects":"/images/refinery-card-1.jpg","/careers":"/images/career-team.jpg",
