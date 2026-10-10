@@ -7,6 +7,7 @@
     "build": "echo Backend requires no compilation",
     "test": "node scripts/diagnose.js",
     "selftest": "node scripts/selftest.js",
+    "test:public": "node scripts/test_public_endpoints.js",
     "dev": "node --watch app.js",
     "start": "node app.js",
     "diagnose": "node scripts/diagnose.js",
