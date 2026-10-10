@@ -13,7 +13,6 @@ const startServer = async () => {
   if (startPromise) return startPromise;
 
   startPromise = (async () => {
-    validateEnvironment();
     ensureUploadDirectories();
 
     const server = await new Promise((resolve, reject) => {
@@ -43,6 +42,12 @@ const startServer = async () => {
         resolve(s);
       });
     });
+
+    try {
+      validateEnvironment();
+    } catch (err) {
+      console.error(`[Startup Configuration Warning]: ${err.message}`);
+    }
 
     // Database connection and startup seeds run after the listener is open.
     // This ensures reverse port binding completes immediately under Passenger/Plesk

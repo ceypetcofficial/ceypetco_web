@@ -1,4 +1,6 @@
+const path = require("path");
 require("dotenv").config({ quiet: true });
+require("dotenv").config({ path: path.resolve(__dirname, "../../.env"), quiet: true });
 
 const isProduction = process.env.NODE_ENV === "production";
 
