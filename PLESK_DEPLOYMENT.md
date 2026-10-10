@@ -17,7 +17,7 @@ Use these Plesk Node.js settings:
 | Application mode | `production` |
 | Application root | `api.ceypetco.gov.lk/backend` |
 | Document root | `api.ceypetco.gov.lk/backend/public` |
-| Startup file | `src/server.js` |
+| Startup file | `app.js` |
 
 Add the environment variables from `backend/.env.example` under **Custom
 environment variables**. At minimum, replace all database credentials,
