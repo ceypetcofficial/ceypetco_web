@@ -1,7 +1,0 @@
-<IfModule mod_passenger.c>
-    PassengerEnabled on
-    PassengerAppType node
-    PassengerStartupFile app.js
-</IfModule>
-
-DirectoryIndex index.html app.js
