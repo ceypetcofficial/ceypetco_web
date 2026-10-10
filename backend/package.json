@@ -6,7 +6,7 @@
   "scripts": {
     "build": "echo Backend requires no compilation",
     "test": "node scripts/diagnose.js",
-    "dev": "node --watch src/server.js",
+    "dev": "node --watch app.js",
     "start": "node app.js",
     "diagnose": "node scripts/diagnose.js",
     "seed": "node src/seedAdmin.js",
