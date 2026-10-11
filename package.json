@@ -9,7 +9,8 @@
   ],
   "scripts": {
     "build": "echo Backend requires no compilation",
-    "start": "node app.js"
+    "start": "node app.js",
+    "auto-configure-plesk": "npm --prefix backend run auto-configure-plesk"
   },
   "engines": {
     "node": ">=22"

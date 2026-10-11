@@ -11,6 +11,7 @@
     "dev": "node --watch app.js",
     "start": "node app.js",
     "diagnose": "node scripts/diagnose.js",
+    "auto-configure-plesk": "node scripts/plesk_auto_configure.js",
     "seed": "node src/seedAdmin.js",
     "seed:operations": "node src/seedOperations.js",
     "seed:home-services": "node src/seedHomeServices.js",
