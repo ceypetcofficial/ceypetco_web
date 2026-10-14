@@ -72,15 +72,19 @@ visits to React routes fall back to `index.html`.
 
 ## Troubleshooting
 
-- `app.js is not found`: the frontend domain incorrectly has Node.js enabled,
-  or the backend startup file is not set to `src/server.js`.
+- `app.js is not found`: the application root is wrong or the deployed backend
+  is incomplete. Open the application root and verify that `app.js`,
+  `package.json`, `src`, and `public` are directly inside it. The startup file
+  must be `app.js`.
 - `ceypetco-frontend-host@1.0.0 postinstall` appears while installing the API:
   pull and deploy the latest `main`; that obsolete package has been replaced
   by `ceypetco-backend-host` without a postinstall script.
-- `nodenv: npm: command not found`: select Node.js 22 in Plesk and redeploy the
-  latest root package before running NPM Install again. The repository includes
-  `scripts-prepend-node-path=true` in `.npmrc` for both supported application
-  roots, as required by Plesk when lifecycle scripts cannot find Node.js.
+- `nodenv: node: command not found` or `nodenv: npm: command not found`: select
+  Node.js 22 in Plesk and redeploy the latest package before running NPM Install
+  again. The repository includes `.node-version` files in both supported
+  application roots so nodenv selects Node.js 22 during dependency lifecycle
+  scripts. If the error path is outside the selected application root, correct
+  the Plesk application root before retrying.
 - Plesk HTML `404 Not Found` at `/api/health`: Node.js is disabled or is not
   attached to the API domain. Open **Websites & Domains > api.ceypetco.gov.lk >
   Node.js**, verify the application root, document root, and startup file above,
