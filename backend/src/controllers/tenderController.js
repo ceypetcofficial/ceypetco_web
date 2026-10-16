@@ -3,7 +3,7 @@ const createCrudController = require("./crudController");
 
 const crud = createCrudController(Tender, {
   searchFields: ["title", "reference", "division", "category"],
-  sortBy: "-publishedDate",
+  sortBy: { priority: -1, createdAt: -1 },
   assetFields: [{ field: "documents", urlKey: "url" }],
 });
 
@@ -15,7 +15,10 @@ const getActive = async (req, res, next) => {
 
     const query = { status: { $in: ["open", "awarded"] } };
     const [items, total] = await Promise.all([
-      Tender.find(query).sort("-publishedDate").skip(skip).limit(limit),
+      Tender.find(query)
+        .sort({ priority: -1, createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
       Tender.countDocuments(query),
     ]);
 

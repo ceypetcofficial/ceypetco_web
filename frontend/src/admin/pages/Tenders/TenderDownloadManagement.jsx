@@ -1,9 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import toast from "react-hot-toast";
-import { Download, Search, DownloadCloud, Trash2 } from "lucide-react";
+import { DownloadCloud, Trash2 } from "lucide-react";
 import api from "../../../services/api";
 import Loading from "../../components/Loading";
-import Pagination from "../../components/Pagination";
 
 const TenderDownloadManagement = () => {
   const [items, setItems] = useState([]);
@@ -47,20 +46,28 @@ const TenderDownloadManagement = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-gray-500">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50 border-b border-gray-200">
+          <table className="w-full min-w-[980px] table-fixed text-left">
+            <colgroup>
+              <col className="w-[150px]" />
+              <col className="w-[280px]" />
+              <col className="w-[150px]" />
+              <col className="w-[230px]" />
+              <col className="w-[160px]" />
+              <col className="w-[80px]" />
+            </colgroup>
+            <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
-                <th className="px-6 py-4 font-semibold">Date & Time</th>
-                <th className="px-6 py-4 font-semibold">Tender Title</th>
-                <th className="px-6 py-4 font-semibold">Tender Ref</th>
-                <th className="px-6 py-4 font-semibold">Email Address</th>
-                <th className="px-6 py-4 font-semibold">Mobile Number</th>
-                <th className="px-6 py-4 font-semibold text-right">Actions</th>
+                <th className="px-5 py-3.5 text-[11px] font-bold tracking-[0.08em] uppercase text-[#66767d]">Downloaded</th>
+                <th className="px-5 py-3.5 text-[11px] font-bold tracking-[0.08em] uppercase text-[#66767d]">Tender</th>
+                <th className="px-5 py-3.5 text-[11px] font-bold tracking-[0.08em] uppercase text-[#66767d]">Reference</th>
+                <th className="px-5 py-3.5 text-[11px] font-bold tracking-[0.08em] uppercase text-[#66767d]">Email</th>
+                <th className="px-5 py-3.5 text-[11px] font-bold tracking-[0.08em] uppercase text-[#66767d]">Mobile</th>
+                <th className="px-5 py-3.5 text-right text-[11px] font-bold tracking-[0.08em] uppercase text-[#66767d]">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-slate-100">
               {loading ? (
                 <tr>
                   <td colSpan="6" className="px-6 py-12">
@@ -83,38 +90,47 @@ const TenderDownloadManagement = () => {
                 items.map((item) => (
                   <tr
                     key={item.id || item._id}
-                    className="hover:bg-gray-50 transition-colors"
+                    className="hover:bg-slate-50/70 transition-colors"
                   >
-                    <td className="px-6 py-4 whitespace-nowrap text-gray-500">
-                      {new Date(item.downloadedAt).toLocaleString("en-GB", {
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit"
-                      })}
+                    <td className="px-5 py-4 align-middle">
+                      <p className="text-sm font-semibold text-[#092f3b] whitespace-nowrap">
+                        {new Date(item.downloadedAt).toLocaleDateString("en-GB", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </p>
+                      <p className="mt-0.5 text-xs text-[#66767d]">
+                        {new Date(item.downloadedAt).toLocaleTimeString("en-GB", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
+                    <td className="px-5 py-4 align-middle">
+                      <div
+                        className="max-w-[240px] truncate text-sm font-semibold text-[#092f3b]"
+                        title={item.tenderTitle || "N/A"}
+                      >
                         {item.tenderTitle || "N/A"}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-500">
+                    <td className="px-5 py-4 align-middle">
+                      <div className="truncate text-xs font-semibold text-[#66767d]" title={item.tenderReference || "N/A"}>
                         {item.tenderReference || "N/A"}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-blue-600">
+                    <td className="px-5 py-4 align-middle">
+                      <div className="truncate text-sm font-medium text-blue-600" title={item.email || ""}>
                         {item.email}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
+                    <td className="px-5 py-4 align-middle">
+                      <div className="truncate text-sm text-[#092f3b]" title={item.mobileNumber || ""}>
                         {item.mobileNumber}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                    <td className="px-5 py-4 align-middle text-right">
                       <button
                         onClick={() => handleDelete(item.id || item._id)}
                         className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"

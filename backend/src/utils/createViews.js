@@ -22,7 +22,7 @@ const schema = {
   "Service": ["title", "category", "text", "image", "link", "order", "status"],
   "SupplierResource": ["title", "url", "order", "status"],
   "SupplierSection": ["eyebrow", "title", "description"],
-  "Tender": ["title", "reference", "summary", "category", "division", "publishedDate", "closingDate", "status"],
+  "Tender": ["title", "reference", "summary", "category", "division", "priority", "publishedDate", "closingDate", "status"],
   "TenderDownload": ["tenderId", "tenderTitle", "tenderReference", "email", "mobileNumber", "downloadedAt"],
   "User": ["name", "email", "role", "status", "lastLogin"]
 };

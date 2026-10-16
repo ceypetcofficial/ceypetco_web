@@ -2,9 +2,6 @@ const path = require("path");
 const { validateEnvironment } = require("./config/env");
 const app = require("./app");
 const connectDB = require("./config/db");
-const ensureHistoricalPrices = require("./ensureHistoricalPrices");
-const ensurePageContents = require("./ensurePageContents");
-const ensureGalleryItems = require("./ensureGalleryItems");
 const { ensureUploadDirectories } = require("./utils/assetStorage");
 
 let startPromise;
@@ -49,21 +46,11 @@ const startServer = async () => {
       console.error(`[Startup Configuration Warning]: ${err.message}`);
     }
 
-    // Database connection and startup seeds run after the listener is open.
+    // Connect after the listener is open. Data seeding is deliberately never
+    // performed during application startup; seed scripts must be run manually.
     // This ensures reverse port binding completes immediately under Passenger/Plesk
     // and health check requests (/api/health) respond without waiting for DB sync.
     connectDB()
-      .then(async () => {
-        await ensureHistoricalPrices().catch((err) =>
-          console.error(`Historical prices sync warning: ${err.message}`)
-        );
-        await ensurePageContents().catch((err) =>
-          console.error(`Page content sync warning: ${err.message}`)
-        );
-        await ensureGalleryItems().catch((err) =>
-          console.error(`Gallery items sync warning: ${err.message}`)
-        );
-      })
       .catch((err) => {
         console.error(`Database initialization warning: ${err.message}`);
       });

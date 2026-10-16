@@ -1405,7 +1405,7 @@ function ManagementTeamProfile({ memberId }) {
     <main className="inner-page management-profile-page">
       <section className="management-profile-hero">
         <div className="container">
-          <a className="management-profile-back" href="/about">
+          <a className="management-profile-back" href="/management">
             <Icon name="arrow" size={16} /> {t('backTeam')}
           </a>
           <div className="management-profile-grid">
@@ -4127,8 +4127,6 @@ const bulkConsumerResources = [
 
 function InnerPage({ type, preserveTemplate, managedSections }) {
   const { t } = useLanguage();
-  const aboutVideoRef = useRef(null);
-  const [aboutVideoPlaying, setAboutVideoPlaying] = useState(false);
   const [historyPage, setHistoryPage] = useState(defaultHistoryPage);
   const page = type === '/history'
     ? { label: historyPage.heroLabel, title: historyPage.heroTitle, intro: historyPage.heroIntro, image: historyPage.heroImage }
@@ -4145,13 +4143,12 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
   const [newsLoading, setNewsLoading] = useState(true);
   const [tenders, setTenders] = useState([]);
   const [tendersLoading, setTendersLoading] = useState(true);
+  const [tenderSearch, setTenderSearch] = useState('');
   const [downloadTender, setDownloadTender] = useState(null);
   const [notices, setNotices] = useState([]);
   const [noticesLoading, setNoticesLoading] = useState(true);
   const [projects, setProjects] = useState([]);
   const [projectsLoading, setProjectsLoading] = useState(true);
-  const [supplierResources, setSupplierResources] = useState([]);
-  const [supplierSection, setSupplierSection] = useState(null);
   const [careers, setCareers] = useState([]);
   const [careersLoading, setCareersLoading] = useState(true);
   const [annualReports, setAnnualReports] = useState([]);
@@ -4408,33 +4405,6 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
   }, [type]);
 
   useEffect(() => {
-    if (type !== '/tenders') return undefined;
-    let cancelled = false;
-    const loadSupplier = async () => {
-      try {
-        const [res, sec] = await Promise.all([
-          api.get('/admin/supplier-resources'),
-          api.get('/admin/supplier-section'),
-        ]);
-        if (!cancelled) {
-          const list = (res.data && res.data.data) || [];
-          setSupplierResources([...list].sort((a, b) => a.order - b.order));
-          setSupplierSection(sec.data && sec.data.data ? sec.data.data : null);
-        }
-      } catch (err) {
-        if (!cancelled) {
-          setSupplierResources([]);
-          setSupplierSection(null);
-        }
-      }
-    };
-    loadSupplier();
-    return () => {
-      cancelled = true;
-    };
-  }, [type]);
-
-  useEffect(() => {
     if (type !== '/current-opportunities') return undefined;
     let cancelled = false;
     const loadCareers = async () => {
@@ -4506,6 +4476,20 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
   }, [type]);
 
   const currentCareers = careers;
+  const normalizedTenderSearch = tenderSearch.trim().toLowerCase();
+  const filteredTenders = normalizedTenderSearch
+    ? tenders.filter((tender) =>
+      [
+        tender.title,
+        tender.reference,
+        tender.division,
+        tender.status,
+        ...(tender.documents || []).map((document) => document?.name),
+      ]
+        .filter(Boolean)
+        .some((value) => String(value).toLowerCase().includes(normalizedTenderSearch)),
+    )
+    : tenders;
 
   return (
     <main className="inner-page">
@@ -4574,28 +4558,6 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
           </div>
         </div>
       ) : null}
-      {['/about', '/management', '/history', '/subsidiaries', '/energy-ministries'].includes(type) && (
-        <div className="subpage-nav">
-          <div className="container">
-            <span>{type === '/history' ? 'Discover Ceypetco' : t('discover')}</span>
-            <a className={type === '/about' ? 'active' : ''} href="/about">
-              {t('aboutUs')}
-            </a>
-            <a className={type === '/management' ? 'active' : ''} href="/management">
-              Management
-            </a>
-            <a className={type === '/history' ? 'active' : ''} href="/history">
-              Our history
-            </a>
-            <a className={type === '/subsidiaries' ? 'active' : ''} href="/subsidiaries">
-              Subsidiaries
-            </a>
-            <a className={type === '/energy-ministries' ? 'active' : ''} href="/energy-ministries">
-              Related ministries
-            </a>
-          </div>
-        </div>
-      )}
       {divisionPages[type] &&
         ![
           '/refinery',
@@ -4672,39 +4634,16 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
                 <p>See the people, operations and purpose behind the energy that keeps Sri Lanka moving.</p>
               </div>
               <div className="about-video-frame">
-                <video
-                  ref={aboutVideoRef}
-                  controls
-                  playsInline
-                  preload="metadata"
-                  poster="/images/about-banner.webp"
-                  aria-label="Ceypetco promotional video"
-                  onPlay={() => setAboutVideoPlaying(true)}
-                  onPause={() => setAboutVideoPlaying(false)}
-                  onEnded={() => setAboutVideoPlaying(false)}
-                >
-                  <source
-                    src="https://ceypetco.gov.lk/wp-content/uploads/2024/12/promo-video.mp4"
-                    type="video/mp4"
-                  />
-                  Your browser does not support video playback.{' '}
-                  <a href="https://ceypetco.gov.lk/wp-content/uploads/2024/12/promo-video.mp4">
-                    Watch the Ceypetco video
-                  </a>
-                  .
-                </video>
-                {!aboutVideoPlaying && (
-                  <button
-                    className="about-video-play"
-                    type="button"
-                    aria-label="Play Ceypetco promotional video"
-                    onClick={() => aboutVideoRef.current?.play()}
-                  >
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                      <path d="M8 5.5v13l10-6.5z" fill="currentColor" />
-                    </svg>
-                  </button>
-                )}
+                <iframe
+                  width="560"
+                  height="315"
+                  src="https://www.youtube.com/embed/nvfKeEBtstw?si=-Z2dhEd5IjNJWJMc"
+                  title="YouTube video player"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allowFullScreen
+                />
               </div>
             </div>
           </section>
@@ -5512,48 +5451,26 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
               </p>
             </div>
 
-            <section
-              className="supplier-registration-panel"
-              id="supplier-registration"
-            >
-              <div className="supplier-registration-copy">
-                <p className="eyebrow light">
-                  {supplierSection
-                    ? supplierSection.eyebrow
-                    : 'SUPPLIER ACCESS'}
-                </p>
-                <h3>
-                  {supplierSection
-                    ? supplierSection.title
-                    : 'Registration resources'}
-                </h3>
-                <p>
-                  {supplierSection
-                    ? supplierSection.description
-                    : 'Guidance and application support for oil suppliers, foreign suppliers, independent inspectors and local contractors'}
-                </p>
-              </div>
-              <div className="supplier-resource-grid">
-                {supplierResources.length === 0 ? (
-                  <span className="supplier-resource-empty">
-                    No registration resources available yet
-                  </span>
-                ) : (
-                  supplierResources.map((resource) => (
-                    <a
-                      href={displayImageUrl(resource.url) || '#'}
-                      key={resource._id}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      <Icon name="download" size={16} />
-                      <span>{resource.title}</span>
-                      <Icon name="arrow" size={14} />
-                    </a>
-                  ))
-                )}
-              </div>
-            </section>
+            <div className="tender-search">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="11" cy="11" r="7" />
+                <path d="m20 20-4-4" />
+              </svg>
+              <input
+                id="tender-search-input"
+                type="search"
+                aria-label="Search tenders"
+                value={tenderSearch}
+                onChange={(event) => setTenderSearch(event.target.value)}
+                placeholder="Search by title, reference, division or status"
+                autoComplete="off"
+              />
+              {!tendersLoading && tenderSearch && (
+                <span className="tender-search-count" aria-live="polite">
+                  {filteredTenders.length} {filteredTenders.length === 1 ? 'result' : 'results'}
+                </span>
+              )}
+            </div>
 
             {tendersLoading && (
               <div className="tender-loading" aria-label="Loading tenders">
@@ -5597,11 +5514,17 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
               </div>
             )}
 
-            {!tendersLoading && tenders.length === 0 && (
+            {!tendersLoading && filteredTenders.length === 0 && (
               <div className="tender-division">
                 <div className="tender-division-heading">
-                  <p className="eyebrow">OPEN TENDERS</p>
-                  <span>No open opportunities</span>
+                  <p className="eyebrow">
+                    {normalizedTenderSearch ? 'SEARCH RESULTS' : 'OPEN TENDERS'}
+                  </p>
+                  <span>
+                    {normalizedTenderSearch
+                      ? `No tenders found for “${tenderSearch.trim()}”`
+                      : 'No open opportunities'}
+                  </span>
                 </div>
               </div>
             )}
@@ -5611,7 +5534,15 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
               'REFINERY DIVISION',
               'PROCUREMENTS & STORES DIVISION',
             ].map((division, di) => {
-              const items = tenders.filter((t) => t.division === division);
+              const items = filteredTenders
+                .filter((t) => t.division === division)
+                .sort((a, b) => {
+                  const priorityDifference = Number(Boolean(b.priority)) - Number(Boolean(a.priority));
+                  if (priorityDifference) return priorityDifference;
+                  const aUploadedAt = new Date(a.createdAt || a.publishedDate || 0).getTime();
+                  const bUploadedAt = new Date(b.createdAt || b.publishedDate || 0).getTime();
+                  return bUploadedAt - aUploadedAt;
+                });
               if (items.length === 0) return null;
               return (
                 <section
@@ -5642,34 +5573,46 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
                         <div>
                           <small>
                             {item.closingDate
-                              ? 'Closing date'
+                              ? 'Closing date & time'
                               : 'Availability'}
                           </small>
                           <p>
                             {item.closingDate
                               ? new Date(
                                 item.closingDate,
-                              ).toLocaleDateString('en-GB', {
+                              ).toLocaleString('en-GB', {
                                 day: 'numeric',
                                 month: 'long',
                                 year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
                               })
                               : 'Open'}
                           </p>
                         </div>
-                        <button
-                          type="button"
-                          className="btn-text"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            if (item.documents && item.documents.length) {
-                              setDownloadTender({ ...item, url: item.documents[0].url });
-                            }
-                          }}
-                          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: 'var(--cpc-red)', fontWeight: 700, fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}
-                        >
-                          Download tender <Icon name="download" size={16} />
-                        </button>
+                        <div className="tender-document-actions">
+                          {(item.documents || [])
+                            .filter((document) => document?.url)
+                            .map((document, documentIndex) => (
+                              <button
+                                type="button"
+                                className="tender-document-button"
+                                key={document._id || document.id || `${document.url}-${documentIndex}`}
+                                title={`Download ${document.name || `Document ${documentIndex + 1}`}`}
+                                onClick={(event) => {
+                                  event.preventDefault();
+                                  setDownloadTender({
+                                    ...item,
+                                    url: document.url,
+                                    documentName: document.name || `Document ${documentIndex + 1}`,
+                                  });
+                                }}
+                              >
+                                <span>{document.name || `Document ${documentIndex + 1}`}</span>
+                                <Icon name="download" size={16} />
+                              </button>
+                            ))}
+                        </div>
                       </article>
                     ))}
                   </div>
@@ -6979,7 +6922,10 @@ function TenderDownloadModal({ tender, onClose }) {
     <div className="tender-modal-overlay" style={{ display: 'flex', zIndex: 9999, position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0, 0, 0, 0.6)', alignItems: 'center', justifyContent: 'center' }}>
       <div className="tender-modal-content" style={{ maxWidth: '800px', width: '90%', maxHeight: '90vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', padding: 0, backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 4px 20px rgba(0,0,0,0.15)' }}>
         <div style={{ padding: '20px 24px', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h2 style={{ margin: 0, fontSize: '1.25rem' }}>Download Tender Document</h2>
+          <div>
+            <h2 style={{ margin: 0, fontSize: '1.25rem' }}>Download Tender Document</h2>
+            {tender.documentName && <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '0.85rem' }}>{tender.documentName}</p>}
+          </div>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.5rem', lineHeight: 1 }}>&times;</button>
         </div>
 

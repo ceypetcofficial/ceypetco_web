@@ -11,6 +11,7 @@ import {
   Loader2,
   FileText,
   Link2,
+  Star,
   X,
 } from "lucide-react";
 import api from "../../../services/api";
@@ -27,7 +28,8 @@ const emptyForm = {
   summary: "",
   description: "",
   category: "general",
-  division: "",
+  division: "COMMERCIAL DIVISION",
+  priority: false,
   publishedDate: "",
   closingDate: "",
   status: "draft",
@@ -41,10 +43,27 @@ const categoryOptions = [
   "services",
 ];
 
+const divisionOptions = [
+  { value: "COMMERCIAL DIVISION", label: "Commercial Division" },
+  { value: "REFINERY DIVISION", label: "Refinery Division" },
+  {
+    value: "PROCUREMENTS & STORES DIVISION",
+    label: "Procurements & Stores Division",
+  },
+];
+
 const getApiOrigin = () =>
   (import.meta.env.VITE_API_BASE_URL || "")
     .replace(/\/+$/, "")
     .replace(/\/api$/, "");
+
+const toLocalDateTimeInput = (value) => {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+  return localDate.toISOString().slice(0, 16);
+};
 
 const TenderManagement = () => {
   const [items, setItems] = useState([]);
@@ -104,8 +123,9 @@ const TenderManagement = () => {
       description: item.description || "",
       category: item.category || "general",
       division: item.division || "",
+      priority: !!item.priority,
       publishedDate: item.publishedDate?.split("T")[0] || "",
-      closingDate: item.closingDate?.split("T")[0] || "",
+      closingDate: toLocalDateTimeInput(item.closingDate),
       status: item.status || "draft",
     });
     setDocs(Array.isArray(item.documents) ? item.documents.map((d) => ({ ...d })) : []);
@@ -158,7 +178,7 @@ const TenderManagement = () => {
     e.preventDefault();
     setSaving(true);
     try {
-      const payload = { ...form };
+      const payload = { ...form, priority: !!form.priority };
       if (payload.publishedDate) payload.publishedDate = new Date(payload.publishedDate).toISOString();
       else delete payload.publishedDate;
       if (payload.closingDate) payload.closingDate = new Date(payload.closingDate).toISOString();
@@ -280,9 +300,17 @@ const TenderManagement = () => {
                   items.map((item) => (
                     <tr key={item._id} className="border-b border-slate-100 hover:bg-slate-50/50 transition-colors">
                       <td className="px-4 py-4">
-                        <p className="text-sm font-semibold text-[#092f3b] line-clamp-1 max-w-xs">
-                          {item.title}
-                        </p>
+                        <div className="flex items-center gap-2 max-w-xs">
+                          {item.priority && (
+                            <Star
+                              className="w-3.5 h-3.5 shrink-0 fill-amber-400 text-amber-400"
+                              aria-label="Prioritized"
+                            />
+                          )}
+                          <p className="text-sm font-semibold text-[#092f3b] line-clamp-1">
+                            {item.title}
+                          </p>
+                        </div>
                         {item.documents?.length > 0 && (
                           <p className="text-xs text-[#66767d] mt-0.5 flex items-center gap-1">
                             <FileText className="w-3 h-3" />
@@ -299,7 +327,13 @@ const TenderManagement = () => {
                       <td className="px-4 py-4 hidden sm:table-cell">
                         <span className="text-xs text-[#66767d]">
                           {item.closingDate
-                            ? new Date(item.closingDate).toLocaleDateString()
+                            ? new Date(item.closingDate).toLocaleString("en-GB", {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })
                             : "—"}
                         </span>
                       </td>
@@ -368,13 +402,23 @@ const TenderManagement = () => {
                 placeholder="e.g. BK/48/2026"
               />
             </Field>
-            <Field label="Division">
-              <input
-                className={inputClass}
+            <Field label="Division" required>
+              <select
+                className={selectClass}
                 value={form.division}
                 onChange={set("division")}
-                placeholder="e.g. Refinery Division"
-              />
+                required
+              >
+                {form.division &&
+                  !divisionOptions.some((division) => division.value === form.division) && (
+                    <option value={form.division}>{form.division}</option>
+                  )}
+                {divisionOptions.map((division) => (
+                  <option key={division.value} value={division.value}>
+                    {division.label}
+                  </option>
+                ))}
+              </select>
             </Field>
           </div>
 
@@ -398,6 +442,22 @@ const TenderManagement = () => {
             </Field>
           </div>
 
+          <label className="flex items-center justify-between gap-4 rounded-xl border border-amber-200 bg-amber-50/60 px-4 py-3 cursor-pointer">
+            <span className="flex items-start gap-3">
+              <Star className={`mt-0.5 h-5 w-5 ${form.priority ? "fill-amber-400 text-amber-400" : "text-slate-400"}`} />
+              <span>
+                <span className="block text-sm font-semibold text-[#092f3b]">Prioritize this tender</span>
+                <span className="block text-xs text-[#66767d] mt-0.5">Show it above other tenders in its division.</span>
+              </span>
+            </span>
+            <input
+              type="checkbox"
+              checked={form.priority}
+              onChange={(event) => setForm((current) => ({ ...current, priority: event.target.checked }))}
+              className="h-5 w-5 shrink-0 accent-amber-500"
+            />
+          </label>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Field label="Published Date">
               <input
@@ -407,9 +467,9 @@ const TenderManagement = () => {
                 onChange={set("publishedDate")}
               />
             </Field>
-            <Field label="Closing Date">
+            <Field label="Closing Date & Time">
               <input
-                type="date"
+                type="datetime-local"
                 className={inputClass}
                 value={form.closingDate}
                 onChange={set("closingDate")}

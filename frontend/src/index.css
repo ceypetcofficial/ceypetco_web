@@ -2078,6 +2078,49 @@
   color: var(--muted);
   font-size: 15px;
   line-height: 1.7;
+}.tender-search{
+  position: relative;
+  display: flex;
+  align-items: center;
+  max-width: 760px;
+  margin: 0 0 12px;
+}.tender-search > svg{
+  position: absolute;
+  left: 20px;
+  width: 21px;
+  height: 21px;
+  color: var(--navy);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  pointer-events: none;
+}.tender-search input{
+  width: 100%;
+  min-height: 58px;
+  padding: 15px 120px 15px 56px;
+  border: 1px solid #d7dfdd;
+  border-radius: 4px;
+  outline: none;
+  background: #fff;
+  color: var(--navy);
+  font: 500 15px 'Outfit', 'Space Grotesk', sans-serif;
+  box-shadow: 0 10px 30px rgba(4, 53, 66, 0.05);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}.tender-search input::placeholder{
+  color: #7b898d;
+}.tender-search input:focus{
+  border-color: var(--navy);
+  box-shadow: 0 0 0 3px rgba(4, 53, 66, 0.1);
+}.tender-search-count{
+  position: absolute;
+  right: 18px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  pointer-events: none;
 }.supplier-registration-panel{
   display: grid;
   grid-template-columns: 330px 1fr;
@@ -2134,8 +2177,13 @@
   align-items: center;
   justify-content: space-between;
   padding-bottom: 17px;
-}.tender-division-heading p{
+}.site-shell .tender-division-heading .eyebrow{
   margin: 0;
+  color: var(--red);
+  font-size: 24px !important;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: 0.025em;
 }.tender-division-heading span{
   color: #64748b;
   font-size: 13.5px;
@@ -2254,10 +2302,17 @@
 
 @media (max-width: 600px) {.tenders-heading h2{
     font-size: 34px;
+  }.tender-search input{
+    min-height: 54px;
+    padding-right: 50px;
+  }.tender-search-count{
+    display: none;
   }.supplier-resource-grid{
     grid-template-columns: 1fr;
   }.tender-division-heading{
     display: block;
+  }.site-shell .tender-division-heading .eyebrow{
+    font-size: 20px !important;
   }.tender-division-heading span{
     display: block;
     margin-top: 8px;
@@ -2529,41 +2584,11 @@
   border-radius: 4px;
   background: var(--navy);
   box-shadow: 0 24px 55px rgba(6, 46, 59, 0.16);
-}.about-video-frame video{
+}.about-video-frame iframe{
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-}.about-video-play{
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  z-index: 1;
-  display: grid;
-  width: clamp(64px, 9vw, 90px);
-  aspect-ratio: 1;
-  place-items: center;
-  border: 2px solid rgba(255, 255, 255, 0.9);
-  border-radius: 50%;
-  background: rgba(213, 16, 28, 0.9);
-  color: #fff;
-  cursor: pointer;
-  transform: translate(-50%, -50%);
-  animation: about-video-blink 1.6s ease-in-out infinite;
-}.about-video-play svg{
-  width: 34%;
-  height: 34%;
-  margin-left: 4px;
-}.about-video-play:hover, .about-video-play:focus-visible{
-  background: var(--red);
-  animation-play-state: paused;
-}.about-video-play:focus-visible{
-  outline: 3px solid #fff;
-  outline-offset: 4px;
-}
-@keyframes about-video-blink {50%{ opacity: 0.55; }
-}
-@media (prefers-reduced-motion: reduce) {.about-video-play{ animation: none; }
+  border: 0;
 }.vision-section{
   padding: 92px 0;
   background:
@@ -2806,6 +2831,37 @@
 .tender-list button:hover{
   color: #b91c1c;
   transform: translateX(3px);
+}.tender-document-actions{
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  min-width: 0;
+}.tender-list .tender-document-button{
+  width: 100%;
+  min-height: 38px;
+  justify-content: space-between;
+  padding: 9px 11px;
+  border: 1px solid #dbe3e6;
+  border-radius: 5px;
+  background: #fff;
+  color: var(--navy);
+  cursor: pointer;
+  font-size: 12.5px;
+  line-height: 1.3;
+  text-align: left;
+}.tender-document-button span{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}.tender-document-button svg{
+  flex: 0 0 auto;
+  color: var(--red);
+}.tender-list .tender-document-button:hover{
+  border-color: rgba(213, 16, 28, 0.35);
+  background: #fff8f8;
+  box-shadow: 0 5px 14px rgba(6, 46, 59, 0.08);
+  transform: translateY(-1px);
 }.career-grid{
   display: grid;
   grid-template-columns: 0.8fr 1.2fr;
@@ -12913,9 +12969,9 @@
   .site-shell .hero-inner {
     min-height: max(540px, calc(100svh - 68px)) !important;
     height: auto !important;
-    align-items: flex-end !important;
-    padding-top: 72px !important;
-    padding-bottom: 38px !important;
+    align-items: center !important;
+    padding-top: 48px !important;
+    padding-bottom: 48px !important;
   }
 
   .site-shell .hero-copy-panel {
@@ -12952,7 +13008,7 @@
 
 @media (max-width: 380px), (max-height: 680px) and (max-width: 700px) {
   .site-shell .hero-inner {
-    padding-top: 48px !important;
+    padding-top: 28px !important;
     padding-bottom: 28px !important;
   }
 
