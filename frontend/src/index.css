@@ -121,10 +121,33 @@
   letter-spacing: 0.025em;
 }
 
+.career-document-download{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 22px;
+  padding: 13px 18px;
+  border-radius: 4px;
+  background: var(--red);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  transition: background .2s ease, transform .2s ease;
+}
+.career-document-download:hover{
+  background: #b80f1a;
+  transform: translateY(-2px);
+}
+
 /* Public media gallery */
 .gallery-hero > img{object-position:center 45%}.gallery-content{background:#f7f9f9}.gallery-intro{max-width:760px;margin-bottom:28px}.gallery-intro h2{margin:8px 0 14px;color:var(--ink);font:800 clamp(30px,3.2vw,44px)/1 'League Spartan','Outfit','Space Grotesk',sans-serif;letter-spacing:-.035em}.gallery-intro>p:last-child{margin:0;color:var(--muted);font-size:17px;line-height:1.7}.gallery-filters{display:flex;gap:9px;margin:0 0 28px;padding-bottom:4px;overflow-x:auto;scrollbar-width:thin}.gallery-filters button{flex:0 0 auto;padding:10px 15px;border:1px solid #cfdcdf;border-radius:999px;background:#fff;color:#36535d;font:700 12px/1 'Outfit',sans-serif;cursor:pointer;transition:.2s ease}.gallery-filters button:hover,.gallery-filters button:focus-visible{border-color:var(--red);outline:0}.gallery-filters button[aria-pressed="true"]{border-color:var(--navy);background:var(--navy);color:#fff}.gallery-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}.gallery-card{position:relative;height:270px;padding:0;overflow:hidden;border:0;border-radius:4px;background:#dce5e7;color:#fff;text-align:left;cursor:pointer;box-shadow:0 12px 28px rgba(6,46,59,.09)}.gallery-card img{width:100%;height:100%;object-fit:cover;transition:transform .45s ease}.gallery-card-shade{position:absolute;inset:0;background:linear-gradient(180deg,transparent 30%,rgba(2,17,22,.9) 100%)}.gallery-card-copy{position:absolute;inset:auto 20px 19px;display:flex;flex-direction:column;align-items:flex-start}.gallery-card-copy small{color:#ffb2aa;font-size:10px;font-weight:800;letter-spacing:.13em;text-transform:uppercase}.gallery-card-copy strong{margin:7px 0 13px;font:800 20px/1.15 'League Spartan','Outfit',sans-serif}.gallery-card-copy em{display:flex;align-items:center;gap:8px;font-size:12px;font-style:normal;font-weight:800}.gallery-card-copy i{display:grid;width:25px;height:25px;place-items:center;border-radius:50%;background:var(--red);font-size:9px;font-style:normal}.gallery-card:hover img{transform:scale(1.055)}.gallery-card:focus-visible{outline:3px solid var(--red);outline-offset:3px}.gallery-status{min-height:180px;display:grid;place-items:center;margin:0;border:1px dashed #cfdcdf;color:var(--muted)}.gallery-error{color:#a61b1b}.gallery-viewer{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;z-index:10020;overflow:hidden;margin:0!important;padding:0!important;transform:none!important;background:rgba(2,17,22,.94);backdrop-filter:blur(10px)}.gallery-viewer-panel{position:fixed!important;top:50vh!important;left:50vw!important;width:min(1180px,calc(100vw - 64px))!important;max-width:calc(100vw - 64px)!important;max-height:calc(100vh - 48px);margin:0!important;transform:translate(-50%,-50%)!important;box-sizing:border-box;color:#fff}.gallery-viewer-top{height:40px;display:flex;align-items:center;justify-content:space-between;color:#b9c9cd;font-size:12px}.gallery-viewer-top button{width:38px;height:38px;border:1px solid rgba(255,255,255,.25);border-radius:50%;background:transparent;color:#fff;font-size:27px;line-height:1;cursor:pointer}.gallery-viewer-stage{position:relative;display:grid;height:min(68vh,720px);place-items:center;background:#011014}.gallery-viewer-stage img,.gallery-viewer-stage iframe{display:block;width:100%;height:100%;border:0;object-fit:contain}.gallery-viewer-prev,.gallery-viewer-next{position:absolute;z-index:2;top:50%;width:44px;height:52px;border:0;background:rgba(2,17,22,.72);color:#fff;font-size:34px;transform:translateY(-50%);cursor:pointer}.gallery-viewer-prev{left:12px}.gallery-viewer-next{right:12px}.gallery-viewer button:focus-visible{outline:3px solid #ff6458;outline-offset:2px}.gallery-viewer-caption{padding:17px 0}.gallery-viewer-caption span{color:#ff8c82;font-size:10px;font-weight:800;letter-spacing:.13em;text-transform:uppercase}.gallery-viewer-caption h2{margin:5px 0 0;font:800 clamp(22px,2.5vw,32px)/1.15 'League Spartan','Outfit',sans-serif}.gallery-viewer-caption p{margin:7px 0 0;max-width:760px;color:#c7d2d5;line-height:1.5}.gallery-viewer-error{color:#fff}.media-hub-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
 @media(max-width:1050px){.gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.gallery-card{height:280px}.media-hub-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.gallery-grid{grid-template-columns:1fr}.gallery-card{height:260px}.gallery-viewer-panel{width:calc(100vw - 24px)!important;max-width:calc(100vw - 24px)!important;max-height:calc(100vh - 20px)}.gallery-viewer-stage{height:60vh}.gallery-viewer-prev{left:5px}.gallery-viewer-next{right:5px}.media-hub-grid{grid-template-columns:1fr}}
+
+/* Public brochure library */
+.brochures-page{background:#f5f7f7}.brochures-heading{display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,480px);gap:64px;align-items:end;margin-bottom:42px}.brochures-heading h2{margin:8px 0 0;color:var(--navy);font:800 43px/1 'League Spartan','Outfit','Space Grotesk',sans-serif;letter-spacing:-.035em}.brochures-heading>p{margin:0;color:var(--muted);font-size:15px;line-height:1.7}.brochure-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}.brochure-card{display:grid;grid-template-columns:128px minmax(0,1fr);min-height:260px;overflow:hidden;border:1px solid #dfe6e5;border-radius:5px;background:#fff;box-shadow:0 14px 36px rgba(6,46,59,.07);transition:transform .25s ease,box-shadow .25s ease}.brochure-card:hover{transform:translateY(-4px);box-shadow:0 20px 44px rgba(6,46,59,.12)}.brochure-card-visual{position:relative;display:flex;flex-direction:column;justify-content:space-between;padding:24px 18px;background:linear-gradient(155deg,#083846 0%,#052832 100%);color:#fff}.brochure-card-visual::after{position:absolute;right:-22px;bottom:30px;width:70px;height:8px;background:var(--red);content:'';transform:rotate(-54deg)}.brochure-card-visual>span{color:#ff7b7b;font-size:12px;font-weight:800;letter-spacing:.12em}.brochure-card-visual>svg{color:#fff}.brochure-card-visual>small{position:relative;z-index:1;color:#c8d7da;font-size:9px;font-weight:800;letter-spacing:.1em}.brochure-card-copy{display:flex;min-width:0;flex-direction:column;padding:25px 22px}.brochure-card-copy .eyebrow{margin-bottom:9px}.brochure-card-copy h3{margin:0;color:var(--navy);font:800 21px/1.15 'League Spartan','Outfit','Space Grotesk',sans-serif}.brochure-card-copy>p:not(.eyebrow){display:-webkit-box;overflow:hidden;margin:12px 0 20px;color:var(--muted);font-size:13.5px;line-height:1.55;-webkit-box-orient:vertical;-webkit-line-clamp:3}.brochure-card-copy a{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:14px;border-top:1px solid #e5e9e8;color:var(--red);font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}.brochures-status{display:flex;min-height:190px;flex-direction:column;align-items:center;justify-content:center;gap:7px;border:1px dashed #c7d2d4;background:#fff;color:var(--muted)}.brochures-status strong{color:var(--navy);font-size:18px}.brochures-status span{font-size:14px}@media(max-width:1100px){.brochure-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:760px){.brochures-heading{grid-template-columns:1fr;gap:16px}.brochure-grid{grid-template-columns:1fr}.brochures-heading h2{font-size:34px}}@media(max-width:420px){.brochure-card{grid-template-columns:105px minmax(0,1fr)}.brochure-card-copy{padding:22px 17px}}
 @media (max-width: 1000px) {.footer-main{
     grid-template-columns: 1.4fr 1fr 1fr;
   }.footer-contact{
@@ -2473,6 +2496,7 @@
   height: 410px;
   position: relative;
   overflow: hidden;
+  background: #0b3541;
   color: #fff;
 }.page-hero > img{
   position: absolute;
@@ -2480,6 +2504,16 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+}.page-hero > .page-hero-image{
+  opacity: 0;
+  transform: scale(1.025);
+  transition: opacity 0.65s ease, transform 1.15s cubic-bezier(0.22, 1, 0.36, 1);
+}.page-hero > .page-hero-image.is-loaded{
+  opacity: 1;
+  transform: scale(1);
+}@media (prefers-reduced-motion: reduce){.page-hero > .page-hero-image{
+    transition: opacity 0.15s linear;
+  }
 }.page-hero::after{
   position: absolute;
   inset: 0 auto 0 0;
@@ -3386,8 +3420,6 @@
   transition:
     width 0.3s ease,
     background 0.3s ease;
-}.page-hero > img{
-  animation: pageImageEnter 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
 }.page-hero-copy > *{
   animation: heroCopyEnter 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
 }.page-hero-logo{

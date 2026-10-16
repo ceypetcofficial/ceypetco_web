@@ -13,6 +13,7 @@ import ProjectManagement from "../admin/pages/Projects/ProjectManagement";
 import SupplierResources from "../admin/pages/SupplierResources/SupplierResources";
 import CareerManagement from "../admin/pages/Careers/CareerManagement";
 import AnnualReportsManagement from "../admin/pages/AnnualReports/AnnualReportsManagement";
+import BrochureManagement from "../admin/pages/Brochures/BrochureManagement";
 import TeamMembersManagement from "../admin/pages/TeamMembers/TeamMembersManagement";
 import ManagementContactsManagement from "../admin/pages/ManagementContacts/ManagementContactsManagement";
 import FuelPriceManagement from "../admin/pages/FuelPrices/FuelPriceManagement";
@@ -58,6 +59,7 @@ const AppRoutes = () => {
         <Route path="supplier-resources" element={<SupplierResources />} />
         <Route path="careers" element={<CareerManagement />} />
         <Route path="publications" element={<AnnualReportsManagement />} />
+        <Route path="brochures" element={<BrochureManagement />} />
         <Route path="team-members" element={<TeamMembersManagement />} />
         <Route path="about" element={<ManagementContactsManagement />} />
         <Route path="history" element={<HistoryManagement />} />

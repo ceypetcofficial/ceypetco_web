@@ -29,6 +29,7 @@ const emptyForm = {
   description: "",
   category: "general",
   division: "COMMERCIAL DIVISION",
+  customDivision: "",
   priority: false,
   publishedDate: "",
   closingDate: "",
@@ -51,6 +52,8 @@ const divisionOptions = [
     label: "Procurements & Stores Division",
   },
 ];
+
+const customDivisionValue = "__custom__";
 
 const getApiOrigin = () =>
   (import.meta.env.VITE_API_BASE_URL || "")
@@ -122,7 +125,12 @@ const TenderManagement = () => {
       summary: item.summary || "",
       description: item.description || "",
       category: item.category || "general",
-      division: item.division || "",
+      division: divisionOptions.some((division) => division.value === item.division)
+        ? item.division
+        : customDivisionValue,
+      customDivision: divisionOptions.some((division) => division.value === item.division)
+        ? ""
+        : item.division || "",
       priority: !!item.priority,
       publishedDate: item.publishedDate?.split("T")[0] || "",
       closingDate: toLocalDateTimeInput(item.closingDate),
@@ -179,6 +187,15 @@ const TenderManagement = () => {
     setSaving(true);
     try {
       const payload = { ...form, priority: !!form.priority };
+      payload.division = payload.division === customDivisionValue
+        ? payload.customDivision.trim().toUpperCase()
+        : payload.division;
+      delete payload.customDivision;
+      if (!payload.division) {
+        toast.error("Please enter a custom division name");
+        setSaving(false);
+        return;
+      }
       if (payload.publishedDate) payload.publishedDate = new Date(payload.publishedDate).toISOString();
       else delete payload.publishedDate;
       if (payload.closingDate) payload.closingDate = new Date(payload.closingDate).toISOString();
@@ -409,18 +426,28 @@ const TenderManagement = () => {
                 onChange={set("division")}
                 required
               >
-                {form.division &&
-                  !divisionOptions.some((division) => division.value === form.division) && (
-                    <option value={form.division}>{form.division}</option>
-                  )}
                 {divisionOptions.map((division) => (
                   <option key={division.value} value={division.value}>
                     {division.label}
                   </option>
                 ))}
+                <option value={customDivisionValue}>Add custom division…</option>
               </select>
             </Field>
           </div>
+
+          {form.division === customDivisionValue && (
+            <Field label="Custom Division Name" required>
+              <input
+                className={inputClass}
+                value={form.customDivision}
+                onChange={set("customDivision")}
+                placeholder="e.g. Engineering Division"
+                maxLength={120}
+                required
+              />
+            </Field>
+          )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Field label="Category">

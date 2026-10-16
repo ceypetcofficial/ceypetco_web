@@ -30,6 +30,7 @@ const projectService = createResourceService("/admin/projects");
 const careerService = createResourceService("/admin/careers");
 const supplierResourceService = createResourceService("/admin/supplier-resources");
 const annualReportService = createResourceService("/admin/annual-reports");
+const brochureService = createResourceService("/admin/brochures");
 const teamMemberService = createResourceService("/admin/team-members");
 const managementContactService = createResourceService("/admin/management-contacts");
 const contactService = createResourceService("/admin/contact-messages");
@@ -105,6 +106,7 @@ export {
   supplierResourceService,
   supplierSectionService,
   annualReportService,
+  brochureService,
   teamMemberService,
   managementContactService,
   contactService,

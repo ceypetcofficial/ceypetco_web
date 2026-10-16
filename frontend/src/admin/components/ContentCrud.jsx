@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import toast from "react-hot-toast";
-import { Plus, Search, Edit3, Trash2, Pencil, Inbox } from "lucide-react";
+import { Plus, Search, Edit3, Trash2, Pencil, Inbox, Link2, Loader2, Upload } from "lucide-react";
+import api from "../../services/api";
 import Pagination from "./Pagination";
 import Modal from "./Modal";
 import Loading from "./Loading";
@@ -33,6 +34,8 @@ const ContentCrud = ({
   const [saving, setSaving] = useState(false);
   const [showDelete, setShowDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  const [uploadingField, setUploadingField] = useState(null);
+  const fileRefs = useRef({});
 
   const makeEmpty = () => {
     const empty = {};
@@ -135,7 +138,35 @@ const ContentCrud = ({
 
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
+  const uploadDocument = async (field, event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setUploadingField(field.key);
+    try {
+      const data = new FormData();
+      data.append("file", file);
+      data.append("visibility", "public");
+      const response = await api.post("/upload/document", data, { headers: { "Content-Type": "multipart/form-data" } });
+      const uploadedUrl = response.data.data.url;
+      const origin = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/+$/, "").replace(/\/api$/, "");
+      setForm((current) => ({ ...current, [field.key]: uploadedUrl?.startsWith("http") ? uploadedUrl : `${origin}${uploadedUrl}` }));
+      toast.success("Document uploaded");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Document upload failed");
+    } finally {
+      setUploadingField(null);
+      if (fileRefs.current[field.key]) fileRefs.current[field.key].value = "";
+    }
+  };
+
   const renderField = (field) => {
+    if (field.type === "document") {
+      return <div className="flex items-stretch gap-2">
+        <div className="relative flex-1"><Link2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"/><input type="url" className={`${inputClass} pl-9`} value={form[field.key] ?? ""} onChange={set(field.key)} placeholder={field.placeholder || "Upload a PDF or enter a document URL"} required={field.required}/></div>
+        <button type="button" disabled={uploadingField === field.key} onClick={() => fileRefs.current[field.key]?.click()} className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-slate-200 px-4 text-sm font-semibold text-[#092f3b] hover:bg-slate-50 disabled:opacity-50">{uploadingField === field.key ? <Loader2 className="h-4 w-4 animate-spin"/> : <Upload className="h-4 w-4"/>}{uploadingField === field.key ? "Uploading" : "Upload"}</button>
+        <input ref={(element) => { fileRefs.current[field.key] = element; }} type="file" accept={field.accept || ".pdf,.doc,.docx"} onChange={(event) => uploadDocument(field, event)} className="hidden"/>
+      </div>;
+    }
     if (field.type === "select") {
       return (
         <select
@@ -335,7 +366,7 @@ const ContentCrud = ({
             </button>
             <button
               type="submit"
-              disabled={saving}
+              disabled={saving || Boolean(uploadingField)}
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#dc2626] hover:bg-[#b91c1c] text-white text-sm font-semibold transition-colors disabled:opacity-50"
             >
               <Pencil className="w-4 h-4" />

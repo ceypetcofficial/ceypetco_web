@@ -1,6 +1,8 @@
 import ContentCrud from "../../components/ContentCrud";
 import StatusBadge from "../../components/StatusBadge";
 import { careerService } from "../../../services/contentService";
+import { FileText } from "lucide-react";
+import displayImageUrl from "../../../utils/displayImageUrl.js";
 
 const columns = [
   { key: "title", label: "Position", className: "max-w-xs" },
@@ -18,6 +20,12 @@ const columns = [
       ) : (
         "—"
       ),
+  },
+  {
+    key: "document",
+    label: "Document",
+    className: "hidden lg:table-cell",
+    render: (record) => record.document ? <a href={displayImageUrl(record.document)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-xs font-semibold text-red-600"><FileText className="h-3.5 w-3.5"/>View file</a> : "—",
   },
   {
     key: "status",
@@ -38,6 +46,7 @@ const fields = [
   { key: "description", label: "Job Description", type: "textarea", fullWidth: true },
   { key: "requirements", label: "Requirements", type: "textarea", fullWidth: true },
   { key: "responsibilities", label: "Responsibilities", type: "textarea", fullWidth: true },
+  { key: "document", label: "Vacancy Document", type: "document", accept: "application/pdf,.pdf,.doc,.docx", placeholder: "Upload the vacancy PDF or enter a public URL", fullWidth: true },
 ];
 
 const CareerManagement = () => (

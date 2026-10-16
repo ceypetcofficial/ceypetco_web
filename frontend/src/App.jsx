@@ -698,6 +698,12 @@ const pageData = {
       'Access Ceylon Petroleum Corporation annual reports and review our operational and financial record across the years',
     image: '/images/publications-hero-v2.webp',
   },
+  '/brochures': {
+    label: 'MEDIA CENTRE · BROCHURES',
+    title: 'Information designed to share',
+    intro: 'Browse and download official Ceypetco brochures, guides and corporate information in PDF format',
+    image: '/images/publications-hero-v2.webp',
+  },
   '/right-to-information': {
     label: 'PUBLIC INFORMATION · RTI',
     title: 'Information access made clear',
@@ -2528,9 +2534,6 @@ function SubsidiariesPage() {
             </article>
           ))}
         </div>
-        <p className="subsidiaries-source">
-          Ownership information: <a href="https://ceypetco.gov.lk/wp-content/uploads/2025/08/Audited-Financial-Statements-2022.pdf" target="_blank" rel="noopener noreferrer">CPC audited financial statements</a>.
-        </p>
       </div>
     </section>
   );
@@ -4127,6 +4130,7 @@ const bulkConsumerResources = [
 
 function InnerPage({ type, preserveTemplate, managedSections }) {
   const { t } = useLanguage();
+  const [loadedHeroImage, setLoadedHeroImage] = useState('');
   const [historyPage, setHistoryPage] = useState(defaultHistoryPage);
   const page = type === '/history'
     ? { label: historyPage.heroLabel, title: historyPage.heroTitle, intro: historyPage.heroIntro, image: historyPage.heroImage }
@@ -4153,6 +4157,8 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
   const [careersLoading, setCareersLoading] = useState(true);
   const [annualReports, setAnnualReports] = useState([]);
   const [annualReportsLoading, setAnnualReportsLoading] = useState(true);
+  const [brochures, setBrochures] = useState([]);
+  const [brochuresLoading, setBrochuresLoading] = useState(true);
   const [regionalOffices, setRegionalOffices] = useState(null);
   const [services, setServices] = useState([]);
   const [servicesLoading, setServicesLoading] = useState(true);
@@ -4453,6 +4459,19 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
   }, [type]);
 
   useEffect(() => {
+    if (type !== '/brochures') return undefined;
+    let cancelled = false;
+    setBrochuresLoading(true);
+    api.get('/admin/brochures/active')
+      .then((response) => {
+        if (!cancelled) setBrochures((response.data?.data || []).filter((item) => item.url));
+      })
+      .catch(() => { if (!cancelled) setBrochures([]); })
+      .finally(() => { if (!cancelled) setBrochuresLoading(false); });
+    return () => { cancelled = true; };
+  }, [type]);
+
+  useEffect(() => {
     if (type !== '/services') return undefined;
     let cancelled = false;
     const loadServices = async () => {
@@ -4494,7 +4513,16 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
   return (
     <main className="inner-page">
       <section className={`page-hero${type === '/about' ? ' page-hero--about' : ''}${type === '/management' ? ' page-hero--management' : ''}${type === '/refinery' ? ' page-hero--refinery' : ''}${type === '/lubricants' ? ' page-hero--lubricants' : ''}${type === '/tenders' ? ' page-hero--tenders' : ''}${pageBrandLogos[type] ? ' page-hero--' + type.slice(1) : ''}`}>
-        <img src={page.image} alt="" loading="eager" decoding="async" fetchPriority="high" />
+        <img
+          key={page.image}
+          className={`page-hero-image${loadedHeroImage === page.image ? ' is-loaded' : ''}`}
+          src={page.image}
+          alt=""
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
+          onLoad={() => setLoadedHeroImage(page.image)}
+        />
         {pageBrandLogos[type] && (
           <div className="page-hero-logo">
             <img src={pageBrandLogos[type]} alt={`${page.title} logo`} />
@@ -4521,12 +4549,13 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
           </div>
         </div>
       </section>
-      {['/news', '/notices', '/publications', '/annual-reports'].includes(type) && (
+      {['/news', '/notices', '/publications', '/annual-reports', '/brochures'].includes(type) && (
         <nav className="media-section-nav" aria-label="Media sections">
           <div className="container">
             <a className={type === '/news' ? 'active' : ''} href="/news">News</a>
             <a className={type === '/notices' ? 'active' : ''} href="/notices">Notices</a>
             <a className={['/publications', '/annual-reports'].includes(type) ? 'active' : ''} href="/publications">Publications</a>
+            <a className={type === '/brochures' ? 'active' : ''} href="/brochures">Brochures</a>
             <a href="/gallery">Gallery</a>
           </div>
         </nav>
@@ -5196,6 +5225,41 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
           </div>
         </section>
       )}
+      {type === '/brochures' && (
+        <section className="brochures-page content-section">
+          <div className="container">
+            <div className="brochures-heading">
+              <div><p className="eyebrow">DOWNLOAD LIBRARY</p><h2>Official brochures</h2></div>
+              <p>Explore Ceypetco publications, service guides and corporate information prepared for customers, partners and the public.</p>
+            </div>
+            {brochuresLoading ? (
+              <div className="brochures-status">Loading brochures...</div>
+            ) : brochures.length === 0 ? (
+              <div className="brochures-status"><strong>No brochures published yet</strong><span>Please check back for new publications.</span></div>
+            ) : (
+              <div className="brochure-grid">
+                {brochures.map((brochure, index) => (
+                  <article className="brochure-card" key={brochure._id}>
+                    <div className="brochure-card-visual">
+                      <span>{String(index + 1).padStart(2, '0')}</span>
+                      <Icon name="download" size={30} />
+                      <small>CEYPETCO · PDF</small>
+                    </div>
+                    <div className="brochure-card-copy">
+                      <p className="eyebrow">{brochure.year || 'OFFICIAL BROCHURE'}</p>
+                      <h3>{brochure.title}</h3>
+                      <p>{brochure.description || 'Official Ceypetco information brochure available to view or download.'}</p>
+                      <a href={displayImageUrl(brochure.url)} target="_blank" rel="noreferrer">
+                        View brochure <Icon name="download" size={17} />
+                      </a>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
       {type === '/projects' && (
         <section className="media-page content-section">
           <div className="container">
@@ -5374,7 +5438,8 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
                 { number: '01', title: 'News', description: 'Corporate announcements, activities and stories.', href: '/news', action: 'Browse news' },
                 { number: '02', title: 'Notices', description: 'Current official notices, circulars and documents.', href: '/notices', action: 'Read notices' },
                 { number: '03', title: 'Publications', description: 'Annual reports and published corporate records.', href: '/publications', action: 'View publications' },
-                { number: '04', title: 'Gallery', description: 'Photography and videos from across Ceypetco.', href: '/gallery', action: 'Explore gallery' },
+                { number: '04', title: 'Brochures', description: 'Official guides and corporate information in PDF format.', href: '/brochures', action: 'View brochures' },
+                { number: '05', title: 'Gallery', description: 'Photography and videos from across Ceypetco.', href: '/gallery', action: 'Explore gallery' },
               ].map((item) => (
                 <a href={item.href} className="media-hub-card" key={item.title}>
                   <span>{item.number}</span>
@@ -5533,6 +5598,12 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
               'COMMERCIAL DIVISION',
               'REFINERY DIVISION',
               'PROCUREMENTS & STORES DIVISION',
+              ...Array.from(new Set(filteredTenders.map((tender) => tender.division).filter(Boolean)))
+                .filter((division) => ![
+                  'COMMERCIAL DIVISION',
+                  'REFINERY DIVISION',
+                  'PROCUREMENTS & STORES DIVISION',
+                ].includes(division)),
             ].map((division, di) => {
               const items = filteredTenders
                 .filter((t) => t.division === division)
@@ -5620,15 +5691,6 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
               );
             })}
 
-            <div className="tender-rfq-note">
-              <div>
-                <p className="eyebrow light">REFINERY DIVISION · RFQ</p>
-                <h3>Request-for-quotation information</h3>
-              </div>
-              <a href="/contact?subject=Refinery%20Division%20RFQ">
-                Request RFQ details <Icon name="arrow" size={17} />
-              </a>
-            </div>
           </div>
           {downloadTender && <TenderDownloadModal tender={downloadTender} onClose={() => setDownloadTender(null)} />}
         </section>
@@ -5706,6 +5768,7 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
                     <div className="career-vacancy-meta">{[job.department, job.location, job.type].filter(Boolean).map((item) => <span key={item}>{item}</span>)}</div>
                     {job.description && <p className="career-vacancy-description">{job.description}</p>}
                     {(job.responsibilities || job.requirements) && <div className="career-vacancy-details">{job.responsibilities && <div><h4>What the role involves</h4><p>{job.responsibilities}</p></div>}{job.requirements && <div><h4>What you will need</h4><p>{job.requirements}</p></div>}</div>}
+                    {job.document && <a className="career-document-download" href={displayImageUrl(job.document)} target="_blank" rel="noreferrer">Download vacancy document <Icon name="download" size={17} /></a>}
                   </article>
                 ))
               )}
@@ -5815,7 +5878,7 @@ function App() {
     '/services/marine-bunkering', '/bunkering', '/electric-mobility', '/ev-charging',
     '/news', '/notices', '/tenders', '/projects', '/careers', '/annual-reports', '/contact',
     '/regional-offices', '/right-to-information', '/consumer-registration', '/online-banking',
-    '/mobile-app', '/media', '/gallery',
+    '/mobile-app', '/media', '/gallery', '/brochures',
   ]).has(cleanPath);
   const managedPageHasContent = Boolean(
     managedPage &&
@@ -5880,6 +5943,28 @@ function App() {
     setPath(nextPath);
     scrollAfterNavigation(url.hash);
   };
+
+  useEffect(() => {
+    const preloadedImages = new Set();
+    const preloadLinkedHero = (event) => {
+      const link = event.target.closest?.('a[href]');
+      if (!link) return;
+      const url = new URL(link.href, window.location.origin);
+      if (url.origin !== window.location.origin) return;
+      const linkedPath = url.pathname.replace(/\/$/, '') || '/';
+      const heroSource = pageData[linkedPath]?.image;
+      if (!heroSource || preloadedImages.has(heroSource)) return;
+      preloadedImages.add(heroSource);
+      const image = new Image();
+      image.src = heroSource;
+    };
+    document.addEventListener('pointerover', preloadLinkedHero, { passive: true });
+    document.addEventListener('focusin', preloadLinkedHero);
+    return () => {
+      document.removeEventListener('pointerover', preloadLinkedHero);
+      document.removeEventListener('focusin', preloadLinkedHero);
+    };
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -6361,7 +6446,7 @@ function App() {
               </div>
             </div>
             <div
-              className={`nav-group media-nav-group ${navMediaDropClosed ? 'closed' : ''} ${['/media', '/news', '/notices', '/publications', '/annual-reports', '/gallery'].includes(path) || path.startsWith('/news/') ? 'active' : ''}`}
+              className={`nav-group media-nav-group ${navMediaDropClosed ? 'closed' : ''} ${['/media', '/news', '/notices', '/publications', '/annual-reports', '/brochures', '/gallery'].includes(path) || path.startsWith('/news/') ? 'active' : ''}`}
               onMouseEnter={() => { setNavMediaDropClosed(false); setNavAboutDropClosed(true); setNavDropClosed(true); setNavCareersDropClosed(true); }}
               onFocus={() => { setNavMediaDropClosed(false); setNavAboutDropClosed(true); setNavDropClosed(true); setNavCareersDropClosed(true); }}
             >
@@ -6395,6 +6480,7 @@ function App() {
                   <a href="/news"><b>News</b><small>Stories and corporate updates</small></a>
                   <a href="/notices"><b>Notices</b><small>Official public information</small></a>
                   <a href="/publications"><b>Publications</b><small>Annual reports and records</small></a>
+                  <a href="/brochures"><b>BROCHURES</b><small>Guides and downloadable PDFs</small></a>
                   <a href="/gallery"><b>Gallery</b><small>Photos and videos</small></a>
                 </div>
               </div>
@@ -6854,6 +6940,7 @@ function App() {
             <a href="/tenders">{t('tenders')}</a>
             <a href="/notices">{t('notices')}</a>
             <a href="/annual-reports">{t('annualReports')}</a>
+            <a href="/brochures">Brochures</a>
             <a href="/right-to-information">{t('rightToInformation')}</a>
           </nav>
           <div className="footer-contact">
