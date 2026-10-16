@@ -13074,3 +13074,5 @@
     left: 0 !important;
   }
 }
+
+.gallery-video-placeholder{position:absolute;inset:0;display:grid;place-content:center;gap:12px;background:radial-gradient(circle at 50% 38%,#215b69 0,#0b3440 42%,#041c24 100%);text-align:center}.gallery-video-placeholder i{display:grid;width:58px;height:58px;margin:auto;place-items:center;border:1px solid rgba(255,255,255,.35);border-radius:50%;background:rgba(220,38,38,.92);box-shadow:0 10px 30px rgba(0,0,0,.28);font-size:17px;font-style:normal}.gallery-video-placeholder b{color:#c7dadd;font-size:10px;letter-spacing:.16em;text-transform:uppercase}
