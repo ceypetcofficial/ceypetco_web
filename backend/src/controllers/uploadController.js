@@ -9,6 +9,7 @@ const UPLOADS_DIR = path.resolve(__dirname, "../../uploads");
 const PRIVATE_DOCS_DIR = path.resolve(__dirname, "../../private-docs");
 const TRASH_IMAGES_DIR = path.resolve(__dirname, "../../uploads-trash/images");
 const MAX_DOCUMENT_BYTES = 8 * 1024 * 1024;
+const MAX_ANNUAL_REPORT_BYTES = 50 * 1024 * 1024;
 
 const resolveContainedPath = (root, filename, allowedTypes) => {
   if (typeof filename !== "string" || !filename || filename !== path.basename(filename) || filename.includes("\0")) return null;
@@ -82,6 +83,12 @@ const docUpload = multer({
   limits: { fileSize: MAX_DOCUMENT_BYTES, files: 1, fields: 2, parts: 3 },
 });
 
+const annualReportUpload = multer({
+  storage: multer.memoryStorage(),
+  fileFilter: docFilter,
+  limits: { fileSize: MAX_ANNUAL_REPORT_BYTES, files: 1, fields: 2, parts: 3 },
+});
+
 const saveToDisk = async (req, isDoc) => {
   // Documents are private by default. Public-site editors must opt in explicitly.
   const isPrivate = isDoc && req.body?.visibility !== "public";
@@ -152,6 +159,22 @@ const uploadDocument = (req, res, next) => {
       return res
         .status(400)
         .json({ success: false, message: "No document file uploaded" });
+    }
+    if (!validDocumentContent(req.file)) return res.status(400).json({ success: false, message: "The file content does not match its document extension" });
+    runUpload(req, res, true);
+  });
+};
+
+const uploadAnnualReport = (req, res) => {
+  annualReportUpload.single("file")(req, res, (err) => {
+    if (err) {
+      const message = err.code === "LIMIT_FILE_SIZE"
+        ? "Annual report files must be 50 MB or smaller"
+        : err.message;
+      return res.status(400).json({ success: false, message });
+    }
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: "No annual report file uploaded" });
     }
     if (!validDocumentContent(req.file)) return res.status(400).json({ success: false, message: "The file content does not match its document extension" });
     runUpload(req, res, true);
@@ -284,6 +307,7 @@ const servePrivateDocument = async (req, res, next) => {
 module.exports = {
   uploadImage,
   uploadDocument,
+  uploadAnnualReport,
   listImages,
   deleteImage,
   renameImage,

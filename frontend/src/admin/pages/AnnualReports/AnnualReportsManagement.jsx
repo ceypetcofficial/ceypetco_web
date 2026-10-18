@@ -30,6 +30,8 @@ const emptyForm = {
   status: "published",
 };
 
+const MAX_ANNUAL_REPORT_BYTES = 50 * 1024 * 1024;
+
 const AnnualReportsManagement = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -90,12 +92,17 @@ const AnnualReportsManagement = () => {
   const handleUpload = async (e) => {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
+    if (file.size > MAX_ANNUAL_REPORT_BYTES) {
+      toast.error("Annual report files must be 50 MB or smaller");
+      e.target.value = "";
+      return;
+    }
     setUploading(true);
     try {
       const fd = new FormData();
       fd.append("file", file);
       fd.append("visibility", "public");
-      const res = await api.post("/upload/document", fd, {
+      const res = await api.post("/upload/annual-report", fd, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       const fullUrl =
@@ -286,7 +293,7 @@ const AnnualReportsManagement = () => {
 
           <Field
             label="Document / PDF"
-            hint="Upload a file or paste a document link."
+            hint="Upload a file up to 50 MB or paste a document link."
           >
             <div className="flex items-stretch gap-2">
               <div className="relative flex-1">
