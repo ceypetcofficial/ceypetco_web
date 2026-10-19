@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const { getNetworkFingerprint } = require("../utils/generateToken");
 
 const cookieValue = (header, name) => {
   for (const part of String(header || "").split(";")) {
@@ -25,6 +26,10 @@ const protect = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET, { algorithms: ["HS256"], issuer: "ceypetco-api", audience: "ceypetco-admin" });
+
+    if (decoded.network && decoded.network !== getNetworkFingerprint(req.ip)) {
+      return res.status(401).json({ success: false, message: "Network changed, please login again" });
+    }
 
     const user = await User.findById(decoded.id);
 
@@ -76,6 +81,7 @@ const optionalAuth = async (req, res, next) => {
     if (!token) return next();
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET, { algorithms: ["HS256"], issuer: "ceypetco-api", audience: "ceypetco-admin" });
+    if (decoded.network && decoded.network !== getNetworkFingerprint(req.ip)) return next();
     const user = await User.findById(decoded.id);
 
     if (user && user.status === "active" && (Number(decoded.tokenVersion) || 0) === (Number(user.tokenVersion) || 0)) {

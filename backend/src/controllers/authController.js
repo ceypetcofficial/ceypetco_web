@@ -70,7 +70,7 @@ const login = async (req, res, next) => {
     user.lockUntil = null;
     await user.save({ validateBeforeSave: false });
 
-    const token = generateToken(user);
+    const token = generateToken(user, req.ip);
     res.cookie(sessionCookieName, token, sessionCookieOptions);
     res.setHeader("Cache-Control", "no-store, private");
 

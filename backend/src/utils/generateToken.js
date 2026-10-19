@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 
 const DEFAULT_TTL_SECONDS = 60 * 60;
 const MAX_TTL_SECONDS = 2 * 60 * 60;
@@ -12,8 +13,13 @@ const getTokenTtlSeconds = () => {
   return Math.max(300, Math.min(requested, MAX_TTL_SECONDS));
 };
 
-const generateToken = (user) => {
-  return jwt.sign({ id: user._id, tokenVersion: Number(user.tokenVersion) || 0 }, process.env.JWT_SECRET, {
+const getNetworkFingerprint = (ip) => crypto
+  .createHmac("sha256", process.env.JWT_SECRET)
+  .update(String(ip || "unknown"))
+  .digest("base64url");
+
+const generateToken = (user, ip) => {
+  return jwt.sign({ id: user._id, tokenVersion: Number(user.tokenVersion) || 0, network: getNetworkFingerprint(ip) }, process.env.JWT_SECRET, {
     expiresIn: getTokenTtlSeconds() || DEFAULT_TTL_SECONDS,
     algorithm: "HS256",
     issuer: "ceypetco-api",
@@ -24,3 +30,4 @@ const generateToken = (user) => {
 
 module.exports = generateToken;
 module.exports.getTokenTtlSeconds = getTokenTtlSeconds;
+module.exports.getNetworkFingerprint = getNetworkFingerprint;
