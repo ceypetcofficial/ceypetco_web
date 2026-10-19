@@ -18,6 +18,7 @@ const ContentCrud = ({
   emptyHint,
   searchPlaceholder = "Search...",
   objectKey = null,
+  transformPayload = null,
 }) => {
   const { user } = useAuth();
   const canDelete = user?.role === "super_admin" || user?.role === "admin";
@@ -40,7 +41,9 @@ const ContentCrud = ({
   const makeEmpty = () => {
     const empty = {};
     fields.forEach((f) => {
-      empty[f.key] =
+      empty[f.key] = f.type === "documents"
+        ? []
+        :
         f.type === "select"
           ? f.default || ""
           : f.type === "number"
@@ -88,6 +91,16 @@ const ContentCrud = ({
     const f = {};
     fields.forEach((field) => {
       let val = item[field.key];
+      if (field.type === "documents") {
+        val = Array.isArray(val) ? val.map((entry) => ({ ...entry })) : [];
+        if (!val.length && field.legacyDocument?.urlKey && item[field.legacyDocument.urlKey]) {
+          val = [{
+            url: item[field.legacyDocument.urlKey],
+            name: item[field.legacyDocument.nameKey] || "",
+            buttonText: item[field.legacyDocument.buttonTextKey] || "Download vacancy document",
+          }];
+        }
+      }
       if (field.type === "date" && val) val = String(val).split("T")[0];
       f[field.key] = val ?? "";
     });
@@ -108,11 +121,12 @@ const ContentCrud = ({
         }
         if ((field.type !== "date" || val) && val !== undefined) payload[field.key] = val;
       });
+      const finalPayload = transformPayload ? transformPayload(payload, { editing, form }) : payload;
       if (editing) {
-        await service.update(editing._id, payload);
+        await service.update(editing._id, finalPayload);
         toast.success("Updated successfully");
       } else {
-        await service.create(payload);
+        await service.create(finalPayload);
         toast.success("Created successfully");
       }
       setShowModal(false);
@@ -167,6 +181,41 @@ const ContentCrud = ({
   };
 
   const renderField = (field) => {
+    if (field.type === "documents") {
+      const entries = Array.isArray(form[field.key]) ? form[field.key] : [];
+      const updateEntry = (index, values) => setForm((current) => ({
+        ...current,
+        [field.key]: entries.map((entry, entryIndex) => entryIndex === index ? { ...entry, ...values } : entry),
+      }));
+      return <div className="space-y-3">
+        {entries.map((entry, index) => <div key={`${field.key}-${index}`} className="space-y-3 rounded-lg border border-slate-200 bg-slate-50/60 p-3">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <input className={inputClass} value={entry.buttonText || ""} onChange={(event) => updateEntry(index, { buttonText: event.target.value })} placeholder="Button text, e.g. Download application" />
+            <input className={inputClass} value={entry.name || ""} onChange={(event) => updateEntry(index, { name: event.target.value })} placeholder="Downloaded filename.pdf" />
+          </div>
+          <div className="flex items-stretch gap-2">
+            <div className="relative flex-1"><Link2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"/><input type="url" className={`${inputClass} pl-9`} value={entry.url || ""} onChange={(event) => updateEntry(index, { url: event.target.value })} placeholder="Upload a document or enter its URL" /></div>
+            <button type="button" disabled={uploadingField === `${field.key}-${index}`} onClick={() => fileRefs.current[`${field.key}-${index}`]?.click()} className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-slate-200 px-3 text-sm font-semibold text-[#092f3b] hover:bg-white disabled:opacity-50">{uploadingField === `${field.key}-${index}` ? <Loader2 className="h-4 w-4 animate-spin"/> : <Upload className="h-4 w-4"/>}Upload</button>
+            <button type="button" onClick={() => setForm((current) => ({ ...current, [field.key]: entries.filter((_, entryIndex) => entryIndex !== index) }))} className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-red-200 px-3 text-sm font-semibold text-red-600 hover:bg-red-50"><X className="h-4 w-4"/>Remove</button>
+            <input ref={(element) => { fileRefs.current[`${field.key}-${index}`] = element; }} type="file" accept={field.accept || ".pdf,.doc,.docx"} onChange={async (event) => {
+              const file = event.target.files?.[0];
+              if (!file) return;
+              setUploadingField(`${field.key}-${index}`);
+              try {
+                const data = new FormData(); data.append("file", file); data.append("visibility", "public");
+                const response = await api.post("/upload/document", data, { headers: { "Content-Type": "multipart/form-data" } });
+                const uploaded = response.data.data;
+                const origin = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/+$/, "").replace(/\/api$/, "");
+                updateEntry(index, { url: uploaded.url?.startsWith("http") ? uploaded.url : `${origin}${uploaded.url}`, name: uploaded.originalname || file.name });
+                toast.success("Document uploaded");
+              } catch (error) { toast.error(error.response?.data?.message || "Document upload failed"); }
+              finally { setUploadingField(null); event.target.value = ""; }
+            }} className="hidden"/>
+          </div>
+        </div>)}
+        <button type="button" onClick={() => setForm((current) => ({ ...current, [field.key]: [...entries, { buttonText: "Download document", name: "", url: "" }] }))} className="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-[#092f3b] hover:bg-slate-50"><Plus className="h-4 w-4"/>Add download button</button>
+      </div>;
+    }
     if (field.type === "document") {
       return <div className="flex items-stretch gap-2">
         <div className="relative flex-1"><Link2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"/><input type="url" className={`${inputClass} pl-9`} value={form[field.key] ?? ""} onChange={set(field.key)} placeholder={field.placeholder || "Upload a PDF or enter a document URL"} required={field.required}/></div>
@@ -352,7 +401,7 @@ const ContentCrud = ({
             {fields.map((field) => (
               <div
                 key={field.key}
-                className={field.type === "textarea" || field.fullWidth ? "sm:col-span-2" : ""}
+                className={field.type === "textarea" || field.type === "documents" || field.fullWidth ? "sm:col-span-2" : ""}
               >
                 <Field
                   label={field.label}

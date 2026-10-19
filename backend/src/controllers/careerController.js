@@ -4,7 +4,7 @@ const createCrudController = require("./crudController");
 const crud = createCrudController(Career, {
   searchFields: ["title", "reference", "department", "location"],
   sortBy: { order: 1, publishedDate: -1 },
-  assetFields: [{ field: "document" }],
+  assetFields: [{ field: "document" }, { field: "documents", urlKey: "url" }],
 });
 
 const getActive = async (req, res, next) => {

@@ -5784,7 +5784,11 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
                     <div className="career-vacancy-meta">{[job.department, job.location, job.type].filter(Boolean).map((item) => <span key={item}>{item}</span>)}</div>
                     {job.description && <p className="career-vacancy-description">{job.description}</p>}
                     {(job.responsibilities || job.requirements) && <div className="career-vacancy-details">{job.responsibilities && <div><h4>What the role involves</h4><p>{job.responsibilities}</p></div>}{job.requirements && <div><h4>What you will need</h4><p>{job.requirements}</p></div>}</div>}
-                    {job.document && <a className="career-document-download" href={careerDocumentDownloadUrl(job.document, job.documentName)} download={job.documentName || undefined}>{job.downloadButtonText || 'Download vacancy document'} <Icon name="download" size={17} /></a>}
+                    {(Array.isArray(job.documents) && job.documents.length
+                      ? job.documents
+                      : job.document ? [{ url: job.document, name: job.documentName, buttonText: job.downloadButtonText }] : [])
+                      .filter((document) => document?.url)
+                      .map((document, documentIndex) => <a className="career-document-download" key={`${document.url}-${documentIndex}`} href={careerDocumentDownloadUrl(document.url, document.name)} download={document.name || undefined}>{document.buttonText || `Download document ${documentIndex + 1}`} <Icon name="download" size={17} /></a>)}
                   </article>
                 ))
               )}

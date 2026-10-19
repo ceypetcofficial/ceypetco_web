@@ -2,7 +2,6 @@ import ContentCrud from "../../components/ContentCrud";
 import StatusBadge from "../../components/StatusBadge";
 import { careerService } from "../../../services/contentService";
 import { FileText } from "lucide-react";
-import displayImageUrl from "../../../utils/displayImageUrl.js";
 
 const columns = [
   { key: "title", label: "Position", className: "max-w-xs" },
@@ -26,7 +25,7 @@ const columns = [
     key: "document",
     label: "Document",
     className: "hidden lg:table-cell",
-    render: (record) => record.document ? <a href={displayImageUrl(record.document)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-xs font-semibold text-red-600"><FileText className="h-3.5 w-3.5"/>View file</a> : "—",
+    render: (record) => (record.documents?.length || record.document) ? <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-red-600"><FileText className="h-3.5 w-3.5"/>{record.documents?.length || 1} file(s)</span> : "—",
   },
   {
     key: "status",
@@ -48,9 +47,7 @@ const fields = [
   { key: "description", label: "Job Description", type: "textarea", fullWidth: true },
   { key: "requirements", label: "Requirements", type: "textarea", fullWidth: true },
   { key: "responsibilities", label: "Responsibilities", type: "textarea", fullWidth: true },
-  { key: "downloadButtonText", label: "Download Button Text", placeholder: "Download vacancy document", hint: "The text shown on the careers page download button." },
-  { key: "documentName", label: "Downloaded File Name", placeholder: "vacancy-notice.pdf", hint: "Filled automatically from an uploaded file; you can rename it here." },
-  { key: "document", label: "Vacancy Document", type: "document", accept: "application/pdf,.pdf,.doc,.docx", placeholder: "Upload the vacancy PDF or enter a public URL", uploadNameKey: "documentName", fullWidth: true },
+  { key: "documents", label: "Download Buttons", type: "documents", accept: "application/pdf,.pdf,.doc,.docx", hint: "Add one or more documents. Each download button and filename can be renamed.", legacyDocument: { urlKey: "document", nameKey: "documentName", buttonTextKey: "downloadButtonText" }, fullWidth: true },
 ];
 
 const CareerManagement = () => (
@@ -63,6 +60,17 @@ const CareerManagement = () => (
     emptyTitle="No vacancies found"
     emptyHint="Create your first vacancy to get started"
     searchPlaceholder="Search vacancies..."
+    transformPayload={(payload) => ({
+      ...payload,
+      documents: (payload.documents || []).map((entry) => ({
+        url: entry.url?.trim() || "",
+        name: entry.name?.trim() || "",
+        buttonText: entry.buttonText?.trim() || "Download document",
+      })).filter((entry) => entry.url),
+      document: "",
+      documentName: "",
+      downloadButtonText: "",
+    })}
   />
 );
 
