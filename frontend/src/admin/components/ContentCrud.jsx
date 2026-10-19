@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import toast from "react-hot-toast";
-import { Plus, Search, Edit3, Trash2, Pencil, Inbox, Link2, Loader2, Upload } from "lucide-react";
+import { Plus, Search, Edit3, Trash2, Pencil, Inbox, Link2, Loader2, Upload, X } from "lucide-react";
 import api from "../../services/api";
 import Pagination from "./Pagination";
 import Modal from "./Modal";
@@ -44,7 +44,7 @@ const ContentCrud = ({
         f.type === "select"
           ? f.default || ""
           : f.type === "number"
-            ? ""
+            ? (f.default ?? "")
             : f.type === "date"
               ? ""
               : "";
@@ -103,7 +103,9 @@ const ContentCrud = ({
       fields.forEach((field) => {
         let val = form[field.key];
         if (field.type === "date" && val) val = new Date(val).toISOString();
-        if (field.type === "number" && (val === "" || val === null || val === undefined)) val = undefined;
+        if (field.type === "number") {
+          val = val === "" || val === null || val === undefined ? undefined : Number(val);
+        }
         if ((field.type !== "date" || val) && val !== undefined) payload[field.key] = val;
       });
       if (editing) {
@@ -148,8 +150,13 @@ const ContentCrud = ({
       data.append("visibility", "public");
       const response = await api.post("/upload/document", data, { headers: { "Content-Type": "multipart/form-data" } });
       const uploadedUrl = response.data.data.url;
+      const originalName = response.data.data.originalname;
       const origin = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/+$/, "").replace(/\/api$/, "");
-      setForm((current) => ({ ...current, [field.key]: uploadedUrl?.startsWith("http") ? uploadedUrl : `${origin}${uploadedUrl}` }));
+      setForm((current) => ({
+        ...current,
+        [field.key]: uploadedUrl?.startsWith("http") ? uploadedUrl : `${origin}${uploadedUrl}`,
+        ...(field.uploadNameKey && originalName ? { [field.uploadNameKey]: originalName } : {}),
+      }));
       toast.success("Document uploaded");
     } catch (error) {
       toast.error(error.response?.data?.message || "Document upload failed");
@@ -164,6 +171,7 @@ const ContentCrud = ({
       return <div className="flex items-stretch gap-2">
         <div className="relative flex-1"><Link2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"/><input type="url" className={`${inputClass} pl-9`} value={form[field.key] ?? ""} onChange={set(field.key)} placeholder={field.placeholder || "Upload a PDF or enter a document URL"} required={field.required}/></div>
         <button type="button" disabled={uploadingField === field.key} onClick={() => fileRefs.current[field.key]?.click()} className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-slate-200 px-4 text-sm font-semibold text-[#092f3b] hover:bg-slate-50 disabled:opacity-50">{uploadingField === field.key ? <Loader2 className="h-4 w-4 animate-spin"/> : <Upload className="h-4 w-4"/>}{uploadingField === field.key ? "Uploading" : "Upload"}</button>
+        {form[field.key] && <button type="button" onClick={() => setForm((current) => ({ ...current, [field.key]: "", ...(field.uploadNameKey ? { [field.uploadNameKey]: "" } : {}) }))} className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-red-200 px-3 text-sm font-semibold text-red-600 hover:bg-red-50" title="Remove uploaded document"><X className="h-4 w-4"/>Remove</button>}
         <input ref={(element) => { fileRefs.current[field.key] = element; }} type="file" accept={field.accept || ".pdf,.doc,.docx"} onChange={(event) => uploadDocument(field, event)} className="hidden"/>
       </div>;
     }

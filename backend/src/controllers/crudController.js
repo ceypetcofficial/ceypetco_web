@@ -156,7 +156,12 @@ const createCrudController = (
           .json({ success: false, message: "Resource not found" });
       }
       if (onChange) await onChange({ action: "delete", item, previous: existing, req });
-      res.status(200).json({ success: true, message: "Resource moved to the recycle bin" });
+      try {
+        await deleteAssets(collectUrls(existing, assetFields));
+      } catch (cleanupErr) {
+        console.warn("Local asset cleanup warning:", cleanupErr.message);
+      }
+      res.status(200).json({ success: true, message: "Resource deleted and uploaded files removed" });
     } catch (error) {
       next(error);
     }

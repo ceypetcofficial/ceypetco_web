@@ -203,7 +203,7 @@ const TenderManagement = () => {
       const cleanDocs = docs
         .map((d) => ({ name: d.name?.trim(), url: d.url?.trim() }))
         .filter((d) => d.name || d.url);
-      if (cleanDocs.length) payload.documents = cleanDocs;
+      payload.documents = cleanDocs;
       if (editing) {
         await tenderService.update(editing._id, payload);
         toast.success("Tender updated successfully");

@@ -8,6 +8,7 @@ const columns = [
   { key: "title", label: "Position", className: "max-w-xs" },
   { key: "department", label: "Department", className: "hidden lg:table-cell" },
   { key: "location", label: "Location", className: "hidden md:table-cell" },
+  { key: "order", label: "Order", className: "hidden sm:table-cell", render: (record) => record.order ?? 0 },
   {
     key: "applicationDeadline",
     label: "Deadline",
@@ -40,13 +41,16 @@ const fields = [
   { key: "location", label: "Location" },
   { key: "type", label: "Employment Type", type: "select", options: ["Full-time", "Part-time", "Contract", "Internship"] },
   { key: "salary", label: "Salary", placeholder: "e.g. LKR 75,000" },
+  { key: "order", label: "Display Order", type: "number", min: 0, step: 1, default: 0, hint: "Lower numbers appear first (for example, 0 before 1)." },
   { key: "status", label: "Status", type: "select", options: ["draft", "open", "closed"], default: "draft" },
   { key: "publishedDate", label: "Published Date", type: "date" },
   { key: "applicationDeadline", label: "Application Deadline", type: "date" },
   { key: "description", label: "Job Description", type: "textarea", fullWidth: true },
   { key: "requirements", label: "Requirements", type: "textarea", fullWidth: true },
   { key: "responsibilities", label: "Responsibilities", type: "textarea", fullWidth: true },
-  { key: "document", label: "Vacancy Document", type: "document", accept: "application/pdf,.pdf,.doc,.docx", placeholder: "Upload the vacancy PDF or enter a public URL", fullWidth: true },
+  { key: "downloadButtonText", label: "Download Button Text", placeholder: "Download vacancy document", hint: "The text shown on the careers page download button." },
+  { key: "documentName", label: "Downloaded File Name", placeholder: "vacancy-notice.pdf", hint: "Filled automatically from an uploaded file; you can rename it here." },
+  { key: "document", label: "Vacancy Document", type: "document", accept: "application/pdf,.pdf,.doc,.docx", placeholder: "Upload the vacancy PDF or enter a public URL", uploadNameKey: "documentName", fullWidth: true },
 ];
 
 const CareerManagement = () => (

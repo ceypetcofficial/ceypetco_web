@@ -5,7 +5,7 @@ const schema = {
   "AnnualReport": ["year", "url", "status"],
   "Brochure": ["title", "description", "year", "url", "order", "status"],
   "AviationPrice": ["customer", "location", "price", "effectiveDate", "status"],
-  "Career": ["title", "reference", "department", "location", "type", "description", "responsibilities", "requirements", "salary", "document", "applicationDeadline", "publishedDate", "status"],
+  "Career": ["title", "reference", "department", "location", "type", "description", "responsibilities", "requirements", "salary", "order", "document", "documentName", "downloadButtonText", "applicationDeadline", "publishedDate", "status"],
   "ContactMessage": ["status", "name", "email", "subject", "message"],
   "Division": ["slug", "title", "subtitle", "order", "kicker", "heading", "image", "detailTitle", "status"],
   "FuelPrice": ["effectiveDate", "product", "price", "status", "type", "unit", "category"],

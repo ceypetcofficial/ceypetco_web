@@ -397,6 +397,7 @@ const NoticeManagement = () => {
                   )}
                   {uploading ? "Uploading..." : "Upload"}
                 </button>
+                {form.document && <button type="button" onClick={() => setForm((current) => ({ ...current, document: "" }))} className="inline-flex items-center gap-2 rounded-lg border border-red-200 px-3 text-sm font-semibold text-red-600 hover:bg-red-50" title="Remove document"><Trash2 className="h-4 w-4"/>Remove</button>}
                 <input
                   ref={fileInputRef}
                   type="file"

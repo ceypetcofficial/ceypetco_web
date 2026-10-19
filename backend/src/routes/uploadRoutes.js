@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { uploadImage, uploadDocument, uploadAnnualReport, listImages, deleteImage, renameImage, servePrivateDocument } = require("../controllers/uploadController");
+const { uploadImage, uploadDocument, uploadAnnualReport, listImages, deleteImage, renameImage, servePrivateDocument, servePublicDocument } = require("../controllers/uploadController");
 const { protect } = require("../middleware/authMiddleware");
 const { authorize } = require("../middleware/roleMiddleware");
 
@@ -20,6 +20,7 @@ router
 
 router.route("/images").get(protect, admins, listImages);
 router.get("/private/:filename", protect, admins, servePrivateDocument);
+router.get("/public/:filename", servePublicDocument);
 
 router
   .route("/images/:filename")

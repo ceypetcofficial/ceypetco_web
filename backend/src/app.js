@@ -102,10 +102,11 @@ app.use(
   (req, res, next) => [".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx", ".csv", ".zip", ".rar"].includes(path.extname(req.path).toLowerCase()) ? next() : res.status(404).end(),
   express.static(path.resolve(__dirname, "../uploads/docs"), {
     setHeaders: (res, filePath) => {
-      const filename = path.basename(filePath).replace(/["\\\r\n]/g, "_");
+      const storageName = path.basename(filePath);
+      const filename = storageName.match(/^\d+-[a-f0-9]{16}--(.+)$/i)?.[1] || storageName;
       res.setHeader("Access-Control-Allow-Origin", "*");
       res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
-      res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+      res.attachment(filename);
       res.setHeader("X-Content-Type-Options", "nosniff");
     },
   })

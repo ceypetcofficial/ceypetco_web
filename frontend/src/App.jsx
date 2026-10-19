@@ -13,12 +13,26 @@ import subsidiariesHeroImage from './images/subsidiaries.webp';
 import ministryHeroImage from './images/ministry.webp';
 import allServicesHeroImage from './images/allservices.webp';
 import displayImageUrl from './utils/displayImageUrl.js';
+import { apiOrigin } from './utils/apiBaseUrl.js';
 import applyCmsOverrides, { scheduleCmsOverrides } from './utils/applyCmsOverrides.js';
 import MarineBunkeringPage from './components/marine-bunkering/MarineBunkeringPage.jsx';
 import ElectricMobilityContent from './components/electric-mobility/ElectricMobilityContent.jsx';
 import HistoricalPricesPage from './components/HistoricalPricesPage.jsx';
 import ManagedPage, { ManagedSections } from './components/ManagedPage.jsx';
 import GalleryPage from './components/GalleryPage.jsx';
+
+const careerDocumentDownloadUrl = (documentUrl, documentName) => {
+  const displayedUrl = displayImageUrl(documentUrl);
+  if (!displayedUrl || !documentName) return displayedUrl;
+  try {
+    const url = new URL(displayedUrl, window.location.origin);
+    const match = url.pathname.match(/^\/uploads\/docs\/([^/]+)$/i);
+    if (!match || url.origin !== apiOrigin) return displayedUrl;
+    return `${apiOrigin}/api/upload/public/${encodeURIComponent(decodeURIComponent(match[1]))}?filename=${encodeURIComponent(documentName)}`;
+  } catch {
+    return displayedUrl;
+  }
+};
 
 const paymentBanks = [
   { name: 'Bank of Ceylon', branch: 'City Office', logo: 'boc.svg' },
@@ -4155,6 +4169,7 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
   const [projectsLoading, setProjectsLoading] = useState(true);
   const [careers, setCareers] = useState([]);
   const [careersLoading, setCareersLoading] = useState(true);
+  const [careerSearch, setCareerSearch] = useState('');
   const [annualReports, setAnnualReports] = useState([]);
   const [annualReportsLoading, setAnnualReportsLoading] = useState(true);
   const [brochures, setBrochures] = useState([]);
@@ -4494,7 +4509,13 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
     };
   }, [type]);
 
-  const currentCareers = careers;
+  const normalizedCareerSearch = careerSearch.trim().toLocaleLowerCase();
+  const currentCareers = normalizedCareerSearch
+    ? careers.filter((career) =>
+      [career.title, career.reference, career.department, career.location, career.type,
+        career.description, career.responsibilities, career.requirements]
+        .some((value) => String(value || '').toLocaleLowerCase().includes(normalizedCareerSearch)))
+    : careers;
   const normalizedTenderSearch = tenderSearch.trim().toLowerCase();
   const filteredTenders = normalizedTenderSearch
     ? tenders.filter((tender) =>
@@ -4549,17 +4570,6 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
           </div>
         </div>
       </section>
-      {['/news', '/notices', '/publications', '/annual-reports', '/brochures'].includes(type) && (
-        <nav className="media-section-nav" aria-label="Media sections">
-          <div className="container">
-            <a className={type === '/news' ? 'active' : ''} href="/news">News</a>
-            <a className={type === '/notices' ? 'active' : ''} href="/notices">Notices</a>
-            <a className={['/publications', '/annual-reports'].includes(type) ? 'active' : ''} href="/publications">Publications</a>
-            <a className={type === '/brochures' ? 'active' : ''} href="/brochures">Brochures</a>
-            <a href="/gallery">Gallery</a>
-          </div>
-        </nav>
-      )}
       {['/careers', '/corporate-life', '/current-opportunities'].includes(type) && (
         <nav className="media-section-nav" aria-label="Careers sections">
           <div className="container">
@@ -5759,7 +5769,13 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
               <h2>Build the future of energy</h2>
               <p>Review available positions below, including role details, requirements and application deadlines where provided.</p>
             </div>
-            <div className="current-opportunities-heading"><div><span>OPEN POSITIONS</span><h3>Current opportunities</h3></div></div>
+            <div className="current-opportunities-heading">
+              <div><span>OPEN POSITIONS</span><h3>Current opportunities</h3></div>
+              <label className="career-search">
+                <span className="sr-only">Search career opportunities</span>
+                <input type="search" value={careerSearch} onChange={(event) => setCareerSearch(event.target.value)} placeholder="Search vacancies..." />
+              </label>
+            </div>
             <div className="career-vacancy-list">
               {careersLoading ? <div className="careers-status">Loading opportunities…</div> : currentCareers.length === 0 ? <div className="careers-status"><h3>No current openings</h3><p>Please check back later for new vacancies.</p></div> : (
                 currentCareers.map((job) => (
@@ -5768,7 +5784,7 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
                     <div className="career-vacancy-meta">{[job.department, job.location, job.type].filter(Boolean).map((item) => <span key={item}>{item}</span>)}</div>
                     {job.description && <p className="career-vacancy-description">{job.description}</p>}
                     {(job.responsibilities || job.requirements) && <div className="career-vacancy-details">{job.responsibilities && <div><h4>What the role involves</h4><p>{job.responsibilities}</p></div>}{job.requirements && <div><h4>What you will need</h4><p>{job.requirements}</p></div>}</div>}
-                    {job.document && <a className="career-document-download" href={displayImageUrl(job.document)} target="_blank" rel="noreferrer">Download vacancy document <Icon name="download" size={17} /></a>}
+                    {job.document && <a className="career-document-download" href={careerDocumentDownloadUrl(job.document, job.documentName)} download={job.documentName || undefined}>{job.downloadButtonText || 'Download vacancy document'} <Icon name="download" size={17} /></a>}
                   </article>
                 ))
               )}
@@ -7007,7 +7023,7 @@ function TenderDownloadModal({ tender, onClose }) {
 
   return (
     <div className="tender-modal-overlay" style={{ display: 'flex', zIndex: 9999, position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0, 0, 0, 0.6)', alignItems: 'center', justifyContent: 'center' }}>
-      <div className="tender-modal-content" style={{ maxWidth: '800px', width: '90%', maxHeight: '90vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', padding: 0, backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 4px 20px rgba(0,0,0,0.15)' }}>
+      <div className="tender-modal-content" style={{ maxWidth: '560px', width: '90%', maxHeight: '90vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', padding: 0, backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 4px 20px rgba(0,0,0,0.15)' }}>
         <div style={{ padding: '20px 24px', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <h2 style={{ margin: 0, fontSize: '1.25rem' }}>Download Tender Document</h2>
@@ -7016,9 +7032,8 @@ function TenderDownloadModal({ tender, onClose }) {
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.5rem', lineHeight: 1 }}>&times;</button>
         </div>
 
-        <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-          {/* Form Side */}
-          <div style={{ flex: '1 1 300px', padding: '24px', borderRight: '1px solid #eee' }}>
+        <div>
+          <div style={{ padding: '24px' }}>
             <p style={{ marginBottom: '1rem', color: '#666', fontSize: '0.9rem' }}>Please provide your contact details to download the tender document for <strong>{tender.title}</strong>.</p>
             {error && <div style={{ color: 'red', marginBottom: '1rem', fontSize: '0.9rem' }}>{error}</div>}
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -7030,20 +7045,12 @@ function TenderDownloadModal({ tender, onClose }) {
                 <span style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Mobile Number *</span>
                 <input type="tel" required value={mobileNumber} onChange={(e) => setMobileNumber(e.target.value)} style={{ width: '100%', padding: '0.75rem', border: '1px solid #ddd', borderRadius: '4px' }} />
               </label>
-              <button type="submit" disabled={loading} className="btn-primary" style={{ marginTop: '0.5rem' }}>
+              <button type="submit" disabled={loading} className="tender-submit-btn" style={{ marginTop: '0.5rem' }}>
                 {loading ? 'Processing...' : 'Submit & Download'}
               </button>
             </form>
           </div>
 
-          {/* Preview Side */}
-          <div style={{ flex: '1 1 300px', padding: '24px', backgroundColor: '#fafafa' }}>
-            <p style={{ marginBottom: '1rem', fontWeight: 600 }}>Document Preview</p>
-            <div style={{ width: '100%', height: '300px', border: '1px solid #ddd', background: '#fff', overflow: 'hidden', position: 'relative' }}>
-              <iframe src={`https://docs.google.com/gview?url=${encodeURIComponent(tender.url)}&embedded=true`} width="100%" height="100%" style={{ border: 'none', pointerEvents: 'none' }}></iframe>
-              <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 10 }}></div>
-            </div>
-          </div>
         </div>
       </div>
     </div>

@@ -11,6 +11,16 @@ const TRASH_IMAGES_DIR = path.resolve(__dirname, "../../uploads-trash/images");
 const MAX_DOCUMENT_BYTES = 8 * 1024 * 1024;
 const MAX_ANNUAL_REPORT_BYTES = 50 * 1024 * 1024;
 
+const safeOriginalDocumentName = (value) => {
+  const original = path.basename(String(value || "document"));
+  const extension = path.extname(original).toLowerCase();
+  const stem = path.basename(original, path.extname(original))
+    .replace(/[<>:"/\\|?*\u0000-\u001f]/g, "_")
+    .replace(/[. ]+$/g, "")
+    .slice(0, 140) || "document";
+  return `${stem}${extension}`;
+};
+
 const resolveContainedPath = (root, filename, allowedTypes) => {
   if (typeof filename !== "string" || !filename || filename !== path.basename(filename) || filename.includes("\0")) return null;
   if (allowedTypes && !allowedTypes.has(path.extname(filename).toLowerCase())) return null;
@@ -96,7 +106,12 @@ const saveToDisk = async (req, isDoc) => {
   const uploadBuffer = req.file.buffer;
   const uploadMime = req.file.mimetype;
   const ext = path.extname(req.file.originalname).toLowerCase();
-  const fileName = `${Date.now()}-${crypto.randomBytes(8).toString("hex")}${ext}`;
+  const uniquePrefix = `${Date.now()}-${crypto.randomBytes(8).toString("hex")}`;
+  // Keep the original document name inside its unique storage name. The static
+  // download handler strips this prefix when setting Content-Disposition.
+  const fileName = isDoc
+    ? `${uniquePrefix}--${safeOriginalDocumentName(req.file.originalname)}`
+    : `${uniquePrefix}${ext}`;
   const targetDir = isPrivate ? PRIVATE_DOCS_DIR : path.resolve(UPLOADS_DIR, folder);
   await fs.promises.mkdir(targetDir, { recursive: true });
   const target = resolveContainedPath(targetDir, fileName, isDoc ? documentTypes : imageTypes);
@@ -304,6 +319,23 @@ const servePrivateDocument = async (req, res, next) => {
   } catch (error) { return next(error); }
 };
 
+const servePublicDocument = async (req, res, next) => {
+  try {
+    const storageName = String(req.params.filename || "");
+    const target = resolveContainedPath(path.resolve(UPLOADS_DIR, "docs"), storageName, documentTypes);
+    if (!target) return res.status(400).json({ success: false, message: "Invalid document name" });
+    try { await fs.promises.access(target); } catch { return res.status(404).json({ success: false, message: "Document not found" }); }
+
+    const storageExtension = path.extname(storageName).toLowerCase();
+    const requestedName = path.basename(String(req.query.filename || storageName)).replace(/["\\\r\n]/g, "_");
+    const downloadName = path.extname(requestedName).toLowerCase() === storageExtension
+      ? requestedName
+      : `${path.basename(requestedName, path.extname(requestedName)) || "document"}${storageExtension}`;
+    res.setHeader("X-Content-Type-Options", "nosniff");
+    return res.download(target, downloadName);
+  } catch (error) { return next(error); }
+};
+
 module.exports = {
   uploadImage,
   uploadDocument,
@@ -312,4 +344,5 @@ module.exports = {
   deleteImage,
   renameImage,
   servePrivateDocument,
+  servePublicDocument,
 };
