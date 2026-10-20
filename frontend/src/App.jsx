@@ -5975,7 +5975,7 @@ function App() {
       window.requestAnimationFrame(() =>
         window.requestAnimationFrame(() => setIsNavigating(false)),
       );
-    }, 240);
+    }, 100);
   };
 
   useEffect(() => () => {
