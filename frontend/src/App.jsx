@@ -6923,6 +6923,7 @@ function App() {
         <MarineBunkeringPage />
       ) : (
         <InnerPage
+          key={cleanPath}
           type={cleanPath}
           preserveTemplate={preserveOriginalTemplate}
           managedSections={
