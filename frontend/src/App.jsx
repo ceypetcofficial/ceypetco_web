@@ -1344,9 +1344,15 @@ function ManagementTeam() {
                 <div className="team-row-portraits">
                   {row.map((member) => (
                     <figure className="team-member-portrait" key={member._id}>
-                      <div className="team-member-photo">
-                        {renderPhoto(member)}
-                      </div>
+                      <a
+                        className="team-member-photo-link"
+                        href={`/management-team/${member._id}`}
+                        aria-label={`View ${member.name}'s profile`}
+                      >
+                        <div className="team-member-photo">
+                          {renderPhoto(member)}
+                        </div>
+                      </a>
                       <figcaption>{member.role || 'Management Team'}</figcaption>
                     </figure>
                   ))}
@@ -5379,32 +5385,11 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
             )}
 
             {notices.length > 0 && (
-              <>
-                <div className="notices-featured">
-                  <div className="notice-featured-index">01</div>
-                  <div>
-                    <p className="eyebrow light">{(notices[0].category || 'Notice').replace(/-/g, ' ')}</p>
-                    <h3>{notices[0].title}</h3>
-                    <p>{notices[0].summary || notices[0].content}</p>
-                    {notices[0].publishedDate && <small>Published {new Date(notices[0].publishedDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</small>}
-                    {notices[0].document ? (
-                      <a
-                        href={notices[0].document}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        Download document <Icon name="download" size={16} />
-                      </a>
-                    ) : (
-                      <small>Official statement</small>
-                    )}
-                  </div>
-                </div>
-                <div className="notice-document-grid">
-                  {notices.slice(1).map((notice, index) => (
+              <div className="notice-document-grid">
+                  {notices.map((notice, index) => (
                     <article key={notice._id}>
                       <div className="notice-document-top">
-                        <span>{String(index + 2).padStart(2, '0')}</span>
+                        <span>{String(index + 1).padStart(2, '0')}</span>
                         <Icon
                           name={notice.document ? 'download' : 'clock'}
                           size={22}
@@ -5429,8 +5414,7 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
                       )}
                     </article>
                   ))}
-                </div>
-              </>
+              </div>
             )}
           </div>
         </section>
@@ -5972,9 +5956,21 @@ function App() {
     setNavMediaDropClosed(true);
     setNavCareersDropClosed(true);
 
-    window.history.pushState({}, '', `${url.pathname}${url.search}${url.hash}`);
-    setPath(nextPath);
-    scrollAfterNavigation(url.hash);
+    const commitNavigation = () => {
+      window.history.pushState({}, '', `${url.pathname}${url.search}${url.hash}`);
+      setPath(nextPath);
+      scrollAfterNavigation(url.hash);
+    };
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) {
+      commitNavigation();
+      return;
+    }
+    setIsNavigating(true);
+    commitNavigation();
+    window.requestAnimationFrame(() =>
+      window.requestAnimationFrame(() => setIsNavigating(false)),
+    );
   };
 
   useEffect(() => {
