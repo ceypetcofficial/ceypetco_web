@@ -5887,7 +5887,13 @@ function App() {
   const [newsLoading, setNewsLoading] = useState(true);
   const [homeServices, setHomeServices] = useState([]);
   const [managedPage, setManagedPage] = useState(null);
+  const [managedPagePath, setManagedPagePath] = useState(null);
   const cleanPath = (path || '').split('?')[0].replace(/\/$/, '') || '/';
+  // A CMS response belongs only to the route that requested it. During
+  // client-side navigation React can render the next route before the effect
+  // below clears the previous response; without this guard, old overrides can
+  // be written into matching headings on the new page.
+  const activeManagedPage = managedPagePath === path ? managedPage : null;
   const preserveOriginalTemplate = new Set([
     '/', '/about', '/history', '/services', '/management', '/subsidiaries', '/energy-ministries',
     '/marketing-sales', '/refinery', '/aviation', '/agro-chemicals', '/lubricants',
@@ -5897,10 +5903,10 @@ function App() {
     '/mobile-app', '/media', '/gallery', '/brochures',
   ]).has(cleanPath);
   const managedPageHasContent = Boolean(
-    managedPage &&
-      ((managedPage.sections && managedPage.sections.length > 0) ||
+    activeManagedPage &&
+      ((activeManagedPage.sections && activeManagedPage.sections.length > 0) ||
         ['title', 'subtitle', 'eyebrow', 'image'].some(
-          (key) => managedPage.hero && managedPage.hero[key],
+          (key) => activeManagedPage.hero && activeManagedPage.hero[key],
         )),
   );
   const showSlide = (next) => {
@@ -5988,39 +5994,49 @@ function App() {
   useEffect(() => {
     let active = true;
     setManagedPage(null);
+    setManagedPagePath(null);
+    const requestedPath = path;
     api.get('/admin/pages/public', { params: { path } })
-      .then(({ data }) => { if (active) setManagedPage(data.data || null); })
-      .catch(() => { if (active) setManagedPage(null); });
+      .then(({ data }) => {
+        if (!active) return;
+        setManagedPage(data.data || null);
+        setManagedPagePath(requestedPath);
+      })
+      .catch(() => {
+        if (!active) return;
+        setManagedPage(null);
+        setManagedPagePath(requestedPath);
+      });
     return () => { active = false; };
   }, [path]);
 
   useEffect(() => {
-    if (!managedPage) return;
-    if (managedPage.seoTitle) document.title = managedPage.seoTitle;
+    if (!activeManagedPage) return;
+    if (activeManagedPage.seoTitle) document.title = activeManagedPage.seoTitle;
     const meta = document.querySelector('meta[name="description"]');
-    if (meta && managedPage.seoDescription) meta.setAttribute('content', managedPage.seoDescription);
-  }, [managedPage]);
+    if (meta && activeManagedPage.seoDescription) meta.setAttribute('content', activeManagedPage.seoDescription);
+  }, [activeManagedPage]);
 
   useEffect(() => {
-    if (!managedPage?.overrides?.length || showOriginalPage) return;
+    if (!activeManagedPage?.overrides?.length || showOriginalPage) return;
     // Published overrides live in the same nodes React renders. Re-asserting the
     // copy after a commit is safe because a write only happens when the content
     // actually differs, so this never oscillates.
-    applyCmsOverrides(managedPage.overrides);
+    applyCmsOverrides(activeManagedPage.overrides);
   });
 
   useEffect(() => {
-    if (!managedPage?.overrides?.length) return undefined;
+    if (!activeManagedPage?.overrides?.length) return undefined;
     // Late-mounted template content (deferred images, fonts) is caught by a short
     // settling window. A MutationObserver must not be used here: it re-entered
     // React's commit phase and destroyed the child nodes reconciliation tracks.
     // In editor preview the canvas owns the DOM, so apply the published copy once.
     if (showOriginalPage) {
-      applyCmsOverrides(managedPage.overrides);
+      applyCmsOverrides(activeManagedPage.overrides);
       return undefined;
     }
-    return scheduleCmsOverrides(managedPage.overrides);
-  }, [managedPage, path, showOriginalPage]);
+    return scheduleCmsOverrides(activeManagedPage.overrides);
+  }, [activeManagedPage, path, showOriginalPage]);
 
   useEffect(() => {
     const handlePopState = () => {
@@ -6547,8 +6563,8 @@ function App() {
         </div>
       </header>
       <div className="page-transition-wrapper">
-      {managedPage && managedPageHasContent && !preserveOriginalTemplate && !showOriginalPage ? (
-        <ManagedPage page={managedPage} />
+      {activeManagedPage && managedPageHasContent && !preserveOriginalTemplate && !showOriginalPage ? (
+        <ManagedPage page={activeManagedPage} />
       ) : cleanPath === '/' ? (
         <main>
           <section
@@ -6891,8 +6907,8 @@ function App() {
           <div id="fuel-network">
             <FuelDistributionMap />
           </div>
-          {managedPage && !showOriginalPage && !preserveOriginalTemplate && (
-            <ManagedSections sections={managedPage.sections} />
+          {activeManagedPage && !showOriginalPage && !preserveOriginalTemplate && (
+            <ManagedSections sections={activeManagedPage.sections} />
           )}
         </main>
       ) : districtFromPath(cleanPath) ? (
@@ -6917,7 +6933,7 @@ function App() {
           type={cleanPath}
           preserveTemplate={preserveOriginalTemplate}
           managedSections={
-            managedPage && !showOriginalPage ? managedPage.sections : []
+            activeManagedPage && !showOriginalPage ? activeManagedPage.sections : []
           }
         />
       )}
