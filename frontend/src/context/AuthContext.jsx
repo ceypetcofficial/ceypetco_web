@@ -18,12 +18,11 @@ export const AuthProvider = ({ children }) => {
       if (response.success) {
         setUser(response.data);
       } else {
-        authService.logout();
         setUser(null);
       }
     } catch {
-      authService.logout();
-      setUser(null);
+      // A temporary API or network failure must not end an existing login.
+      setUser(authService.getUser());
     } finally {
       setLoading(false);
     }

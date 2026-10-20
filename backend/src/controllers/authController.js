@@ -1,6 +1,5 @@
 const User = require("../models/User");
 const generateToken = require("../utils/generateToken");
-const { getTokenTtlSeconds } = require("../utils/generateToken");
 const bcrypt = require("bcryptjs");
 
 // Timing-equalization hash only. It is never assigned to an account and keeps
@@ -14,7 +13,9 @@ const sessionCookieOptions = {
   secure: process.env.NODE_ENV === "production",
   sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   path: "/api",
-  maxAge: getTokenTtlSeconds() * 1000,
+  // Persist until explicit logout. Account status and tokenVersion checks still
+  // allow administrators to revoke access when necessary.
+  maxAge: 10 * 365 * 24 * 60 * 60 * 1000,
 };
 
 const login = async (req, res, next) => {
@@ -70,7 +71,7 @@ const login = async (req, res, next) => {
     user.lockUntil = null;
     await user.save({ validateBeforeSave: false });
 
-    const token = generateToken(user, req.ip);
+    const token = generateToken(user);
     res.cookie(sessionCookieName, token, sessionCookieOptions);
     res.setHeader("Cache-Control", "no-store, private");
 
