@@ -5875,7 +5875,6 @@ function App() {
   const [path, setPath] = useState(
     () => window.location.pathname.replace(/\/$/, '') || '/',
   );
-  const [isNavigating, setIsNavigating] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [navDropClosed, setNavDropClosed] = useState(true);
   const [navAboutDropClosed, setNavAboutDropClosed] = useState(true);
@@ -5883,7 +5882,6 @@ function App() {
   const [navCareersDropClosed, setNavCareersDropClosed] = useState(true);
   const [slide, setSlide] = useState(0);
   const slideRef = useRef(0);
-  const navigationTimerRef = useRef(null);
   const [loadedHeroSlides, setLoadedHeroSlides] = useState(() => new Set([0]));
   const [news, setNews] = useState([]);
   const [newsLoading, setNewsLoading] = useState(true);
@@ -5962,25 +5960,8 @@ function App() {
       setPath(nextPath);
       scrollAfterNavigation(url.hash);
     };
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduceMotion) {
-      commitNavigation();
-      return;
-    }
-    if (navigationTimerRef.current) window.clearTimeout(navigationTimerRef.current);
-    setIsNavigating(true);
-    navigationTimerRef.current = window.setTimeout(() => {
-      commitNavigation();
-      navigationTimerRef.current = null;
-      window.requestAnimationFrame(() =>
-        window.requestAnimationFrame(() => setIsNavigating(false)),
-      );
-    }, 100);
+    commitNavigation();
   };
-
-  useEffect(() => () => {
-    if (navigationTimerRef.current) window.clearTimeout(navigationTimerRef.current);
-  }, []);
 
   useEffect(() => {
     const preloadedImages = new Set();
@@ -6565,7 +6546,7 @@ function App() {
           </nav>
         </div>
       </header>
-      <div className={`page-transition-wrapper ${isNavigating ? 'is-navigating' : ''}`}>
+      <div className="page-transition-wrapper">
       {managedPage && managedPageHasContent && !preserveOriginalTemplate && !showOriginalPage ? (
         <ManagedPage page={managedPage} />
       ) : cleanPath === '/' ? (
