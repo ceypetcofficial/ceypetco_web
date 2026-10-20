@@ -3201,13 +3201,6 @@ function MarketingSalesPage() {
               </div>
             ))
           )}
-          <div className="pricing-note">
-            <Icon name="building" size={22} />
-            <div>
-              <b>Outstation pricing</b>
-              <p>{copy[1]}</p>
-            </div>
-          </div>
           <a className="hp-marketing-link" href="/marketing-sales/historical-prices">
             <span>
               <small>EXPLORE THE ARCHIVE</small>
@@ -4142,6 +4135,9 @@ const bulkConsumerResources = [
   ['Fuel Ordering Mobile App', 'https://fuelup.cpstl.lk/apk/'],
 ];
 
+const NEWS_PER_PAGE = 9;
+const BROCHURES_PER_PAGE = 9;
+
 function InnerPage({ type, preserveTemplate, managedSections }) {
   const { t } = useLanguage();
   const [loadedHeroImage, setLoadedHeroImage] = useState('');
@@ -4159,6 +4155,7 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
   }, [type]);
   const [news, setNews] = useState([]);
   const [newsLoading, setNewsLoading] = useState(true);
+  const [newsPage, setNewsPage] = useState(1);
   const [tenders, setTenders] = useState([]);
   const [tendersLoading, setTendersLoading] = useState(true);
   const [tenderSearch, setTenderSearch] = useState('');
@@ -4174,9 +4171,22 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
   const [annualReportsLoading, setAnnualReportsLoading] = useState(true);
   const [brochures, setBrochures] = useState([]);
   const [brochuresLoading, setBrochuresLoading] = useState(true);
+  const [brochuresPage, setBrochuresPage] = useState(1);
   const [regionalOffices, setRegionalOffices] = useState(null);
   const [services, setServices] = useState([]);
   const [servicesLoading, setServicesLoading] = useState(true);
+  const newsPageCount = Math.max(1, Math.ceil(news.length / NEWS_PER_PAGE));
+  const pagedNews = news.slice((newsPage - 1) * NEWS_PER_PAGE, newsPage * NEWS_PER_PAGE);
+  const brochuresPageCount = Math.max(1, Math.ceil(brochures.length / BROCHURES_PER_PAGE));
+  const pagedBrochures = brochures.slice((brochuresPage - 1) * BROCHURES_PER_PAGE, brochuresPage * BROCHURES_PER_PAGE);
+  const chooseNewsPage = (page) => {
+    setNewsPage(Math.min(Math.max(1, page), newsPageCount));
+    document.getElementById('news-list-heading')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+  const chooseBrochuresPage = (page) => {
+    setBrochuresPage(Math.min(Math.max(1, page), brochuresPageCount));
+    document.getElementById('brochures-list-heading')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
   const serviceItems = [
     {
       title: 'New Dealership Registration',
@@ -5221,17 +5231,6 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
               </>
             )}
 
-            <div className="annual-report-note">
-              <Icon name="globe" size={21} />
-              <p>
-                Reports are presented in the years currently available in the
-                CPC publication archive. Selecting a report opens the official
-                PDF in a new browser tab
-              </p>
-              <a href="/contact?subject=Annual%20report%20enquiry">
-                Publication enquiry <Icon name="arrow" size={16} />
-              </a>
-            </div>
           </div>
         </section>
       )}
@@ -5239,7 +5238,7 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
         <section className="brochures-page content-section">
           <div className="container">
             <div className="brochures-heading">
-              <div><p className="eyebrow">DOWNLOAD LIBRARY</p><h2>Official brochures</h2></div>
+              <div><p className="eyebrow">DOWNLOAD LIBRARY</p><h2 id="brochures-list-heading">Official brochures</h2></div>
               <p>Explore Ceypetco publications, service guides and corporate information prepared for customers, partners and the public.</p>
             </div>
             {brochuresLoading ? (
@@ -5248,10 +5247,10 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
               <div className="brochures-status"><strong>No brochures published yet</strong><span>Please check back for new publications.</span></div>
             ) : (
               <div className="brochure-grid">
-                {brochures.map((brochure, index) => (
+                {pagedBrochures.map((brochure, index) => (
                   <article className="brochure-card" key={brochure._id}>
                     <div className="brochure-card-visual">
-                      <span>{String(index + 1).padStart(2, '0')}</span>
+                      <span>{String((brochuresPage - 1) * BROCHURES_PER_PAGE + index + 1).padStart(2, '0')}</span>
                       <Icon name="download" size={30} />
                       <small>CEYPETCO · PDF</small>
                     </div>
@@ -5266,6 +5265,17 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
                   </article>
                 ))}
               </div>
+            )}
+            {!brochuresLoading && brochuresPageCount > 1 && (
+              <nav className="gallery-pagination brochures-pagination" aria-label="Brochure pages">
+                <button type="button" disabled={brochuresPage === 1} onClick={() => chooseBrochuresPage(brochuresPage - 1)}>Previous</button>
+                <div>
+                  {Array.from({ length: brochuresPageCount }, (_, index) => index + 1).map((page) => (
+                    <button type="button" key={page} className={brochuresPage === page ? 'active' : ''} aria-current={brochuresPage === page ? 'page' : undefined} aria-label={`Page ${page}`} onClick={() => chooseBrochuresPage(page)}>{page}</button>
+                  ))}
+                </div>
+                <button type="button" disabled={brochuresPage === brochuresPageCount} onClick={() => chooseBrochuresPage(brochuresPage + 1)}>Next</button>
+              </nav>
             )}
           </div>
         </section>
@@ -5422,16 +5432,6 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
                 </div>
               </>
             )}
-            <div className="notices-support">
-              <Icon name="globe" size={22} />
-              <p>
-                Need clarification about a notice or circular? Contact Ceypetco
-                customer care for assistance
-              </p>
-              <a href="/contact?subject=Public%20notice%20enquiry">
-                Request clarification <Icon name="arrow" size={16} />
-              </a>
-            </div>
           </div>
         </section>
       )}
@@ -5468,7 +5468,7 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
             <div className="page-title-row">
               <div>
                 <p className="eyebrow">LATEST STORIES</p>
-                <h2>News and updates</h2>
+                <h2 id="news-list-heading">News and updates</h2>
               </div>
               <p>Published announcements and stories from Ceylon Petroleum Corporation.</p>
             </div>
@@ -5480,7 +5480,7 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
                   No published news available yet
                 </p>
               ) : (
-                news.map((item) => (
+                pagedNews.map((item) => (
                   <article key={item._id}>
                     {item.featuredImage ? (
                       <div
@@ -5509,6 +5509,17 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
                 ))
               )}
             </div>
+            {!newsLoading && newsPageCount > 1 && (
+              <nav className="gallery-pagination news-pagination" aria-label="News pages">
+                <button type="button" disabled={newsPage === 1} onClick={() => chooseNewsPage(newsPage - 1)}>Previous</button>
+                <div>
+                  {Array.from({ length: newsPageCount }, (_, index) => index + 1).map((page) => (
+                    <button type="button" key={page} className={newsPage === page ? 'active' : ''} aria-current={newsPage === page ? 'page' : undefined} aria-label={`Page ${page}`} onClick={() => chooseNewsPage(page)}>{page}</button>
+                  ))}
+                </div>
+                <button type="button" disabled={newsPage === newsPageCount} onClick={() => chooseNewsPage(newsPage + 1)}>Next</button>
+              </nav>
+            )}
           </div>
         </section>
       )}

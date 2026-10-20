@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { ChevronDown, ChevronUp, Copy, Eye, FilePlus2, GripVertical, Image, Loader2, Plus, Save, Trash2, X } from "lucide-react";
 import toast from "react-hot-toast";
@@ -19,7 +19,9 @@ export default function PageManagement(){
   const canPublish=user?.role==="super_admin"||user?.role==="admin";
   const [searchParams]=useSearchParams();
   const currentFrameRef=useRef(null);
-  const [pages,setPages]=useState([]),[form,setForm]=useState(emptyPage),[selected,setSelected]=useState(null),[loading,setLoading]=useState(true),[saving,setSaving]=useState(false),[uploading,setUploading]=useState(""),[previewOpen,setPreviewOpen]=useState(false),[previewMode,setPreviewMode]=useState("current");
+  const latestFormRef=useRef(emptyPage);
+  const [pages,setPages]=useState([]),[form,setFormState]=useState(emptyPage),[selected,setSelected]=useState(null),[loading,setLoading]=useState(true),[saving,setSaving]=useState(false),[uploading,setUploading]=useState(""),[previewOpen,setPreviewOpen]=useState(false),[previewMode,setPreviewMode]=useState("current");
+  const setForm=useCallback(update=>setFormState(current=>{const next=typeof update==="function"?update(current):update;latestFormRef.current=next;return next}),[]);
   const load=async()=>{setLoading(true);try{setPages((await api.get("/admin/pages")).data.data||[]);}catch{toast.error("Could not load pages");}finally{setLoading(false);}};
   useEffect(()=>{load();},[]);
   const edit=p=>{setSelected(p._id);setForm({...emptyPage,...p,hero:{...emptyPage.hero,...p.hero},sections:(p.sections||[]).map(s=>({...emptySection(),...s,id:s.id||crypto.randomUUID(),items:s.items||[]}))});setPreviewMode("current");window.scrollTo({top:0,behavior:"smooth"});};
@@ -29,7 +31,7 @@ export default function PageManagement(){
   const hero=(key,value)=>setForm(f=>({...f,hero:{...f.hero,[key]:value}}));
   const section=(index,key,value)=>setForm(f=>({...f,sections:f.sections.map((s,i)=>i===index?{...s,[key]:value}:s)}));
   const upload=async(file,where,index)=>{if(!file)return;const key=`${where}-${index??"hero"}`;setUploading(key);try{const body=new FormData();body.append("image",file);const url=(await api.post("/upload/image",body)).data.data.url;if(where==="hero")hero("image",url);else section(index,"image",url);toast.success("Image uploaded");}catch(e){toast.error(e.response?.data?.message||"Upload failed");}finally{setUploading("");}};
-  const save=async(status=form.status)=>{if(!form.name.trim()||!form.path.trim())return toast.error("Page name and route are required");if(status==="published"&&!canPublish)return toast.error("Editors can save drafts, but an Admin must publish them");setSaving(true);try{const payload={...form,status};const response=selected?await api.put(`/admin/pages/${selected}`,payload):await api.post("/admin/pages",payload);setForm(f=>({...f,status}));toast.success(response.data?.message||(status==="published"?"Page published":"Draft saved"));await load();}catch(e){toast.error(e.response?.data?.message||"Save failed");}finally{setSaving(false);}};
+  const save=async(status=latestFormRef.current.status)=>{currentFrameRef.current?.contentDocument?.activeElement?.blur();await new Promise(resolve=>setTimeout(resolve,0));const currentForm=latestFormRef.current;if(!currentForm.name.trim()||!currentForm.path.trim())return toast.error("Page name and route are required");if(status==="published"&&!canPublish)return toast.error("Editors can save drafts, but an Admin must publish them");setSaving(true);try{const payload={...currentForm,status};const response=selected?await api.put(`/admin/pages/${selected}`,payload):await api.post("/admin/pages",payload);const savedPage=response.data?.data;if(!selected&&savedPage?._id)setSelected(savedPage._id);setForm(f=>({...f,status}));toast.success(response.data?.message||(status==="published"?"Page published":"Draft saved"));await load();}catch(e){toast.error(e.response?.data?.message||"Save failed");}finally{setSaving(false);}};
   const remove=async p=>{if(!confirm(`Delete managed page “${p.name}”? The original page will become visible again.`))return;try{await api.delete(`/admin/pages/${p._id}`);toast.success("Managed page deleted");if(selected===p._id)start();load();}catch(e){toast.error(e.response?.data?.message||"Delete failed");}};
   const addSection=()=>setForm(f=>({...f,sections:[...f.sections,emptySection()]}));
   const moveSection=(index,direction)=>setForm(f=>{const sections=[...f.sections],target=index+direction;if(target<0||target>=sections.length)return f;[sections[index],sections[target]]=[sections[target],sections[index]];return {...f,sections};});

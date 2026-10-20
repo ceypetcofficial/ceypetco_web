@@ -4,6 +4,8 @@ import api from "../api";
 import displayImageUrl from "../utils/displayImageUrl";
 import { getVideoDetails } from "../utils/videoEmbed";
 
+const ITEMS_PER_PAGE = 12;
+
 function Viewer({ item, onClose, onPrevious, onNext, count, index }) {
   const closeRef = useRef(null);
   useEffect(() => {
@@ -51,6 +53,7 @@ export default function GalleryPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [filter, setFilter] = useState("all");
+  const [page, setPage] = useState(1);
   const [active, setActive] = useState(null);
   useEffect(() => {
     let live = true;
@@ -63,16 +66,23 @@ export default function GalleryPage() {
     return unique;
   }, new Map()).values()].sort((a, b) => a.localeCompare(b)), [items]);
   const visible = useMemo(() => items.filter((item) => filter === "all" || item.type === filter || item.category === filter), [items, filter]);
-  const chooseFilter = (value) => { setFilter(value); setActive(null); };
+  const pageCount = Math.max(1, Math.ceil(visible.length / ITEMS_PER_PAGE));
+  const pagedItems = visible.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+  const chooseFilter = (value) => { setFilter(value); setPage(1); setActive(null); };
+  const choosePage = (value) => {
+    setPage(Math.min(Math.max(1, value), pageCount));
+    setActive(null);
+    document.getElementById("gallery-heading")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
   const activeIndex = active ? visible.findIndex((item) => item._id === active._id) : -1;
   const move = (step) => setActive(visible[(activeIndex + step + visible.length) % visible.length]);
   return <main className="inner-page gallery-page">
     <section className="page-hero gallery-hero"><img src="/images/aviation-hero.jpg" alt="" /><div className="container page-hero-copy"><p className="eyebrow light">MEDIA CENTRE · GALLERY</p><h1>Ceypetco in focus</h1><p>Explore photographs and videos from across our people, operations, services and community.</p><div className="breadcrumbs"><a href="/">Home</a><span>/</span><b>Gallery</b></div></div></section>
-    <nav className="media-section-nav" aria-label="Media sections"><div className="container"><a href="/news">News</a><a href="/notices">Notices</a><a href="/publications">Publications</a><a className="active" href="/gallery" aria-current="page">Gallery</a></div></nav>
     <section className="gallery-content content-section" aria-labelledby="gallery-heading"><div className="container">
       <div className="gallery-intro"><p className="eyebrow">VISUAL STORIES</p><h2 id="gallery-heading">Inside Ceypetco</h2><p>A curated view of the people, places and operations behind our work.</p></div>
       <div className="gallery-filters" aria-label="Filter gallery">{[["all", "All media"], ["image", "Photos"], ["video", "Videos"], ...categories.map((c) => [c, c])].map(([value, label]) => <button key={value} type="button" aria-pressed={filter === value} onClick={() => chooseFilter(value)}>{label}</button>)}</div>
-      {loading ? <p className="gallery-status" role="status">Loading gallery…</p> : error ? <p className="gallery-status gallery-error" role="alert">{error}</p> : visible.length === 0 ? <p className="gallery-status">No published media matches this filter.</p> : <div className="gallery-grid">{visible.map((item) => { const video = item.type === "video" ? getVideoDetails(item.mediaUrl) : null; const image = item.type === "video" ? item.posterUrl || video.thumbnailUrl : item.mediaUrl; return <button className="gallery-card" type="button" key={item._id} onClick={() => setActive(item)} aria-label={`${item.type === "video" ? "Watch video" : "View photo"}: ${item.title}`}>{image ? <img src={displayImageUrl(image)} alt={item.altText || item.title} loading="lazy" decoding="async" /> : <span className="gallery-video-placeholder" aria-hidden="true"><i>▶</i><b>{video.provider || "Video"}</b></span>}<span className="gallery-card-shade" /><span className="gallery-card-copy"><small>{item.category}</small><strong>{item.title}</strong><em>{item.type === "video" && <i aria-hidden="true">▶</i>}{item.type === "video" ? `Watch on ${video.provider || "video"}` : "View photo"}</em></span></button>; })}</div>}
+      {loading ? <p className="gallery-status" role="status">Loading gallery…</p> : error ? <p className="gallery-status gallery-error" role="alert">{error}</p> : visible.length === 0 ? <p className="gallery-status">No published media matches this filter.</p> : <div className="gallery-grid">{pagedItems.map((item) => { const video = item.type === "video" ? getVideoDetails(item.mediaUrl) : null; const image = item.type === "video" ? item.posterUrl || video.thumbnailUrl : item.mediaUrl; return <button className="gallery-card" type="button" key={item._id} onClick={() => setActive(item)} aria-label={`${item.type === "video" ? "Watch video" : "View photo"}: ${item.title}`}>{image ? <img src={displayImageUrl(image)} alt={item.altText || item.title} loading="lazy" decoding="async" /> : <span className="gallery-video-placeholder" aria-hidden="true"><i>▶</i><b>{video.provider || "Video"}</b></span>}<span className="gallery-card-shade" /><span className="gallery-card-copy"><small>{item.category}</small><strong>{item.title}</strong><em>{item.type === "video" && <i aria-hidden="true">▶</i>}{item.type === "video" ? `Watch on ${video.provider || "video"}` : "View photo"}</em></span></button>; })}</div>}
+      {!loading && !error && pageCount > 1 && <nav className="gallery-pagination" aria-label="Gallery pages"><button type="button" disabled={page === 1} onClick={() => choosePage(page - 1)}>Previous</button><div>{Array.from({ length: pageCount }, (_, index) => index + 1).map((number) => <button type="button" key={number} className={page === number ? "active" : ""} aria-current={page === number ? "page" : undefined} aria-label={`Page ${number}`} onClick={() => choosePage(number)}>{number}</button>)}</div><button type="button" disabled={page === pageCount} onClick={() => choosePage(page + 1)}>Next</button></nav>}
     </div></section>
     {active && <Viewer item={active} index={activeIndex} count={visible.length} onClose={() => setActive(null)} onPrevious={() => move(-1)} onNext={() => move(1)} />}
   </main>;
