@@ -5883,6 +5883,7 @@ function App() {
   const [navCareersDropClosed, setNavCareersDropClosed] = useState(true);
   const [slide, setSlide] = useState(0);
   const slideRef = useRef(0);
+  const navigationTimerRef = useRef(null);
   const [loadedHeroSlides, setLoadedHeroSlides] = useState(() => new Set([0]));
   const [news, setNews] = useState([]);
   const [newsLoading, setNewsLoading] = useState(true);
@@ -5966,12 +5967,20 @@ function App() {
       commitNavigation();
       return;
     }
+    if (navigationTimerRef.current) window.clearTimeout(navigationTimerRef.current);
     setIsNavigating(true);
-    commitNavigation();
-    window.requestAnimationFrame(() =>
-      window.requestAnimationFrame(() => setIsNavigating(false)),
-    );
+    navigationTimerRef.current = window.setTimeout(() => {
+      commitNavigation();
+      navigationTimerRef.current = null;
+      window.requestAnimationFrame(() =>
+        window.requestAnimationFrame(() => setIsNavigating(false)),
+      );
+    }, 240);
   };
+
+  useEffect(() => () => {
+    if (navigationTimerRef.current) window.clearTimeout(navigationTimerRef.current);
+  }, []);
 
   useEffect(() => {
     const preloadedImages = new Set();
