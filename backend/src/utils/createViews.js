@@ -2,6 +2,7 @@ const mysql = require("mysql2/promise");
 const { getDatabaseConfig } = require("../config/env");
 
 const schema = {
+  "ActivityLog": ["userId", "userName", "userEmail", "userRole", "action", "method", "path", "target", "summary", "result", "statusCode", "ipAddress", "userAgent", "occurredAt"],
   "AnnualReport": ["year", "url", "status"],
   "Brochure": ["title", "description", "year", "url", "order", "status"],
   "AviationPrice": ["customer", "location", "price", "effectiveDate", "status"],

@@ -1,12 +1,11 @@
 const User = require("../models/User");
 const generateToken = require("../utils/generateToken");
 const bcrypt = require("bcryptjs");
+const { writeActivity } = require("../utils/activityLogger");
 
 // Timing-equalization hash only. It is never assigned to an account and keeps
 // unknown-user authentication timing comparable to real password checks.
 const DUMMY_PASSWORD_HASH = "$2b$12$EPdbbosRG97tn63t5WDp5.cXEOc5qYdmQS0MAggvVQYAV7H2GlKGS";
-const MAX_FAILED_ATTEMPTS = 5;
-const ACCOUNT_LOCK_MS = 15 * 60 * 1000;
 const sessionCookieName = process.env.NODE_ENV === "production" ? "__Secure-ceypetco_session" : "ceypetco_session";
 const sessionCookieOptions = {
   httpOnly: true,
@@ -35,31 +34,17 @@ const login = async (req, res, next) => {
 
     if (!user) {
       await bcrypt.compare(password, DUMMY_PASSWORD_HASH);
+      await writeActivity(req, { userEmail: email.toLowerCase(), action: "login", summary: "Failed login: unknown account", result: "failed", statusCode: 401 });
       return res.status(401).json({
         success: false,
         message: "Invalid email or password",
       });
     }
 
-    if (user.lockUntil && new Date(user.lockUntil).getTime() > Date.now()) {
-      await user.comparePassword(password);
-      return res.status(429).json({
-        success: false,
-        message: "Too many login attempts, please try again later",
-      });
-    }
-
     const isMatch = await user.comparePassword(password);
 
     if (!isMatch || user.status !== "active") {
-      if (!isMatch) {
-        user.failedLoginAttempts = (Number(user.failedLoginAttempts) || 0) + 1;
-        if (user.failedLoginAttempts >= MAX_FAILED_ATTEMPTS) {
-          user.lockUntil = new Date(Date.now() + ACCOUNT_LOCK_MS);
-          user.failedLoginAttempts = 0;
-        }
-        await user.save({ validateBeforeSave: false });
-      }
+      await writeActivity(req, { userId: user._id, userName: user.name, userEmail: user.email, userRole: user.role, action: "login", summary: user.status !== "active" ? "Failed login: inactive account" : "Failed login: invalid password", result: "failed", statusCode: 401 });
       return res.status(401).json({
         success: false,
         message: "Invalid email or password",
@@ -67,9 +52,8 @@ const login = async (req, res, next) => {
     }
 
     user.lastLogin = new Date();
-    user.failedLoginAttempts = 0;
-    user.lockUntil = null;
     await user.save({ validateBeforeSave: false });
+    await writeActivity(req, { userId: user._id, userName: user.name, userEmail: user.email, userRole: user.role, action: "login", summary: "Login successful", result: "success", statusCode: 200 });
 
     const token = generateToken(user);
     res.cookie(sessionCookieName, token, sessionCookieOptions);
@@ -95,6 +79,7 @@ const login = async (req, res, next) => {
 const logout = async (req, res, next) => {
   try {
     if (req.user) {
+      await writeActivity(req, { action: "logout", summary: "Logged out", result: "success", statusCode: 200 });
       req.user.tokenVersion = (Number(req.user.tokenVersion) || 0) + 1;
       await req.user.save({ validateBeforeSave: false });
     }

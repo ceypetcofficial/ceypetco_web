@@ -38,6 +38,8 @@ const recycleBinRoutes = require("./routes/recycleBinRoutes");
 const priceAuditRoutes = require("./routes/priceAuditRoutes");
 const galleryRoutes = require("./routes/galleryRoutes");
 const productSpecificationRoutes = require("./routes/productSpecificationRoutes");
+const activityLogRoutes = require("./routes/activityLogRoutes");
+const { auditAdminActivity } = require("./utils/activityLogger");
 const errorHandler = require("./middleware/errorMiddleware");
 const { allowedOrigins, isProduction } = require("./config/env");
 const requireTrustedOrigin = require("./middleware/csrfMiddleware");
@@ -117,12 +119,14 @@ app.use(morgan(isProduction ? "combined" : "dev"));
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
+  keyGenerator: (req) => rateLimit.ipKeyGenerator(req.ip),
   message: {
     success: false,
     message: "Too many login attempts, please try again after 15 minutes",
   },
   standardHeaders: true,
   legacyHeaders: false,
+  skipSuccessfulRequests: true,
 });
 
 const readLimiter = rateLimit({
@@ -199,6 +203,7 @@ app.use("/api/images/google-drive", imageProxyLimiter);
 app.use("/api/upload", uploadLimiter);
 app.use("/api", readLimiter);
 app.use("/api", writeLimiter);
+app.use(auditAdminActivity);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/admin/dashboard", dashboardRoutes);
@@ -233,6 +238,7 @@ app.use("/api/admin/recycle-bin", recycleBinRoutes);
 app.use("/api/admin/price-audit", priceAuditRoutes);
 app.use("/api/admin/gallery", galleryRoutes);
 app.use("/api/admin/product-specification", productSpecificationRoutes);
+app.use("/api/admin/activity-logs", activityLogRoutes);
 app.use("/api/images/google-drive", googleDriveImageRoutes);
 
 app.use((req, res) => {

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { Fuel, LayoutDashboard, FileText, Wrench, Droplets, MapPin, Building2, Mail, Users, ChevronDown, ChevronRight, X, Newspaper, ClipboardList, BadgeAlert, Megaphone, Layers, Smartphone, Home, Compass, Contact, Settings, GraduationCap, BookOpen, FolderOpen, Images as ImagesIcon, ArchiveRestore } from "lucide-react";
+import { Activity, Fuel, LayoutDashboard, FileText, Wrench, Droplets, MapPin, Building2, Mail, Users, ChevronDown, ChevronRight, X, Newspaper, ClipboardList, BadgeAlert, Megaphone, Layers, Smartphone, Home, Compass, Contact, Settings, GraduationCap, BookOpen, FolderOpen, Images as ImagesIcon, ArchiveRestore } from "lucide-react";
 import { accessForRole } from "../roleAccess";
 
 const page=(path)=>`/admin/pages?path=${encodeURIComponent(path)}`;
@@ -28,7 +28,7 @@ const navigation=[
     [page("/contact"),"Contact Us Page",FileText],["/admin/messages","Contact Us Details",Mail],
   ]},
   {text:"System",icon:Settings,items:[
-    ["/admin/users","Users & Roles",Users],["/admin/recycle-bin","Recycle Bin",ArchiveRestore],["/admin/page-revisions","Page History",BookOpen],
+    ["/admin/users","Users & Roles",Users],["/admin/activity","User Activity",Activity],["/admin/recycle-bin","Recycle Bin",ArchiveRestore],["/admin/page-revisions","Page History",BookOpen],
   ]},
 ];
 

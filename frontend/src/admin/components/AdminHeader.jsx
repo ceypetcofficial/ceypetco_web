@@ -29,6 +29,7 @@ const pageTitles = {
   "/admin/messages": "Contact Us Details",
   "/admin/media": "Media Library",
   "/admin/users": "User Management",
+  "/admin/activity": "User Activity",
   "/admin/recycle-bin": "Recycle Bin",
   "/admin/page-revisions": "Page Version History",
   "/admin/popup-notices": "Popup Notice Management",

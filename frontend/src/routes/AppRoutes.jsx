@@ -37,6 +37,7 @@ import PageRevisions from "../admin/pages/Pages/PageRevisions";
 import PriceAudit from "../admin/pages/FuelPrices/PriceAudit";
 import GalleryManagement from "../admin/pages/Media/GalleryManagement";
 import ProductSpecificationManagement from "../admin/pages/Products/ProductSpecificationManagement";
+import ActivityLog from "../admin/pages/Activity/ActivityLog";
 
 const AppRoutes = () => {
   return (
@@ -79,6 +80,7 @@ const AppRoutes = () => {
         <Route path="media" element={<GalleryManagement />} />
         <Route path="image-library" element={<ImageLibrary />} />
         <Route path="users" element={<ProtectedRoute roles={["super_admin", "admin"]}><UserManagement /></ProtectedRoute>} />
+        <Route path="activity" element={<ProtectedRoute roles={["super_admin", "admin"]}><ActivityLog /></ProtectedRoute>} />
         <Route path="recycle-bin" element={<ProtectedRoute roles={["super_admin", "admin"]}><RecycleBin /></ProtectedRoute>} />
         <Route path="page-revisions" element={<ProtectedRoute roles={["super_admin", "admin"]}><PageRevisions /></ProtectedRoute>} />
         <Route path="popup-notices" element={<PopupNoticeManagement />} />
