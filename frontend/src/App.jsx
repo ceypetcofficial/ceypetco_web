@@ -5996,7 +5996,12 @@ function App() {
     setManagedPage(null);
     setManagedPagePath(null);
     const requestedPath = path;
-    api.get('/admin/pages/public', { params: { path } })
+    api.get('/admin/pages/public', {
+      // The revision value also bypasses any hosting/CDN cache that ignores
+      // response cache directives configured after an older deployment.
+      params: { path, revision: Date.now() },
+      headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' },
+    })
       .then(({ data }) => {
         if (!active) return;
         setManagedPage(data.data || null);

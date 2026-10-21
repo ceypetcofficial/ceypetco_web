@@ -34,6 +34,13 @@ const sanitizePageOutput = (page) => {
 
 const getPublic = async (req, res, next) => {
   try {
+    // Published CMS copy must be revalidated on every request. Reverse proxies
+    // otherwise tend to cache this unauthenticated GET endpoint, which makes a
+    // second edit (especially removing text) appear not to have been saved.
+    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
+    res.setHeader("Surrogate-Control", "no-store");
     const path = String(req.query.path || "/").replace(/\/$/, "") || "/";
     const page = await PageContent.findOne({ path, status: "published" }).lean();
     res.json({ success: true, data: sanitizePageOutput(page) || null });
