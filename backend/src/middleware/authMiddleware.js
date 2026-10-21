@@ -13,6 +13,22 @@ const requestToken = (req) => {
   return cookieValue(req.headers.cookie, "__Secure-ceypetco_session") || cookieValue(req.headers.cookie, "ceypetco_session");
 };
 
+const restrictedRoleApiPrefixes = {
+  tender_user: ["/api/auth", "/api/admin/tenders", "/api/upload"],
+  marketing_user: ["/api/auth", "/api/admin/fuel-prices"],
+  hr_user: ["/api/auth", "/api/admin/careers", "/api/upload"],
+  media_user: [
+    "/api/auth", "/api/admin/news", "/api/admin/notices", "/api/admin/projects",
+    "/api/admin/annual-reports", "/api/admin/brochures", "/api/admin/gallery", "/api/upload",
+  ],
+};
+
+const restrictedRoleCanAccess = (role, requestPath) => {
+  const prefixes = restrictedRoleApiPrefixes[role];
+  if (!prefixes) return true;
+  return prefixes.some((prefix) => requestPath === prefix || requestPath.startsWith(`${prefix}/`));
+};
+
 const protect = async (req, res, next) => {
   try {
     const token = requestToken(req);
@@ -44,6 +60,13 @@ const protect = async (req, res, next) => {
 
     if ((Number(decoded.tokenVersion) || 0) !== (Number(user.tokenVersion) || 0)) {
       return res.status(401).json({ success: false, message: "Session is no longer valid, please login again" });
+    }
+
+    if (!restrictedRoleCanAccess(user.role, req.originalUrl.split("?")[0])) {
+      return res.status(403).json({
+        success: false,
+        message: "Your account does not have permission to access this area",
+      });
     }
 
     req.user = user;

@@ -10,13 +10,13 @@ router.use(protect);
 
 router
   .route("/")
-  .get(c.getAll)
-  .post(authorize("super_admin", "admin", "editor"), c.create);
+  .get(authorize("super_admin", "admin", "editor", "hr_user"), c.getAll)
+  .post(authorize("super_admin", "admin", "editor", "hr_user"), c.create);
 
 router
   .route("/:id")
-  .get(c.getById)
-  .put(authorize("super_admin", "admin", "editor"), c.update)
-  .delete(authorize("super_admin", "admin"), c.remove);
+  .get(authorize("super_admin", "admin", "editor", "hr_user"), c.getById)
+  .put(authorize("super_admin", "admin", "editor", "hr_user"), c.update)
+  .delete(authorize("super_admin", "admin", "hr_user"), c.remove);
 
 module.exports = router;

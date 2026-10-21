@@ -18,14 +18,14 @@ router.route("/active").get(async (req, res, next) => {
 
 router.use(protect);
 
-router.route("/").get(c.getAll);
+router.route("/").get(authorize("super_admin", "admin", "marketing_user"), c.getAll);
 
-router.route("/").post(authorize("super_admin", "admin"), c.create);
+router.route("/").post(authorize("super_admin", "admin", "marketing_user"), c.create);
 
 router
   .route("/:id")
-  .get(c.getById)
-  .put(authorize("super_admin", "admin"), c.update)
-  .delete(authorize("super_admin", "admin"), c.remove);
+  .get(authorize("super_admin", "admin", "marketing_user"), c.getById)
+  .put(authorize("super_admin", "admin", "marketing_user"), c.update)
+  .delete(authorize("super_admin", "admin", "marketing_user"), c.remove);
 
 module.exports = router;

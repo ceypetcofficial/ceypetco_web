@@ -1,6 +1,9 @@
 const User = require("../models/User");
 
-const ALLOWED_ROLES = ["super_admin", "admin", "editor"];
+const ALLOWED_ROLES = [
+  "super_admin", "admin", "editor", "tender_user", "marketing_user",
+  "hr_user", "media_user",
+];
 const ALLOWED_STATUSES = ["active", "inactive"];
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MIN_PASSWORD_LENGTH = 12;
@@ -27,7 +30,7 @@ const validateUserInput = ({ name, email, password, role, status }) => {
     }
   }
   if (role !== undefined && !ALLOWED_ROLES.includes(role)) {
-    return "Invalid role. Must be one of: super_admin, admin, editor";
+    return `Invalid role. Must be one of: ${ALLOWED_ROLES.join(", ")}`;
   }
   if (status !== undefined && !ALLOWED_STATUSES.includes(status)) {
     return "Invalid status. Must be one of: active, inactive";

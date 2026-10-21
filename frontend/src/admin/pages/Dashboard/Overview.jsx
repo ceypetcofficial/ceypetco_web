@@ -10,6 +10,8 @@ import {
 import toast from "react-hot-toast";
 import snapshotLivePage from "../../../utils/snapshotLivePage";
 import displayImageUrl from "../../../utils/displayImageUrl";
+import RestrictedDashboard from "./RestrictedDashboard";
+import { accessForRole } from "../../roleAccess";
 
 const fallbackImages={
   "/":"/images/hero.png","/about":"/images/about-banner.webp","/history":"/images/history-1.jpg",
@@ -33,6 +35,12 @@ const knownPages = [["Home","/"],["About","/about"],["History","/history"],["Ser
 const emptyManaged={hero:{eyebrow:"",title:"",subtitle:"",image:"",imageAlt:"",buttonText:"",buttonLink:""},sections:[],overrides:[]};
 
 export default function Overview(){
+  const {user}=useAuth();
+  if(accessForRole(user?.role))return <RestrictedDashboard/>;
+  return <FullDashboard/>;
+}
+
+function FullDashboard(){
   const {user}=useAuth();
   const [records,setRecords]=useState([]),[gallery,setGallery]=useState([]),[galleryTotal,setGalleryTotal]=useState(0),[loading,setLoading]=useState(true),[query,setQuery]=useState(""),[category,setCategory]=useState("All"),[preview,setPreview]=useState(null),[publishing,setPublishing]=useState(""),[publishingAll,setPublishingAll]=useState(false),[live,setLive]=useState({});
   const load=async()=>{setLoading(true);try{const [pageResponse,galleryResponse]=await Promise.all([api.get("/admin/pages"),api.get("/admin/gallery",{params:{limit:8}})]);setRecords(pageResponse.data.data||[]);setGallery(galleryResponse.data.data||[]);setGalleryTotal(galleryResponse.data.pagination?.total||0);}catch{toast.error("Could not load dashboard content");}finally{setLoading(false);}};

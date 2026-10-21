@@ -4,27 +4,28 @@ const { uploadImage, uploadDocument, uploadAnnualReport, listImages, deleteImage
 const { protect } = require("../middleware/authMiddleware");
 const { authorize } = require("../middleware/roleMiddleware");
 
-const admins = authorize("super_admin", "admin", "editor");
+const contentUploaders = authorize("super_admin", "admin", "editor", "tender_user", "hr_user", "media_user");
+const mediaManagers = authorize("super_admin", "admin", "editor", "media_user");
 
 router
   .route("/image")
-  .post(protect, admins, uploadImage);
+  .post(protect, contentUploaders, uploadImage);
 
 router
   .route("/document")
-  .post(protect, admins, uploadDocument);
+  .post(protect, contentUploaders, uploadDocument);
 
 router
   .route("/annual-report")
-  .post(protect, admins, uploadAnnualReport);
+  .post(protect, mediaManagers, uploadAnnualReport);
 
-router.route("/images").get(protect, admins, listImages);
-router.get("/private/:filename", protect, admins, servePrivateDocument);
+router.route("/images").get(protect, mediaManagers, listImages);
+router.get("/private/:filename", protect, contentUploaders, servePrivateDocument);
 router.get("/public/:filename", servePublicDocument);
 
 router
   .route("/images/:filename")
-  .patch(protect, admins, renameImage)
-  .delete(protect, admins, deleteImage);
+  .patch(protect, mediaManagers, renameImage)
+  .delete(protect, mediaManagers, deleteImage);
 
 module.exports = router;

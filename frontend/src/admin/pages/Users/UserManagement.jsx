@@ -43,6 +43,10 @@ const ROLE_INFO = {
     desc: "Authors and manages website content only.",
     badge: "Content only \u00b7 no user management",
   },
+  tender_user: { label: "Tender User", desc: "Manages tender records only; no page or canvas editing.", badge: "Tender CRUD only" },
+  marketing_user: { label: "Marketing User", desc: "Manages Marketing & Sales fuel prices only; no page or canvas editing.", badge: "Fuel price CRUD only" },
+  hr_user: { label: "HR User", desc: "Manages career opportunities only; no page or canvas editing.", badge: "Careers CRUD only" },
+  media_user: { label: "Media User", desc: "Manages news and media records only; no page or canvas editing.", badge: "Media CRUD only" },
 };
 
 const STATUS_INFO = {
@@ -494,6 +498,10 @@ const UserManagement = () => {
                 >
                   <option value="admin">Admin</option>
                   <option value="editor">Editor</option>
+                  <option value="tender_user">Tender User</option>
+                  <option value="marketing_user">Marketing User</option>
+                  <option value="hr_user">HR User</option>
+                  <option value="media_user">Media User</option>
                   {currentUser?.role === "super_admin" && <option value="super_admin">Super Admin</option>}
                 </select>
               </Field>

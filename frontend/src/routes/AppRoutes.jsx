@@ -67,7 +67,7 @@ const AppRoutes = () => {
         <Route path="services-page/divisions" element={<DivisionManagement />} />
         <Route path="services-page/divisions/:slug" element={<DivisionEditor />} />
         <Route path="products-page" element={<Placeholder />} />
-        <Route path="fuel-prices" element={<ProtectedRoute roles={["super_admin", "admin"]}><FuelPriceManagement /></ProtectedRoute>} />
+        <Route path="fuel-prices" element={<ProtectedRoute roles={["super_admin", "admin", "marketing_user"]}><FuelPriceManagement /></ProtectedRoute>} />
         <Route path="aviation-prices" element={<ProtectedRoute roles={["super_admin", "admin"]}><AviationPriceManagement /></ProtectedRoute>} />
         <Route path="historical-prices" element={<ProtectedRoute roles={["super_admin", "admin"]}><HistoricalPriceManagement /></ProtectedRoute>} />
         <Route path="price-audit" element={<ProtectedRoute roles={["super_admin", "admin"]}><PriceAudit /></ProtectedRoute>} />
