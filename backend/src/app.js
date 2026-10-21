@@ -37,6 +37,7 @@ const tenderDownloadRoutes = require("./routes/tenderDownloadRoutes");
 const recycleBinRoutes = require("./routes/recycleBinRoutes");
 const priceAuditRoutes = require("./routes/priceAuditRoutes");
 const galleryRoutes = require("./routes/galleryRoutes");
+const productSpecificationRoutes = require("./routes/productSpecificationRoutes");
 const errorHandler = require("./middleware/errorMiddleware");
 const { allowedOrigins, isProduction } = require("./config/env");
 const requireTrustedOrigin = require("./middleware/csrfMiddleware");
@@ -231,6 +232,7 @@ app.use("/api/admin/pages", pageContentRoutes);
 app.use("/api/admin/recycle-bin", recycleBinRoutes);
 app.use("/api/admin/price-audit", priceAuditRoutes);
 app.use("/api/admin/gallery", galleryRoutes);
+app.use("/api/admin/product-specification", productSpecificationRoutes);
 app.use("/api/images/google-drive", googleDriveImageRoutes);
 
 app.use((req, res) => {

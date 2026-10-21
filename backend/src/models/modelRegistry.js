@@ -1,7 +1,7 @@
 const modelNames = [
   "AnnualReport","AviationPrice","Brochure","Career","ContactMessage","Division","FuelPrice","FuelStation",
   "GalleryItem","HistoricalPrice","HistoryPage","HomeService","ManagementContact","ManagementTeamMember",
-  "MobileApp","News","Notice","PageContent","PageContentRevision","PopupNotice","PriceAudit","Project","RegionalOffice",
+  "MobileApp","News","Notice","PageContent","PageContentRevision","PopupNotice","PriceAudit","ProductSpecification","Project","RegionalOffice",
   "Service","SupplierResource","SupplierSection","Tender","TenderDownload","User",
 ];
 

@@ -13,7 +13,7 @@ import subsidiariesHeroImage from './images/subsidiaries.webp';
 import ministryHeroImage from './images/ministry.webp';
 import allServicesHeroImage from './images/allservices.webp';
 import displayImageUrl from './utils/displayImageUrl.js';
-import { apiOrigin } from './utils/apiBaseUrl.js';
+import { apiBaseUrl, apiOrigin } from './utils/apiBaseUrl.js';
 import applyCmsOverrides, { scheduleCmsOverrides } from './utils/applyCmsOverrides.js';
 import MarineBunkeringPage from './components/marine-bunkering/MarineBunkeringPage.jsx';
 import ElectricMobilityContent from './components/electric-mobility/ElectricMobilityContent.jsx';
@@ -172,6 +172,10 @@ const useDivision = (slug, defaults) => {
   return div;
 };
 
+const PRODUCT_SPECIFICATIONS_URL = 'https://ceypetco.gov.lk/wp-content/uploads/Import-Specification.pdf';
+const withWorkingProductSpecificationLink = (item) =>
+  item?.title === 'Product Specifications' ? { ...item, link: '/products' } : item;
+
 const fallbackServices = [
   {
     icon: 'globe',
@@ -195,7 +199,7 @@ const fallbackServices = [
     icon: 'droplet',
     title: 'Product Specifications',
     description: 'Review petroleum product standards',
-    link: 'https://ceypetco.gov.lk/wp-content/uploads/2026/04/Marketing-Sepecifictions.pdf',
+    link: '/products',
   },
   {
     icon: 'shield',
@@ -637,6 +641,13 @@ const pageData = {
     intro:
       'Find official registrations, applications, specifications and information from one clear destination',
     image: allServicesHeroImage,
+  },
+  '/products': {
+    label: 'PRODUCT SPECIFICATIONS',
+    title: 'Petroleum product standards',
+    intro: 'Review official quality requirements and technical data for petroleum products supplied by Ceylon Petroleum Corporation',
+    breadcrumb: 'Product Specifications',
+    image: '/images/lubricants-hero.jpg',
   },
   '/bunkering': {
     label: 'OUR OPERATIONS · MARINE FUELS',
@@ -4181,6 +4192,13 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
   const [regionalOffices, setRegionalOffices] = useState(null);
   const [services, setServices] = useState([]);
   const [servicesLoading, setServicesLoading] = useState(true);
+  const [productSpecification, setProductSpecification] = useState({
+    title: 'Petroleum product specifications',
+    description: 'The official specification document covers marketed petroleum products and their required technical characteristics.',
+    url: PRODUCT_SPECIFICATIONS_URL,
+  });
+  const [showSpecificationPreview, setShowSpecificationPreview] = useState(false);
+  const specificationDocumentUrl = `${apiBaseUrl}/admin/product-specification/current/document`;
   const newsPageCount = Math.max(1, Math.ceil(news.length / NEWS_PER_PAGE));
   const pagedNews = news.slice((newsPage - 1) * NEWS_PER_PAGE, newsPage * NEWS_PER_PAGE);
   const brochuresPageCount = Math.max(1, Math.ceil(brochures.length / BROCHURES_PER_PAGE));
@@ -4220,7 +4238,7 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
       category: 'Technical Information',
       text: 'Review quality and technical information for marketed petroleum products',
       image: 'media-1.jpg',
-      href: 'https://ceypetco.gov.lk/wp-content/uploads/2026/04/Marketing-Sepecifictions.pdf',
+      href: '/products',
     },
     {
       title: 'Supplier Registration',
@@ -4281,7 +4299,7 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
   }));
   const availableServices =
     services.length > 0
-      ? services.map((s) => ({ ...s, href: s.link }))
+      ? services.map(withWorkingProductSpecificationLink).map((s) => ({ ...s, href: s.link }))
       : serviceItems;
   const serviceList = [
     ...availableServices.filter((item) =>
@@ -4490,6 +4508,29 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
   }, [type]);
 
   useEffect(() => {
+    if (type !== '/products') return undefined;
+    let cancelled = false;
+    api.get('/admin/product-specification/current')
+      .then(({ data }) => { if (!cancelled && data.data) setProductSpecification((current) => ({ ...current, ...data.data })); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [type]);
+
+  useEffect(() => {
+    if (!showSpecificationPreview) return undefined;
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') setShowSpecificationPreview(false);
+    };
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [showSpecificationPreview]);
+
+  useEffect(() => {
     if (type !== '/brochures') return undefined;
     let cancelled = false;
     setBrochuresLoading(true);
@@ -4597,6 +4638,7 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
       {[
         '/regional-offices',
         '/consumer-registration',
+        '/products',
         '/projects',
         '/right-to-information',
         '/tenders',
@@ -4787,6 +4829,56 @@ function InnerPage({ type, preserveTemplate, managedSections }) {
             </div>
           </section>
         </>
+      )}
+      {type === '/products' && (
+        <section className="content-section product-specifications-page">
+          <div className="container">
+            <div className="page-title-row">
+              <div>
+                <p className="eyebrow">TECHNICAL INFORMATION</p>
+                <h2>Official product specifications</h2>
+              </div>
+              <p>Consult the current CEYPETCO document for product properties, quality requirements and applicable test methods.</p>
+            </div>
+            <div className="product-specifications-grid">
+              <article className="product-specifications-card">
+                <span className="product-specifications-icon"><Icon name="droplet" size={28} /></span>
+                <p className="eyebrow">PRODUCT DATA SHEETS</p>
+                <h3>{productSpecification.title}</h3>
+                <p>{productSpecification.description}</p>
+                <div className="product-specifications-actions">
+                  <button type="button" onClick={() => setShowSpecificationPreview(true)}>View specifications <Icon name="arrow" size={17} /></button>
+                  <a href={`${specificationDocumentUrl}?disposition=attachment`} download>Download PDF <Icon name="download" size={17} /></a>
+                </div>
+              </article>
+              <aside className="product-specifications-note">
+                <p className="eyebrow">IMPORTANT</p>
+                <h3>Use the current official document</h3>
+                <p>Specifications may be revised. Confirm the latest requirements with CEYPETCO before using technical data for purchasing, storage, handling or tender decisions.</p>
+                <a href="/contact?subject=Product%20Specifications">Contact CEYPETCO <Icon name="arrow" size={16} /></a>
+              </aside>
+            </div>
+          </div>
+          {showSpecificationPreview && (
+            <div className="specification-preview-overlay" role="presentation" onMouseDown={(event) => {
+              if (event.target === event.currentTarget) setShowSpecificationPreview(false);
+            }}>
+              <div className="specification-preview-dialog" role="dialog" aria-modal="true" aria-labelledby="specification-preview-title">
+                <div className="specification-preview-header">
+                  <div>
+                    <p className="eyebrow">DOCUMENT PREVIEW</p>
+                    <h3 id="specification-preview-title">{productSpecification.title}</h3>
+                  </div>
+                  <button type="button" className="specification-preview-close" onClick={() => setShowSpecificationPreview(false)} aria-label="Close document preview">&times;</button>
+                </div>
+                <iframe title={`${productSpecification.title} document preview`} src={`${specificationDocumentUrl}?disposition=inline`} />
+                <div className="specification-preview-footer">
+                  <a href={`${specificationDocumentUrl}?disposition=attachment`} download>Download PDF <Icon name="download" size={17} /></a>
+                </div>
+              </div>
+            </div>
+          )}
+        </section>
       )}
       {type === '/online-banking' && (
         <section className="payment-options online-banking-directory content-section">
@@ -6106,7 +6198,9 @@ function App() {
         });
         if (!cancelled)
           setHomeServices(
-            res.data && res.data.data ? res.data.data : [],
+            res.data && res.data.data
+              ? res.data.data.map(withWorkingProductSpecificationLink)
+              : [],
           );
       } catch (err) {
         if (!cancelled) setHomeServices([]);
@@ -6893,7 +6987,7 @@ function App() {
                 {[
                   [
                     'Product Specifications',
-                    'https://ceypetco.gov.lk/wp-content/uploads/2026/04/Marketing-Sepecifictions.pdf',
+                    '/products',
                   ],
                   ['Supplier Registration', '/tenders#supplier-registration'],
                   ['Consumer Registration', '/consumer-registration'],

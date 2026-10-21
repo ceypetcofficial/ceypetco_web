@@ -15,7 +15,7 @@ const requestToken = (req) => {
 
 const restrictedRoleApiPrefixes = {
   tender_user: ["/api/auth", "/api/admin/tenders", "/api/upload"],
-  marketing_user: ["/api/auth", "/api/admin/fuel-prices"],
+  marketing_user: ["/api/auth", "/api/admin/fuel-prices", "/api/admin/product-specification", "/api/upload"],
   hr_user: ["/api/auth", "/api/admin/careers", "/api/upload"],
   media_user: [
     "/api/auth", "/api/admin/news", "/api/admin/notices", "/api/admin/projects",

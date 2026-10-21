@@ -35,7 +35,7 @@ const seedHomeServices = async () => {
       title: "Product Specifications",
       description: "Review petroleum product standards",
       icon: "droplet",
-      link: "https://ceypetco.gov.lk/wp-content/uploads/2026/04/Marketing-Sepecifictions.pdf",
+      link: "/products",
       order: 4,
       status: "published",
     },

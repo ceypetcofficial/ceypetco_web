@@ -42,7 +42,7 @@ const seedServices = async () => {
       category: "Technical Information",
       text: "Review quality and technical information for marketed petroleum products",
       image: CLOUD + "media-1.jpg",
-      link: "https://ceypetco.gov.lk/wp-content/uploads/2026/04/Marketing-Sepecifictions.pdf",
+      link: "/products",
       order: 4,
       status: "published",
     },

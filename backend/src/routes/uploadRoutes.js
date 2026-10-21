@@ -4,7 +4,7 @@ const { uploadImage, uploadDocument, uploadAnnualReport, listImages, deleteImage
 const { protect } = require("../middleware/authMiddleware");
 const { authorize } = require("../middleware/roleMiddleware");
 
-const contentUploaders = authorize("super_admin", "admin", "editor", "tender_user", "hr_user", "media_user");
+const contentUploaders = authorize("super_admin", "admin", "editor", "tender_user", "marketing_user", "hr_user", "media_user");
 const mediaManagers = authorize("super_admin", "admin", "editor", "media_user");
 
 router

@@ -36,6 +36,7 @@ import RecycleBin from "../admin/pages/RecycleBin/RecycleBin";
 import PageRevisions from "../admin/pages/Pages/PageRevisions";
 import PriceAudit from "../admin/pages/FuelPrices/PriceAudit";
 import GalleryManagement from "../admin/pages/Media/GalleryManagement";
+import ProductSpecificationManagement from "../admin/pages/Products/ProductSpecificationManagement";
 
 const AppRoutes = () => {
   return (
@@ -66,7 +67,8 @@ const AppRoutes = () => {
         <Route path="services-page" element={<ServicesManagement />} />
         <Route path="services-page/divisions" element={<DivisionManagement />} />
         <Route path="services-page/divisions/:slug" element={<DivisionEditor />} />
-        <Route path="products-page" element={<Placeholder />} />
+        <Route path="products-page" element={<ProductSpecificationManagement />} />
+        <Route path="product-specification" element={<ProductSpecificationManagement />} />
         <Route path="fuel-prices" element={<ProtectedRoute roles={["super_admin", "admin", "marketing_user"]}><FuelPriceManagement /></ProtectedRoute>} />
         <Route path="aviation-prices" element={<ProtectedRoute roles={["super_admin", "admin"]}><AviationPriceManagement /></ProtectedRoute>} />
         <Route path="historical-prices" element={<ProtectedRoute roles={["super_admin", "admin"]}><HistoricalPriceManagement /></ProtectedRoute>} />

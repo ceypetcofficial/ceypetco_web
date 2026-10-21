@@ -19,6 +19,7 @@ const schema = {
   "Notice": ["title", "slug", "summary", "content", "category", "publishedDate", "status", "document"],
   "PageContent": ["name", "path", "status", "seoTitle", "seoDescription"],
   "Project": ["title", "slug", "summary", "content", "featuredImage", "category", "location", "statusLabel", "startDate", "status"],
+  "ProductSpecification": ["title", "description", "url", "status"],
   "RegionalOffice": ["region", "district", "email", "manager", "name", "openingHours", "phone", "status"],
   "Service": ["title", "category", "text", "image", "link", "order", "status"],
   "SupplierResource": ["title", "url", "order", "status"],

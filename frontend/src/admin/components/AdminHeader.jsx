@@ -21,6 +21,7 @@ const pageTitles = {
   "/admin/services-page": "Services Management",
   "/admin/services-page/divisions": "Division Pages",
   "/admin/products-page": "Products Management",
+  "/admin/product-specification": "Product Specifications",
   "/admin/fuel-prices": "Fuel Prices",
   "/admin/price-audit": "Price Change History",
   "/admin/fuel-stations": "Fuel Stations",

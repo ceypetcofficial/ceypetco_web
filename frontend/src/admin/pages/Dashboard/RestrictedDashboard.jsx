@@ -5,7 +5,10 @@ import { accessForRole } from "../../roleAccess";
 
 const roleLinks = {
   tender_user: [["/admin/tenders", "Tender Records", "Create, edit and remove tenders.", ClipboardList]],
-  marketing_user: [["/admin/fuel-prices", "Fuel Prices", "Manage current Marketing & Sales fuel prices.", Droplets]],
+  marketing_user: [
+    ["/admin/fuel-prices", "Fuel Prices", "Manage current Marketing & Sales fuel prices.", Droplets],
+    ["/admin/product-specification", "Product Specifications", "Upload and publish the product specification PDF.", ClipboardList],
+  ],
   hr_user: [["/admin/careers", "Career Opportunities", "Create, edit and remove vacancies.", BriefcaseBusiness]],
   media_user: [
     ["/admin/news", "News Articles", "Manage website news articles.", Newspaper],
