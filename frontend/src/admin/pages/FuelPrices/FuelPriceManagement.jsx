@@ -28,6 +28,7 @@ const columns = [
         "—"
       ),
   },
+  { key: "effectiveTime", label: "Effective Time", className: "hidden lg:table-cell", render: (r) => <span className="text-xs text-[#66767d]">{r.effectiveTime || "00:00"}</span> },
   {
     key: "status",
     label: "Status",
@@ -54,6 +55,7 @@ const fields = [
   { key: "price", label: "Price (LKR)", type: "number", required: true, min: 0, max: 1000000, step: "0.01" },
   { key: "unit", label: "Unit", default: "LKR" },
   { key: "effectiveDate", label: "Effective Date", type: "date" },
+  { key: "effectiveTime", label: "Effective Time", type: "time", default: "00:00", hint: "Defaults to midnight (12:00 AM). You can change this time." },
   { key: "status", label: "Status", type: "select", options: ["active", "inactive"], default: "active" },
 ];
 

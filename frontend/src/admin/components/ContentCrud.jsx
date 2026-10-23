@@ -50,6 +50,8 @@ const ContentCrud = ({
             ? (f.default ?? "")
             : f.type === "date"
               ? ""
+              : f.type === "time"
+                ? (f.default ?? "00:00")
               : "";
     });
     return empty;
@@ -102,7 +104,7 @@ const ContentCrud = ({
         }
       }
       if (field.type === "date" && val) val = String(val).split("T")[0];
-      f[field.key] = val ?? "";
+      f[field.key] = val ?? (field.type === "time" ? (field.default ?? "00:00") : "");
     });
     setForm(f);
     setShowModal(true);
@@ -271,6 +273,7 @@ const ContentCrud = ({
       inputProps.step = field.step;
     }
     if (field.type === "date") inputProps.type = "date";
+    if (field.type === "time") inputProps.type = "time";
     return <input {...inputProps} />;
   };
 

@@ -3051,7 +3051,7 @@ function RefineryPage() {
 function FuelPriceCards({ products, category }) {
   return (
     <div className="fuel-price-grid">
-      {products.map(([name, price, date], index) => (
+      {products.map(([name, price, date, time], index) => (
         <article className="fuel-price-card" key={name}>
           <div className="price-card-top">
             <span>{category}</span>
@@ -3066,7 +3066,7 @@ function FuelPriceCards({ products, category }) {
           <div className="price-effective">
             <Icon name="clock" size={15} />
             <span>
-              Effective from <b>{date}</b>
+              Effective from <b>{date}</b> at <b>{time}</b>
             </span>
           </div>
         </article>
@@ -3139,6 +3139,7 @@ function MarketingSalesPage() {
               })
               .replace(/\//g, '-')
             : '',
+          p.effectiveTime || '00:00',
         ]),
     }))
     .filter((g) => g.products.length > 0);

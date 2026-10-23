@@ -9,7 +9,7 @@ const schema = {
   "Career": ["title", "reference", "department", "location", "type", "description", "responsibilities", "requirements", "salary", "order", "document", "documentName", "downloadButtonText", "documents", "applicationDeadline", "publishedDate", "status"],
   "ContactMessage": ["status", "name", "email", "subject", "message"],
   "Division": ["slug", "title", "subtitle", "order", "kicker", "heading", "image", "detailTitle", "status"],
-  "FuelPrice": ["effectiveDate", "product", "price", "status", "type", "unit", "category"],
+  "FuelPrice": ["effectiveDate", "effectiveTime", "product", "price", "status", "type", "unit", "category"],
   "FuelStation": ["dealerNo", "address", "dealerName", "district", "status"],
   "HistoricalPrice": ["seedId", "dateLabel", "kind", "note", "sortKey", "sourceIndex", "status", "year"],
   "HomeService": ["title", "description", "icon", "link", "order", "status"],

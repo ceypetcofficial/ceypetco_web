@@ -6,8 +6,8 @@ export const RESTRICTED_ROLE_ACCESS = {
   },
   marketing_user: {
     label: "Marketing User",
-    description: "Manage Marketing & Sales fuel prices and product specifications.",
-    paths: ["/admin/fuel-prices", "/admin/product-specification", "/admin/products-page"],
+    description: "Manage current and historical Marketing & Sales prices and product specifications.",
+    paths: ["/admin/fuel-prices", "/admin/historical-prices", "/admin/product-specification", "/admin/products-page"],
   },
   hr_user: {
     label: "HR User",

@@ -72,7 +72,7 @@ const AppRoutes = () => {
         <Route path="product-specification" element={<ProductSpecificationManagement />} />
         <Route path="fuel-prices" element={<ProtectedRoute roles={["super_admin", "admin", "marketing_user"]}><FuelPriceManagement /></ProtectedRoute>} />
         <Route path="aviation-prices" element={<ProtectedRoute roles={["super_admin", "admin"]}><AviationPriceManagement /></ProtectedRoute>} />
-        <Route path="historical-prices" element={<ProtectedRoute roles={["super_admin", "admin"]}><HistoricalPriceManagement /></ProtectedRoute>} />
+        <Route path="historical-prices" element={<ProtectedRoute roles={["super_admin", "admin", "marketing_user"]}><HistoricalPriceManagement /></ProtectedRoute>} />
         <Route path="price-audit" element={<ProtectedRoute roles={["super_admin", "admin"]}><PriceAudit /></ProtectedRoute>} />
         <Route path="fuel-stations" element={<FuelStationManagement />} />
         <Route path="regional-offices" element={<RegionalOfficeManagement />} />

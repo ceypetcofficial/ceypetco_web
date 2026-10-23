@@ -7,6 +7,7 @@ const roleLinks = {
   tender_user: [["/admin/tenders", "Tender Records", "Create, edit and remove tenders.", ClipboardList]],
   marketing_user: [
     ["/admin/fuel-prices", "Fuel Prices", "Manage current Marketing & Sales fuel prices.", Droplets],
+    ["/admin/historical-prices", "Historical Prices", "Create, review, edit and remove the historical fuel and bitumen price archive.", Droplets],
     ["/admin/product-specification", "Product Specifications", "Upload and publish the product specification PDF.", ClipboardList],
   ],
   hr_user: [["/admin/careers", "Career Opportunities", "Create, edit and remove vacancies.", BriefcaseBusiness]],

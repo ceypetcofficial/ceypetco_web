@@ -15,7 +15,7 @@ const emptyForm = (kind) => ({ kind, dateLabel: '', values: fieldsFor(kind).map(
 
 function HistoricalPriceManagement() {
   const { user } = useAuth();
-  const canDelete = ['super_admin', 'admin'].includes(user?.role);
+  const canDelete = ['super_admin', 'admin', 'marketing_user'].includes(user?.role);
   const [kind, setKind] = useState('fuel');
   const [page, setPage] = useState(1);
   const [searchInput, setSearchInput] = useState('');

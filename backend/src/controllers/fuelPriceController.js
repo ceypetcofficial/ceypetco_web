@@ -8,6 +8,10 @@ const validate = (payload, { existing }) => {
   if (typeof value === "boolean" || !Number.isFinite(Number(value))) return "Price must be a valid number";
   if (Number(value) < 0 || Number(value) > 1000000) return "Price must be between 0 and 1,000,000 LKR";
   payload.price = Number(value);
+  if (payload.effectiveTime !== undefined && !/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(payload.effectiveTime)) {
+    return "Effective time must be in 24-hour HH:MM format";
+  }
+  if (payload.effectiveTime === undefined && !existing) payload.effectiveTime = "00:00";
   return null;
 };
 const onChange = ({ action, item, previous, req }) => PriceAudit.create({ entity: "FuelPrice", entityId: item._id, action, previousValue: previous?.price ?? null, newValue: item.price ?? null, userId: req.user._id, userName: req.user.name, userEmail: req.user.email, changedAt: new Date() });
