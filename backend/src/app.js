@@ -4,6 +4,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
+const { loginIpLimiter, loginAccountLimiter } = require("./utils/loginRateLimiters");
 const authRoutes = require("./routes/authRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const newsRoutes = require("./routes/newsRoutes");
@@ -47,6 +48,9 @@ const requireTrustedOrigin = require("./middleware/csrfMiddleware");
 const app = express();
 const isDevelopment = process.env.NODE_ENV === "development";
 
+// Plesk/Passenger proxies requests into Express. Keep trust limited to the
+// immediate proxy hop so req.ip resolves to the connecting device address
+// from X-Forwarded-For without trusting arbitrary client-supplied hops.
 app.set("trust proxy", 1);
 app.set("query parser", "simple");
 
@@ -116,19 +120,6 @@ app.use(
 );
 app.use(morgan(isProduction ? "combined" : "dev"));
 
-const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 10,
-  keyGenerator: (req) => rateLimit.ipKeyGenerator(req.ip),
-  message: {
-    success: false,
-    message: "Too many login attempts, please try again after 15 minutes",
-  },
-  standardHeaders: true,
-  legacyHeaders: false,
-  skipSuccessfulRequests: true,
-});
-
 const readLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 1000,
@@ -196,7 +187,7 @@ app.get("/", (req, res) => {
   });
 });
 
-app.use("/api/auth/login", loginLimiter);
+app.use("/api/auth/login", loginIpLimiter, loginAccountLimiter);
 app.use("/api/admin/contact-messages", publicFormLimiter);
 app.use("/api/tender-downloads", publicFormLimiter);
 app.use("/api/images/google-drive", imageProxyLimiter);

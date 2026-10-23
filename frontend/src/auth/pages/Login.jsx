@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { useNavigate, Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, Navigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { Fuel, Eye, EyeOff, Loader2, AlertCircle } from "lucide-react";
+import { Fuel, Eye, EyeOff, Loader2, AlertCircle, ArrowRight, ShieldCheck, House } from "lucide-react";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -10,10 +10,33 @@ const Login = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [errors, setErrors] = useState({});
   const [apiError, setApiError] = useState("");
+  const [retryAfterSeconds, setRetryAfterSeconds] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loginStage, setLoginStage] = useState(0);
 
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isSubmitting) {
+      setLoginStage(0);
+      return undefined;
+    }
+
+    setLoginStage(0);
+    const stageTimer = window.setInterval(() => {
+      setLoginStage((stage) => Math.min(stage + 1, 2));
+    }, 900);
+    return () => window.clearInterval(stageTimer);
+  }, [isSubmitting]);
+
+  useEffect(() => {
+    if (retryAfterSeconds <= 0) return undefined;
+    const countdown = window.setInterval(() => {
+      setRetryAfterSeconds((seconds) => Math.max(0, seconds - 1));
+    }, 1000);
+    return () => window.clearInterval(countdown);
+  }, [retryAfterSeconds > 0]);
 
   if (isAuthenticated) {
     return <Navigate to="/admin" replace />;
@@ -39,6 +62,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setApiError("");
+    setRetryAfterSeconds(0);
 
     if (!validate()) return;
 
@@ -50,6 +74,8 @@ const Login = () => {
         navigate("/admin", { replace: true });
       }
     } catch (error) {
+      const retrySeconds = Number(error.response?.data?.retryAfterSeconds);
+      if (Number.isFinite(retrySeconds) && retrySeconds > 0) setRetryAfterSeconds(retrySeconds);
       const message =
         error.response?.data?.message || "An error occurred. Please try again.";
       setApiError(message);
@@ -59,9 +85,9 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="login-page min-h-screen flex">
       {/* Left branding panel */}
-      <div className="hidden lg:flex lg:w-[45%] bg-[#062e3b] relative overflow-hidden flex-col justify-between p-12">
+      <div className="login-brand-panel hidden lg:flex lg:w-[45%] bg-[#062e3b] relative overflow-hidden flex-col justify-between p-12">
         <div className="absolute inset-0 opacity-[0.03]">
           <div
             className="absolute inset-0"
@@ -90,14 +116,13 @@ const Login = () => {
 
         <div className="relative z-10">
           <h2 className="text-white font-extrabold text-4xl leading-tight mb-6" style={{ fontFamily: "'League Spartan', sans-serif" }}>
-            Official Website
+            One account.
             <br />
-            Administration
+            Connected energy.
           </h2>
           <p className="text-[#8faab0] text-sm leading-relaxed max-w-md">
-            Manage the CEYPETCO public website content, fuel prices, tenders,
-            news and operational data through a unified administration
-            dashboard.
+            Sign in to continue to your CEYPETCO services and account. A secure,
+            trusted connection to the energy that moves Sri Lanka.
           </p>
         </div>
 
@@ -112,6 +137,10 @@ const Login = () => {
               ))}
             </div>
           </div>
+          <Link to="/" className="mt-5 inline-flex items-center gap-2 rounded-lg border border-white/30 bg-white/10 px-3.5 py-2 text-sm font-semibold text-white transition-colors hover:border-white/50 hover:bg-white/20" style={{ color: "#ffffff" }}>
+            <House className="h-4 w-4 text-white" />
+            Back to home
+          </Link>
           <p className="text-[#66767d] text-[11px] mt-6">
             &copy; {new Date().getFullYear()} Ceylon Petroleum Corporation. All
             rights reserved.
@@ -120,8 +149,8 @@ const Login = () => {
       </div>
 
       {/* Right login panel */}
-      <div className="flex-1 flex items-center justify-center p-6 sm:p-12 bg-white">
-        <div className="w-full max-w-[400px]">
+      <div className="login-form-panel flex-1 flex items-center justify-center p-6 sm:p-12 bg-white">
+        <div className="login-card w-full max-w-[400px]">
           {/* Mobile branding */}
           <div className="flex items-center gap-3 mb-10 lg:hidden">
             <div className="w-11 h-11 bg-white border border-slate-200 rounded-full flex items-center justify-center shadow-sm">
@@ -132,27 +161,34 @@ const Login = () => {
                 CEYPETCO
               </h1>
               <p className="text-[10px] tracking-[0.12em] uppercase font-bold text-[#6c7a7e]">
-                Administration
+                Energy for everyone
               </p>
             </div>
           </div>
 
           <div className="mb-8">
             <p className="text-[11px] font-bold tracking-[0.14em] uppercase text-red-600 mb-3">
-              ADMIN LOGIN
+              CEYPETCO ACCOUNT
             </p>
             <h2 className="text-[#092f3b] font-extrabold text-[28px] leading-tight mb-2" style={{ fontFamily: "'League Spartan', sans-serif", color: '#092f3b' }}>
-              Welcome Back
+              Welcome back
             </h2>
             <p className="text-[#66767d] text-sm">
-              Sign in to manage the CEYPETCO website.
+              Sign in to your account to continue.
             </p>
           </div>
 
           {apiError && (
             <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-lg mb-6">
               <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />
-              <p className="text-sm text-red-700">{apiError}</p>
+              <div>
+                <p className="text-sm text-red-700">{apiError}</p>
+                {retryAfterSeconds > 0 && (
+                  <p className="mt-1 text-xs font-semibold text-red-700" role="timer" aria-live="polite">
+                    Try again in {Math.floor(retryAfterSeconds / 60)}:{String(retryAfterSeconds % 60).padStart(2, "0")}.
+                  </p>
+                )}
+              </div>
             </div>
           )}
 
@@ -239,35 +275,42 @@ const Login = () => {
                   disabled={isSubmitting}
                 />
                 <span className="text-sm text-[#66767d] select-none group-hover:text-[#092f3b] transition-colors">
-                  Remember Me
+                  Keep me signed in
                 </span>
               </label>
               <a
-                href="#"
+              href="mailto:info@ceypetco.gov.lk?subject=Account%20access%20help"
                 className="text-sm text-red-600 hover:text-red-700 font-medium transition-colors"
               >
-                Forgot Password?
+              Need help signing in?
               </a>
             </div>
 
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full h-12 bg-red-600 hover:bg-red-700 text-white font-bold text-sm tracking-wide rounded-lg flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed shadow-sm shadow-red-600/25 hover:shadow-md hover:shadow-red-600/30"
+              className={`login-submit w-full h-12 bg-red-600 hover:bg-red-700 text-white font-bold text-sm tracking-wide rounded-lg flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-100 disabled:cursor-wait shadow-sm shadow-red-600/25 hover:shadow-md hover:shadow-red-600/30 ${isSubmitting ? "is-loading" : ""}`}
+              aria-live="polite"
             >
               {isSubmitting ? (
-                <>
+                <span className="login-submit-content">
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Signing In...
-                </>
+                  {loginStage === 0 ? "Connecting securely..." : loginStage === 1 ? "Verifying your details..." : "Preparing your account..."}
+                </span>
               ) : (
-                "Sign In"
+                <>Sign in <ArrowRight className="w-4 h-4" /></>
               )}
             </button>
+            {isSubmitting && (
+              <div className="login-progress" role="status" aria-label="Sign-in in progress">
+                <div className="login-progress-track"><span key={loginStage} className="login-progress-fill" /></div>
+                <p>{loginStage === 0 ? "Establishing a secure connection" : loginStage === 1 ? "Checking your sign-in details" : "Almost there"}</p>
+              </div>
+            )}
           </form>
 
           <p className="mt-8 text-center text-[11px] text-[#879699]">
-            Protected administration area. Authorized personnel only.
+            <span className="inline-flex items-center justify-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5" /> Your account is protected with secure sign-in.</span>
           </p>
         </div>
       </div>

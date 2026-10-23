@@ -7,6 +7,7 @@ const { authorize } = require("../middleware/roleMiddleware");
 router.use(protect, authorize("super_admin", "admin"));
 
 router.route("/").get(c.getAll).post(c.create);
+router.post("/:id/unlock-login", c.unlockLogin);
 router.route("/:id").get(c.getById).put(c.update).delete(c.remove);
 
 module.exports = router;

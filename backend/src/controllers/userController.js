@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const { resetAccountLoginAttempts } = require("../utils/loginRateLimiters");
 
 const ALLOWED_ROLES = [
   "super_admin", "admin", "editor", "tender_user", "marketing_user",
@@ -79,6 +80,23 @@ const getById = async (req, res, next) => {
         .json({ success: false, message: "User not found" });
     }
     res.status(200).json({ success: true, data: user });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const unlockLogin = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+    resetAccountLoginAttempts(user.email);
+    if (user.status !== "active") user.status = "active";
+    user.failedLoginAttempts = 0;
+    user.lockUntil = null;
+    await user.save({ validateBeforeSave: false });
+
+    res.status(200).json({ success: true, message: "Login unlocked and account activated", data: user });
   } catch (error) {
     next(error);
   }
@@ -228,31 +246,34 @@ const update = async (req, res, next) => {
 
 const remove = async (req, res, next) => {
   try {
-    if (String(req.params.id).toLowerCase() === String(req.user._id).toLowerCase()) {
+    const target = await User.findById(req.params.id);
+    if (!target) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+    if (String(target._id).toLowerCase() === String(req.user._id).toLowerCase()) {
       return res
         .status(400)
         .json({ success: false, message: "You cannot delete your own account" });
     }
     if (req.user.role !== 'super_admin') {
-      return res.status(403).json({ success: false, message: 'Only super_admin can delete user accounts' });
+      if (target.role === "super_admin") {
+        return res.status(403).json({ success: false, message: "Admins cannot delete super_admin accounts" });
+      }
+      if (target.role === "admin") {
+        return res.status(403).json({ success: false, message: "Admins cannot delete other admin accounts" });
+      }
     }
-    const target = await User.findById(req.params.id);
-    if (target && target.role === 'super_admin') {
+    if (target.role === 'super_admin') {
       const superAdminCount = await User.countDocuments({ role: 'super_admin', status: 'active' });
       if (superAdminCount <= 1) {
         return res.status(400).json({ success: false, message: 'Cannot delete the last super_admin account' });
       }
     }
     const user = await User.findByIdAndDelete(req.params.id);
-    if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found" });
-    }
     res.status(200).json({ success: true, message: "User deleted" });
   } catch (error) {
     next(error);
   }
 };
 
-module.exports = { getAll, getById, create, update, remove };
+module.exports = { getAll, getById, create, update, unlockLogin, remove };

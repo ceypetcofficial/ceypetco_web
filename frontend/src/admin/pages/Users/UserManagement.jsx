@@ -16,6 +16,7 @@ import {
   Lock,
   Mail,
   Dices,
+  UnlockKeyhole,
 } from "lucide-react";
 import { userService } from "../../../services/contentService";
 import { useAuth } from "../../../context/AuthContext";
@@ -87,6 +88,19 @@ const initialsOf = (name) =>
     .slice(0, 2)
     .map((w) => w.charAt(0).toUpperCase())
     .join("") || "U";
+
+const sameUserId = (left, right) => {
+  const normalize = (value) => {
+    if (value == null) return "";
+    if (typeof value === "object") return String(value._id || value.id || value.$oid || value).toLowerCase();
+    return String(value).toLowerCase();
+  };
+  return Boolean(normalize(left) && normalize(left) === normalize(right));
+};
+
+const isCurrentUser = (currentUser, item) =>
+  sameUserId(currentUser?._id || currentUser?.id || currentUser?.userId, item?._id || item?.id || item?.userId) ||
+  Boolean(currentUser?.email && item?.email && currentUser.email.trim().toLowerCase() === item.email.trim().toLowerCase());
 
 const generateStrongPassword = () => {
   const chars =
@@ -164,6 +178,7 @@ const UserManagement = () => {
   const [saving, setSaving] = useState(false);
   const [showDelete, setShowDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  const [unlockingId, setUnlockingId] = useState(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -278,6 +293,19 @@ const UserManagement = () => {
     }
   };
 
+  const handleUnlockLogin = async (item) => {
+    setUnlockingId(item._id);
+    try {
+      await userService.unlockLogin(item._id);
+      toast.success(`Login unlocked for ${item.name}`);
+      await load();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to unlock login");
+    } finally {
+      setUnlockingId(null);
+    }
+  };
+
   const set = (key) => (e) => {
     const value = e.target.value;
     setForm((f) => ({ ...f, [key]: value }));
@@ -387,7 +415,7 @@ const UserManagement = () => {
                           <div className="min-w-0">
                             <p className="text-sm font-semibold text-[#092f3b] truncate">
                               {item.name}
-                              {currentUser?._id === item._id && (
+                              {isCurrentUser(currentUser, item) && (
                                 <span className="ml-2 text-[10px] font-bold text-white bg-[#062e3b] px-1.5 py-0.5 rounded">YOU</span>
                               )}
                             </p>
@@ -409,20 +437,30 @@ const UserManagement = () => {
                       <td className="px-4 py-4 text-right">
                         <div className="inline-flex items-center gap-1">
                           <button
+                            onClick={() => handleUnlockLogin(item)}
+                            disabled={unlockingId === item._id}
+                            title="Unlock login and activate account"
+                            className="p-2 rounded-lg text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 transition-colors disabled:opacity-50"
+                          >
+                            {unlockingId === item._id ? <Loader2 className="w-4 h-4 animate-spin" /> : <UnlockKeyhole className="w-4 h-4" />}
+                          </button>
+                          <button
                             onClick={() => openEdit(item)}
                             title="Edit"
                             className="p-2 rounded-lg text-slate-400 hover:text-[#092f3b] hover:bg-slate-100 transition-colors"
                           >
                             <Edit3 className="w-4 h-4" />
                           </button>
-                          <button
-                            onClick={() => setShowDelete(item)}
-                            disabled={currentUser?._id === item._id}
-                            title={currentUser?._id === item._id ? "Cannot delete your own account" : "Delete"}
-                            className="p-2 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                          {!isCurrentUser(currentUser, item) && (
+                            <button
+                              onClick={() => setShowDelete(item)}
+                              disabled={currentUser?.role !== "super_admin" && ["admin", "super_admin"].includes(item.role)}
+                              title={currentUser?.role !== "super_admin" && ["admin", "super_admin"].includes(item.role) ? "Admins cannot delete admin or super admin accounts" : "Delete"}
+                              className="p-2 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>

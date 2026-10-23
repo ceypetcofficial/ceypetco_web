@@ -1,6 +1,101 @@
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@700&family=Unbounded:wght@800;900&family=League+Spartan:wght@700;800;900&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Sinhala:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;500;600;700;800&display=swap');
 @import 'tailwindcss';
 
+/* Login page motion: restrained, quick, and disabled for reduced-motion users. */
+.login-page {
+  overflow: hidden;
+  background: #f7f9fa;
+}
+.login-brand-panel {
+  isolation: isolate;
+  animation: login-panel-in 700ms cubic-bezier(.2,.75,.25,1) both;
+}
+.login-brand-panel::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  width: 520px;
+  height: 520px;
+  right: -210px;
+  bottom: -255px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 50%;
+  box-shadow: 0 0 0 44px rgba(255,255,255,.025), 0 0 0 90px rgba(255,255,255,.02);
+  animation: login-orbit 18s linear infinite;
+}
+.login-form-panel {
+  animation: login-panel-in 700ms 90ms cubic-bezier(.2,.75,.25,1) both;
+}
+.login-card { animation: login-card-in 650ms 180ms cubic-bezier(.2,.75,.25,1) both; }
+.login-page form button[type='submit'] { transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease; }
+.login-page form button[type='submit']:not(:disabled):hover { transform: translateY(-2px); }
+.login-submit.is-loading {
+  position: relative;
+  overflow: hidden;
+  background: #a80f1a;
+}
+.login-submit.is-loading::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 -45%;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.2), transparent);
+  animation: login-button-sheen 1.35s ease-in-out infinite;
+}
+.login-submit-content { position: relative; display: inline-flex; align-items: center; gap: .5rem; }
+.login-progress { margin-top: 15px; animation: login-card-in 220ms ease both; }
+.login-progress-track { height: 3px; overflow: hidden; border-radius: 999px; background: #e9eef0; }
+.login-progress-fill {
+  display: block;
+  width: 42%;
+  height: 100%;
+  border-radius: inherit;
+  background: #c41220;
+  animation: login-progress-run 1.5s cubic-bezier(.4,0,.2,1) infinite;
+}
+.login-progress p { margin: 8px 0 0; color: #879699; font-size: 11px; text-align: center; }
+@keyframes login-panel-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes login-card-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes login-orbit { to { transform: rotate(360deg); } }
+@keyframes login-button-sheen { 0% { transform: translateX(0); } 100% { transform: translateX(360%); } }
+@keyframes login-progress-run { 0% { transform: translateX(-110%); } 100% { transform: translateX(350%); } }
+@media (prefers-reduced-motion: reduce) {
+  .login-brand-panel, .login-form-panel, .login-card, .login-brand-panel::after { animation: none !important; }
+  .login-page form button[type='submit'], .login-submit.is-loading::before, .login-progress-fill { transition: none; animation: none !important; }
+}
+
+/* Keep the admin navigation scrollable without exposing browser scroll tracks. */
+.admin-sidebar nav,
+.admin-sidebar nav [class*='overflow-y-auto'] {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.admin-sidebar nav::-webkit-scrollbar,
+.admin-sidebar nav [class*='overflow-y-auto']::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+.admin-sidebar-group-content {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 260ms ease, opacity 180ms ease;
+}
+.admin-sidebar-group-content > div {
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.admin-sidebar-group-content > div::-webkit-scrollbar { display: none; }
+.admin-sidebar-group-content.is-open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .admin-sidebar-group-content { transition: none; }
+}
+
 .hero-slides{
 
   position: absolute;

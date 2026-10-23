@@ -39,6 +39,7 @@ const aviationPriceService = createResourceService("/admin/aviation-prices");
 const fuelStationService = createResourceService("/admin/fuel-stations");
 const regionalOfficeService = createResourceService("/admin/regional-offices");
 const userService = createResourceService("/admin/users");
+userService.unlockLogin = async (id) => (await api.post(`/admin/users/${id}/unlock-login`)).data;
 const homeServiceService = createResourceService("/admin/home-services");
 const serviceService = createResourceService("/admin/services");
 const mobileAppService = createResourceService("/admin/mobile-apps");
