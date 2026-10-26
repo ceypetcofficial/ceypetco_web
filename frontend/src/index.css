@@ -211,6 +211,8 @@
   color: #ffe3e5;
   font-size: 13px;
   line-height: 1.55;
+}.footer-contact-item p, .footer-contact-item a{
+  font-size: 16px;
 }.footer-contact-item span{
   display: block;
   margin-bottom: 2px;
