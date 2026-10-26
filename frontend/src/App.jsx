@@ -7104,15 +7104,6 @@ function App() {
                 <a href="tel:+94117296100">+94 11 7296 100</a>
               </div>
             </div>
-            <div className="footer-contact-item">
-              <Icon name="globe" size={19} />
-              <div>
-                <span>{t('email')}</span>
-                <a href="mailto:secretariat@ceypetco.gov.lk">
-                  secretariat@ceypetco.gov.lk
-                </a>
-              </div>
-            </div>
           </div>
         </div>
         <div className="container footer-bottom">
