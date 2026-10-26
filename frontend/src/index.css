@@ -190,6 +190,22 @@
   gap: 12px;
   margin-bottom: 12px;
   color: #fff;
+}.footer-contact-icon{
+  display: grid !important;
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  margin: 1px 0 0 !important;
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff !important;
+  place-items: center;
+}.footer-contact-icon svg{
+  display: block;
+  width: 22px;
+  height: 22px;
+  stroke-width: 2.25;
 }.footer-contact-item p, .footer-contact-item a, .footer-contact-item span{
   margin: 0;
   color: #ffe3e5;

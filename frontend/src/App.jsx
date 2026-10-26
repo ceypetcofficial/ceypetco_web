@@ -80,6 +80,12 @@ const Icon = ({ name, size = 24 }) => {
         <path d="M4 21V7l8-4 8 4v14M8 10h2m4 0h2m-8 4h2m4 0h2M9 21v-3h6v3" />
       </>
     ),
+    location: (
+      <>
+        <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
+        <circle cx="12" cy="10" r="2.5" />
+      </>
+    ),
     app: (
       <>
         <rect x="6" y="2" width="12" height="20" rx="2" />
@@ -7082,13 +7088,17 @@ function App() {
           <div className="footer-contact">
             <h4>{t('headOffice')}</h4>
             <div className="footer-contact-item">
-              <Icon name="building" size={19} />
+              <span className="footer-contact-icon">
+                <Icon name="location" size={22} />
+              </span>
               <p>
                 No. 609, Dr. Danister de Silva Mawatha, Colombo 09, Sri Lanka
               </p>
             </div>
             <div className="footer-contact-item">
-              <Icon name="phone" size={19} />
+              <span className="footer-contact-icon">
+                <Icon name="phone" size={22} />
+              </span>
               <div>
                 <span>{t('generalLine')}</span>
                 <a href="tel:+94117296100">+94 11 7296 100</a>
