@@ -23,10 +23,23 @@ const restrictedRoleApiPrefixes = {
   ],
 };
 
-const restrictedRoleCanAccess = (role, requestPath) => {
+const normalizeApiPath = (value) => {
+  let requestPath = String(value || "").split("?")[0].replace(/\/+$/, "");
+  const apiIndex = requestPath.indexOf("/api/");
+  if (apiIndex > 0) requestPath = requestPath.slice(apiIndex);
+  if (requestPath.startsWith("/admin/")) requestPath = `/api${requestPath}`;
+  if (requestPath === "/auth" || requestPath.startsWith("/auth/")) requestPath = `/api${requestPath}`;
+  if (requestPath === "/upload" || requestPath.startsWith("/upload/")) requestPath = `/api${requestPath}`;
+  return requestPath || "/";
+};
+
+const restrictedRoleCanAccess = (role, requestPaths) => {
   const prefixes = restrictedRoleApiPrefixes[role];
   if (!prefixes) return true;
-  return prefixes.some((prefix) => requestPath === prefix || requestPath.startsWith(`${prefix}/`));
+  return requestPaths.some((value) => {
+    const requestPath = normalizeApiPath(value);
+    return prefixes.some((prefix) => requestPath === prefix || requestPath.startsWith(`${prefix}/`));
+  });
 };
 
 const protect = async (req, res, next) => {
@@ -62,7 +75,12 @@ const protect = async (req, res, next) => {
       return res.status(401).json({ success: false, message: "Session is no longer valid, please login again" });
     }
 
-    if (!restrictedRoleCanAccess(user.role, req.originalUrl.split("?")[0])) {
+    const requestPaths = [
+      req.originalUrl,
+      req.baseUrl,
+      `${req.baseUrl || ""}${req.path || ""}`,
+    ];
+    if (!restrictedRoleCanAccess(user.role, requestPaths)) {
       return res.status(403).json({
         success: false,
         message: "Your account does not have permission to access this area",
@@ -111,4 +129,4 @@ const optionalAuth = async (req, res, next) => {
   }
 };
 
-module.exports = { protect, optionalAuth };
+module.exports = { protect, optionalAuth, normalizeApiPath, restrictedRoleCanAccess };
