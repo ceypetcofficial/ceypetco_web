@@ -45,7 +45,7 @@ const ROLE_INFO = {
     badge: "Content only \u00b7 no user management",
   },
   tender_user: { label: "Tender User", desc: "Manages tender records only; no page or canvas editing.", badge: "Tender CRUD only" },
-  marketing_user: { label: "Marketing User", desc: "Manages Marketing & Sales fuel prices only; no page or canvas editing.", badge: "Fuel price CRUD only" },
+  marketing_user: { label: "Marketing User", desc: "Manages current and historical Marketing & Sales prices and product specifications; no page or canvas editing.", badge: "Marketing price CRUD" },
   hr_user: { label: "HR User", desc: "Manages career opportunities only; no page or canvas editing.", badge: "Careers CRUD only" },
   media_user: { label: "Media User", desc: "Manages news and media records only; no page or canvas editing.", badge: "Media CRUD only" },
 };
@@ -200,7 +200,7 @@ const UserManagement = () => {
     load();
   }, [load]);
 
-  const isSelf = editing ? editing._id === currentUser?._id : false;
+  const isSelf = editing ? isCurrentUser(currentUser, editing) : false;
 
   const openCreate = () => {
     setEditing(null);
@@ -263,6 +263,10 @@ const UserManagement = () => {
       const payload = { ...form };
       delete payload.confirmPassword;
       if (!payload.password) delete payload.password;
+      if (editing && isCurrentUser(currentUser, editing)) {
+        delete payload.role;
+        delete payload.status;
+      }
       if (editing) {
         await userService.update(editing._id, payload);
         toast.success("User updated successfully");

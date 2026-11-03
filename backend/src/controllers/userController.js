@@ -161,10 +161,13 @@ const update = async (req, res, next) => {
         .json({ success: false, message: "User not found" });
     }
 
-    if (
-      String(req.params.id).toLowerCase() === String(req.user._id).toLowerCase() &&
-      (req.body.role !== undefined || req.body.status !== undefined)
-    ) {
+    const updatingSelf =
+      String(req.params.id).toLowerCase() === String(req.user._id).toLowerCase();
+    const changesOwnAccess =
+      (req.body.role !== undefined && req.body.role !== target.role) ||
+      (req.body.status !== undefined && req.body.status !== target.status);
+
+    if (updatingSelf && changesOwnAccess) {
       return res.status(400).json({
         success: false,
         message: "You cannot change your own role or status",
